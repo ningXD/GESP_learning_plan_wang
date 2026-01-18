@@ -792,6 +792,128 @@
             display: none;
         }
         
+        /* 图片预览容器样式 */
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        /* 单张图片预览样式 */
+        .image-preview-item {
+            position: relative;
+            max-width: 200px;
+            max-height: 150px;
+            overflow: hidden;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 删除按钮样式 */
+        .image-delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .image-delete-btn:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        /* 图片预览弹窗样式 */
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(3px);
+        }
+        
+        .image-preview-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-preview-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .image-preview-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .image-preview-close:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+        
+        .image-preview-area {
+            max-width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #fullSizeImage {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            display: block;
+            cursor: grab;
+            transition: transform 0.1s ease;
+            position: relative;
+            transform-origin: center;
+        }
+        
+        #fullSizeImage:active {
+            cursor: grabbing;
+        }
+        
         .note-image-preview.active {
             display: block;
         }
@@ -1014,13 +1136,13 @@
                         <input type="text" id="imageNoteTitle" placeholder="请输入图片笔记标题" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">上传图片:</label>
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">上传图片 (最多5张):</label>
                         <div class="note-image-upload" onclick="document.getElementById('imageUpload').click()">
                             <span style="font-size: 48px;">📁</span>
                             <span style="margin-top: 10px;">点击上传图片或拖拽图片到此处</span>
-                            <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
+                            <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()" multiple>
                         </div>
-                        <img id="imagePreview" class="note-image-preview" alt="图片预览">
+                        <div id="imagePreviewContainer" class="image-preview-container"></div>
                     </div>
                 </div>
                 
@@ -1044,6 +1166,16 @@
             <div class="note-modal-footer">
                 <button class="note-cancel-btn" onclick="toggleNoteModal()">取消</button>
                 <button class="note-save-btn" onclick="saveNote()">保存笔记</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图片预览弹窗 -->
+    <div id="imagePreviewModal" class="image-preview-modal">
+        <div class="image-preview-modal-content">
+            <button class="image-preview-close" onclick="toggleImagePreview()">&times;</button>
+            <div class="image-preview-area">
+                <img id="fullSizeImage" src="" alt="高清大图">
             </div>
         </div>
     </div>
@@ -1999,13 +2131,16 @@ int main() {
         // 笔记功能相关变量
         let currentNoteType = 'text';
         let notes = [];
-        let currentImageData = '';
+        let currentImageData = []; // 改为数组，支持多张图片
         
         // IndexedDB配置
         const DB_NAME = 'StudyNotesDB';
         const DB_VERSION = 1;
         const STORE_NAME = 'notes';
         let db = null;
+        
+        // 最大图片数量限制
+        const MAX_IMAGES = 5;
         
         // 初始化IndexedDB
         function initIndexedDB() {
@@ -2139,22 +2274,97 @@ int main() {
         // 预览图片
         function previewImage() {
             const fileInput = document.getElementById('imageUpload');
-            const preview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('imagePreviewContainer');
             
-            console.log('previewImage called');
+            console.log('previewImage called, files:', fileInput.files.length);
             
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
+            if (fileInput.files && fileInput.files.length > 0) {
+                const files = Array.from(fileInput.files);
                 
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.add('active');
-                    currentImageData = e.target.result;
-                    console.log('Image data loaded, currentImageData set:', !!currentImageData);
+                // 检查文件数量是否超过限制
+                const remainingSlots = MAX_IMAGES - currentImageData.length;
+                const filesToProcess = files.slice(0, remainingSlots);
+                
+                if (files.length > remainingSlots) {
+                    alert(`最多只能上传${MAX_IMAGES}张图片，已跳过${files.length - remainingSlots}张`);
                 }
                 
-                reader.readAsDataURL(fileInput.files[0]);
+                // 逐个处理文件
+                filesToProcess.forEach((file, index) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const imageData = e.target.result;
+                        
+                        // 添加到当前图片数据数组
+                        currentImageData.push(imageData);
+                        
+                        // 创建预览项
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'image-preview-item';
+                        previewItem.dataset.index = currentImageData.length - 1;
+                        
+                        // 创建图片元素
+                        const img = document.createElement('img');
+                        img.src = imageData;
+                        img.alt = `图片${currentImageData.length}`;
+                        
+                        // 创建删除按钮
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'image-delete-btn';
+                        deleteBtn.innerHTML = '&times;';
+                        deleteBtn.onclick = function() {
+                            deletePreviewImage(parseInt(previewItem.dataset.index));
+                        };
+                        
+                        // 添加到预览容器
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(deleteBtn);
+                        previewContainer.appendChild(previewItem);
+                        
+                        console.log('Image data loaded, currentImageData length:', currentImageData.length);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
             }
+            
+            // 清空文件输入，允许再次上传相同文件
+            fileInput.value = '';
+        }
+        
+        // 删除预览图片
+        function deletePreviewImage(index) {
+            // 从数组中删除
+            currentImageData.splice(index, 1);
+            
+            // 更新DOM
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            previewContainer.innerHTML = '';
+            
+            // 重新渲染所有预览图片
+            currentImageData.forEach((imageData, idx) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.dataset.index = idx;
+                
+                const img = document.createElement('img');
+                img.src = imageData;
+                img.alt = `图片${idx + 1}`;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'image-delete-btn';
+                deleteBtn.innerHTML = '&times;';
+                deleteBtn.onclick = function() {
+                    deletePreviewImage(idx);
+                };
+                
+                previewItem.appendChild(img);
+                previewItem.appendChild(deleteBtn);
+                previewContainer.appendChild(previewItem);
+            });
+            
+            console.log('Image deleted, currentImageData length:', currentImageData.length);
         }
         
         // IndexedDB CRUD操作
@@ -2275,8 +2485,8 @@ int main() {
             // 重置图片笔记表单
             document.getElementById('imageNoteTitle').value = '';
             document.getElementById('imageUpload').value = '';
-            document.getElementById('imagePreview').classList.remove('active');
-            currentImageData = ''; // 清空当前图片数据
+            document.getElementById('imagePreviewContainer').innerHTML = '';
+            currentImageData = []; // 清空当前图片数据数组
             
             // 重置思维导图笔记表单
             document.getElementById('mindmapNoteTitle').value = '';
@@ -2321,7 +2531,17 @@ int main() {
                         html += `<div>${note.content.replace(/\n/g, '<br>')}</div>`;
                         break;
                     case 'image':
-                        html += `<img src="${note.content}" class="note-item-image" alt="笔记图片">`;
+                        // 检查是否为多张图片（数组）
+                        if (Array.isArray(note.content)) {
+                            html += `<div class="image-preview-container">`;
+                            note.content.forEach(imgData => {
+                                html += `<div class="image-preview-item" onclick="toggleImagePreview('${imgData}')"><img src="${imgData}" class="note-item-image" alt="笔记图片" style="cursor: pointer;"></div>`;
+                            });
+                            html += `</div>`;
+                        } else {
+                            // 兼容旧版单张图片格式
+                            html += `<img src="${note.content}" class="note-item-image" alt="笔记图片" onclick="toggleImagePreview('${note.content}')" style="cursor: pointer;">`;
+                        }
                         break;
                     case 'mindmap':
                         html += `
@@ -2409,6 +2629,154 @@ int main() {
                 console.error('笔记迁移失败:', error);
                 return false;
             }
+        }
+        
+        // 图片拖拽和缩放相关变量
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        let currentScale = 1;
+        let minScale = 0.5;
+        let maxScale = 5;
+        
+        // 切换图片预览弹窗
+        function toggleImagePreview(imageSrc = '') {
+            const modal = document.getElementById('imagePreviewModal');
+            const previewArea = modal.querySelector('.image-preview-area');
+            const fullSizeImage = document.getElementById('fullSizeImage');
+            
+            if (modal.classList.contains('active')) {
+                // 关闭弹窗
+                modal.classList.remove('active');
+                fullSizeImage.src = '';
+                // 重置图片状态
+                resetImagePosition();
+                // 移除事件监听
+                document.removeEventListener('keydown', handleEscapeKey);
+                previewArea.removeEventListener('mousedown', handleMouseDown);
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+                document.removeEventListener('mouseleave', handleMouseUp);
+                fullSizeImage.removeEventListener('wheel', handleWheel);
+                fullSizeImage.removeEventListener('dblclick', handleDoubleClick);
+            } else {
+                // 打开弹窗并设置图片
+                if (imageSrc) {
+                    fullSizeImage.src = imageSrc;
+                }
+                modal.classList.add('active');
+                // 重置图片状态
+                resetImagePosition();
+                // 添加事件监听
+                setTimeout(() => {
+                    document.addEventListener('keydown', handleEscapeKey);
+                    // 将事件监听添加到整个预览区域，而不仅仅是图片
+                    previewArea.addEventListener('mousedown', handleMouseDown);
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                    document.removeEventListener('mouseleave', handleMouseUp);
+                    fullSizeImage.addEventListener('wheel', handleWheel);
+                    fullSizeImage.addEventListener('dblclick', handleDoubleClick);
+                }, 100);
+            }
+        }
+        
+        // 键盘ESC键关闭弹窗
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('imagePreviewModal');
+                if (modal.classList.contains('active')) {
+                    toggleImagePreview();
+                }
+            }
+        }
+        
+        // 图片拖拽开始
+        function handleMouseDown(event) {
+            if (event.button !== 0) return; // 只处理左键
+            
+            // 防止点击关闭按钮时触发拖拽
+            if (event.target.classList.contains('image-preview-close')) {
+                return;
+            }
+            
+            isDragging = true;
+            startX = event.clientX - currentX;
+            startY = event.clientY - currentY;
+            event.preventDefault();
+        }
+        
+        // 图片拖拽移动
+        function handleMouseMove(event) {
+            if (!isDragging) return;
+            currentX = event.clientX - startX;
+            currentY = event.clientY - startY;
+            updateImageTransform();
+            event.preventDefault();
+        }
+        
+        // 图片拖拽结束
+        function handleMouseUp() {
+            isDragging = false;
+        }
+        
+        // 确保ESC键仍能关闭弹窗（保留原有功能）
+        
+        // 图片滚轮缩放
+        function handleWheel(event) {
+            event.preventDefault();
+            
+            // 计算缩放中心（相对于图片的坐标）
+            const img = event.target;
+            const rect = img.getBoundingClientRect();
+            
+            // 计算鼠标在图片上的相对位置（考虑当前的偏移和缩放）
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            // 计算缩放前的图片中心点偏移
+            const imgCenterX = rect.width / 2;
+            const imgCenterY = rect.height / 2;
+            
+            // 计算鼠标相对于图片中心点的位置
+            const relX = mouseX - imgCenterX;
+            const relY = mouseY - imgCenterY;
+            
+            // 计算缩放方向和比例
+            const delta = event.deltaY > 0 ? -0.1 : 0.1;
+            const newScale = Math.max(minScale, Math.min(maxScale, currentScale + delta));
+            
+            // 计算缩放因子
+            const scaleFactor = newScale / currentScale;
+            
+            // 调整位置：保持鼠标位置不变
+            // 新的偏移 = 旧的偏移 + 相对位置 * (1 - 缩放因子)
+            currentX += relX * (1 - scaleFactor);
+            currentY += relY * (1 - scaleFactor);
+            currentScale = newScale;
+            
+            updateImageTransform();
+        }
+        
+        // 双击重置图片
+        function handleDoubleClick() {
+            resetImagePosition();
+        }
+        
+        // 重置图片位置和缩放
+        function resetImagePosition() {
+            currentScale = 1;
+            currentX = 0;
+            currentY = 0;
+            updateImageTransform();
+        }
+        
+        // 更新图片变换
+        function updateImageTransform() {
+            const fullSizeImage = document.getElementById('fullSizeImage');
+            fullSizeImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
         }
         
         // 初始化笔记列表
