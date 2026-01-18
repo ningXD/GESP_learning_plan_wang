@@ -1081,6 +1081,10 @@
                 <span class="icon">📝</span>
                 添加笔记
             </button>
+            <button class="btn" onclick="convertNotesToPPT()">
+                <span class="icon">📊</span>
+                笔记转PPT
+            </button>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-weight: bold; color: #2c3e50;">总进度: <span id="progress">0/8</span> 周</span>
@@ -2803,6 +2807,202 @@ int main() {
             }
         }
         
+        // 将笔记转换为PPT
+        async function convertNotesToPPT() {
+            try {
+                // 获取所有笔记
+                const notes = await getAllNotesFromDB();
+                
+                if (notes.length === 0) {
+                    alert('没有可用的笔记来生成PPT！');
+                    return;
+                }
+                
+                // 创建PPT HTML内容
+                let pptContent = `
+                    <!DOCTYPE html>
+                    <html lang="zh-CN">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>学习笔记PPT</title>
+                        <style>
+                            * {
+                                margin: 0;
+                                padding: 0;
+                                box-sizing: border-box;
+                            }
+                            
+                            body {
+                                font-family: 'Microsoft YaHei', sans-serif;
+                                background: #f5f5f5;
+                            }
+                            
+                            .slide {
+                                width: 960px;
+                                height: 720px;
+                                background: white;
+                                margin: 20px auto;
+                                padding: 50px;
+                                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                                page-break-after: always;
+                            }
+                            
+                            .slide:last-child {
+                                page-break-after: avoid;
+                            }
+                            
+                            .title-slide {
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                align-items: center;
+                                text-align: center;
+                            }
+                            
+                            .title-slide h1 {
+                                font-size: 48px;
+                                color: #2c3e50;
+                                margin-bottom: 20px;
+                            }
+                            
+                            .title-slide p {
+                                font-size: 24px;
+                                color: #7f8c8d;
+                            }
+                            
+                            .slide h2 {
+                                font-size: 36px;
+                                color: #3498db;
+                                margin-bottom: 30px;
+                                border-bottom: 3px solid #3498db;
+                                padding-bottom: 10px;
+                            }
+                            
+                            .slide h3 {
+                                font-size: 28px;
+                                color: #2c3e50;
+                                margin-bottom: 20px;
+                            }
+                            
+                            .slide p {
+                                font-size: 20px;
+                                line-height: 1.6;
+                                color: #34495e;
+                                margin-bottom: 15px;
+                            }
+                            
+                            .slide img {
+                                max-width: 100%;
+                                max-height: 400px;
+                                margin: 20px 0;
+                                border-radius: 8px;
+                            }
+                            
+                            .note-item {
+                                background: #f8f9fa;
+                                padding: 20px;
+                                border-radius: 8px;
+                                margin-bottom: 20px;
+                                border-left: 4px solid #3498db;
+                            }
+                            
+                            .note-item-title {
+                                font-weight: bold;
+                                font-size: 24px;
+                                color: #2c3e50;
+                                margin-bottom: 10px;
+                            }
+                            
+                            .note-item-date {
+                                font-size: 16px;
+                                color: #7f8c8d;
+                                margin-bottom: 15px;
+                            }
+                            
+                            @media print {
+                                .slide {
+                                    box-shadow: none;
+                                    margin: 0;
+                                    padding: 30px;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <!-- 标题页 -->
+                        <div class="slide title-slide">
+                            <h1>学习笔记PPT</h1>
+                            <p>生成时间：${new Date().toLocaleString()}</p>
+                            <p>共 ${notes.length} 条笔记</p>
+                        </div>
+                `;
+                
+                // 添加每条笔记作为一页幻灯片
+                notes.forEach((note, index) => {
+                    pptContent += `
+                        <div class="slide">
+                            <h2>第 ${index + 1} 条笔记</h2>
+                            <div class="note-item">
+                                <div class="note-item-title">${note.title || '无标题笔记'}</div>
+                                <div class="note-item-date">${new Date(note.createdAt).toLocaleString()}</div>
+                                <div class="note-item-content">
+                    `;
+                    
+                    // 根据笔记类型添加内容
+                    switch(note.type) {
+                        case 'text':
+                            pptContent += `<p>${note.content.replace(/\n/g, '</p><p>')}</p>`;
+                            break;
+                        case 'image':
+                            if (Array.isArray(note.content)) {
+                                note.content.forEach(imgData => {
+                                    pptContent += `<img src="${imgData}" alt="笔记图片">`;
+                                });
+                            } else {
+                                pptContent += `<img src="${note.content}" alt="笔记图片">`;
+                            }
+                            break;
+                        case 'mindmap':
+                            pptContent += `
+                                <div style="text-align: center; padding: 50px;">
+                                    <span style="font-size: 64px;">🧠</span>
+                                    <p>思维导图</p>
+                                </div>
+                            `;
+                            break;
+                    }
+                    
+                    pptContent += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                pptContent += `
+                    </body>
+                    </html>
+                `;
+                
+                // 创建Blob并下载
+                const blob = new Blob([pptContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `学习笔记PPT_${new Date().toISOString().slice(0, 10)}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('笔记已转换为PPT格式！请将下载的HTML文件用浏览器打开或直接打印。');
+            } catch (error) {
+                console.error('转换笔记为PPT失败:', error);
+                alert('转换笔记为PPT失败，请稍后重试。');
+            }
+        }
+
         // 调用初始化函数
         initNotes();
         
