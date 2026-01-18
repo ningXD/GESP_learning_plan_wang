@@ -2661,6 +2661,8 @@ int main() {
                 document.removeEventListener('mouseleave', handleMouseUp);
                 fullSizeImage.removeEventListener('wheel', handleWheel);
                 fullSizeImage.removeEventListener('dblclick', handleDoubleClick);
+                // 移除背景滚动阻止
+                modal.removeEventListener('wheel', preventBackgroundScroll);
             } else {
                 // 打开弹窗并设置图片
                 if (imageSrc) {
@@ -2679,6 +2681,8 @@ int main() {
                     document.removeEventListener('mouseleave', handleMouseUp);
                     fullSizeImage.addEventListener('wheel', handleWheel);
                     fullSizeImage.addEventListener('dblclick', handleDoubleClick);
+                    // 添加背景滚动阻止
+                    modal.addEventListener('wheel', preventBackgroundScroll);
                 }, 100);
             }
         }
@@ -2691,6 +2695,12 @@ int main() {
                     toggleImagePreview();
                 }
             }
+        }
+        
+        // 阻止背景滚动
+        function preventBackgroundScroll(event) {
+            event.preventDefault();
+            event.stopPropagation();
         }
         
         // 图片拖拽开始
