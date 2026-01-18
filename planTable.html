@@ -1998,8 +1998,54 @@ int main() {
         
         // 笔记功能相关变量
         let currentNoteType = 'text';
-        let notes = JSON.parse(localStorage.getItem('studyNotes')) || [];
+        let notes = [];
         let currentImageData = '';
+        
+        // IndexedDB配置
+        const DB_NAME = 'StudyNotesDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'notes';
+        let db = null;
+        
+        // 初始化IndexedDB
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                if (db) {
+                    resolve(db);
+                    return;
+                }
+                
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = (event) => {
+                    console.error('IndexedDB打开失败:', event.target.error);
+                    reject(event.target.error);
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('IndexedDB打开成功');
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    
+                    // 创建对象存储空间
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const objectStore = db.createObjectStore(STORE_NAME, {
+                            keyPath: 'id',
+                            autoIncrement: false
+                        });
+                        
+                        // 创建索引（可选，用于更快的查询）
+                        objectStore.createIndex('type', 'type', { unique: false });
+                        objectStore.createIndex('date', 'date', { unique: false });
+                        console.log('对象存储空间创建成功');
+                    }
+                };
+            });
+        }
         
         // 切换笔记类型
         function switchNoteType(type) {
@@ -2045,7 +2091,7 @@ int main() {
         }
         
         // 保存笔记
-        function saveNote() {
+        async function saveNote() {
             let note = {};
             
             console.log('saveNote called, currentNoteType:', currentNoteType);
@@ -2087,7 +2133,7 @@ int main() {
                     break;
             }
             
-            saveNoteToStorage(note);
+            await saveNoteToStorage(note);
         }
         
         // 预览图片
@@ -2111,22 +2157,113 @@ int main() {
             }
         }
         
-        // 保存笔记到本地存储
-        function saveNoteToStorage(note) {
-            // 添加笔记
-            notes.push(note);
-            
-            // 保存到本地存储
-            localStorage.setItem('studyNotes', JSON.stringify(notes));
-            
-            // 刷新笔记列表
-            renderNotes();
-            
-            // 关闭模态框
-            toggleNoteModal();
-            
-            // 重置表单
-            resetNoteForm();
+        // IndexedDB CRUD操作
+        
+        // 保存笔记到IndexedDB
+        async function saveNoteToDB(note) {
+            try {
+                const database = await initIndexedDB();
+                const transaction = database.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                await new Promise((resolve, reject) => {
+                    const request = store.add(note);
+                    
+                    request.onsuccess = () => {
+                        console.log('笔记保存成功:', note.id);
+                        resolve();
+                    };
+                    
+                    request.onerror = (event) => {
+                        console.error('笔记保存失败:', event.target.error);
+                        reject(event.target.error);
+                    };
+                });
+                
+                await transaction.complete;
+                return true;
+            } catch (error) {
+                console.error('保存到IndexedDB失败:', error);
+                throw error;
+            }
+        }
+        
+        // 从IndexedDB获取所有笔记
+        async function getAllNotesFromDB() {
+            try {
+                const database = await initIndexedDB();
+                const transaction = database.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                return new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => {
+                        console.log('获取笔记成功，共', request.result.length, '条');
+                        resolve(request.result);
+                    };
+                    
+                    request.onerror = (event) => {
+                        console.error('获取笔记失败:', event.target.error);
+                        reject(event.target.error);
+                    };
+                });
+            } catch (error) {
+                console.error('从IndexedDB获取笔记失败:', error);
+                return [];
+            }
+        }
+        
+        // 从IndexedDB删除笔记
+        async function deleteNoteFromDB(id) {
+            try {
+                const database = await initIndexedDB();
+                const transaction = database.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                
+                await new Promise((resolve, reject) => {
+                    const request = store.delete(id);
+                    
+                    request.onsuccess = () => {
+                        console.log('笔记删除成功:', id);
+                        resolve();
+                    };
+                    
+                    request.onerror = (event) => {
+                        console.error('笔记删除失败:', event.target.error);
+                        reject(event.target.error);
+                    };
+                });
+                
+                await transaction.complete;
+                return true;
+            } catch (error) {
+                console.error('从IndexedDB删除笔记失败:', error);
+                throw error;
+            }
+        }
+        
+        // 保存笔记（整合函数）
+        async function saveNoteToStorage(note) {
+            try {
+                // 保存到IndexedDB
+                await saveNoteToDB(note);
+                
+                // 重新获取所有笔记
+                notes = await getAllNotesFromDB();
+                
+                // 刷新笔记列表
+                renderNotes();
+                
+                // 关闭模态框
+                toggleNoteModal();
+                
+                // 重置表单
+                resetNoteForm();
+            } catch (error) {
+                console.error('保存笔记失败:', error);
+                alert('保存笔记失败，请稍后重试。');
+            }
         }
         
         // 重置笔记表单
@@ -2228,16 +2365,70 @@ int main() {
         }
         
         // 删除笔记
-        function deleteNote(id) {
+        async function deleteNote(id) {
             if (confirm('确定要删除这条笔记吗？')) {
-                notes = notes.filter(note => note.id !== id);
-                localStorage.setItem('studyNotes', JSON.stringify(notes));
-                renderNotes();
+                try {
+                    // 从IndexedDB删除笔记
+                    await deleteNoteFromDB(id);
+                    
+                    // 重新获取所有笔记
+                    notes = await getAllNotesFromDB();
+                    
+                    // 刷新笔记列表
+                    renderNotes();
+                } catch (error) {
+                    console.error('删除笔记失败:', error);
+                    alert('删除笔记失败，请稍后重试。');
+                }
+            }
+        }
+        
+        // 从localStorage迁移笔记到IndexedDB
+        async function migrateNotesFromLocalStorage() {
+            try {
+                // 检查localStorage中是否有旧笔记
+                const oldNotes = localStorage.getItem('studyNotes');
+                if (oldNotes) {
+                    const parsedNotes = JSON.parse(oldNotes);
+                    if (parsedNotes.length > 0) {
+                        console.log('发现旧笔记，开始迁移:', parsedNotes.length, '条');
+                        
+                        // 保存到IndexedDB
+                        for (const note of parsedNotes) {
+                            await saveNoteToDB(note);
+                        }
+                        
+                        // 迁移完成后删除localStorage中的旧笔记
+                        localStorage.removeItem('studyNotes');
+                        console.log('笔记迁移完成');
+                        return true;
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.error('笔记迁移失败:', error);
+                return false;
             }
         }
         
         // 初始化笔记列表
-        renderNotes();
+        async function initNotes() {
+            try {
+                // 先尝试从localStorage迁移笔记
+                await migrateNotesFromLocalStorage();
+                
+                // 从IndexedDB获取所有笔记
+                notes = await getAllNotesFromDB();
+                
+                // 渲染笔记列表
+                renderNotes();
+            } catch (error) {
+                console.error('初始化笔记失败:', error);
+            }
+        }
+        
+        // 调用初始化函数
+        initNotes();
         
         function changeMonth(direction) {
             currentDate.setMonth(currentDate.getMonth() + direction);
