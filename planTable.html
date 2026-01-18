@@ -633,6 +633,285 @@
             visibility: visible;
         }
         
+        /* 笔记功能样式 */
+        .note-btn {
+            padding: 6px 12px;
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .note-btn:hover {
+            background: #e67e22;
+            transform: translateY(-1px);
+        }
+        
+        .note-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+        
+        .note-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .note-modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            max-height: 80vh;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .note-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #3498db;
+            color: white;
+        }
+        
+        .note-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .note-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .note-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .note-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .note-type-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .note-type-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .note-type-tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+        
+        .note-type-content {
+            display: none;
+        }
+        
+        .note-type-content.active {
+            display: block;
+        }
+        
+        .note-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        .note-image-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .note-image-upload:hover {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+        
+        .note-image-upload input[type="file"] {
+            display: none;
+        }
+        
+        .note-image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .note-image-preview.active {
+            display: block;
+        }
+        
+        .note-mindmap {
+            width: 100%;
+            min-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        
+        .note-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        .note-save-btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .note-save-btn:hover {
+            background: #45a049;
+        }
+        
+        .note-cancel-btn {
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .note-cancel-btn:hover {
+            background: #5a6268;
+        }
+        
+        /* 笔记列表样式 */
+        .notes-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .notes-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .note-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .note-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .note-item-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .note-item-date {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .note-item-content {
+            margin-top: 10px;
+        }
+        
+        .note-item-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .note-item-mindmap {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+            background: #fafafa;
+        }
+        
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
@@ -678,12 +957,94 @@
                 <span class="icon">💻</span>
                 常用代码模板
             </button>
+            <button class="btn" onclick="toggleNoteModal()">
+                <span class="icon">📝</span>
+                添加笔记
+            </button>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-weight: bold; color: #2c3e50;">总进度: <span id="progress">0/8</span> 周</span>
             <button class="btn-small" onclick="toggleCalendar()" title="查看日历">
                 <span class="icon">📅</span>
             </button>
+        </div>
+    </div>
+    
+    <!-- 笔记列表容器 -->
+    <div class="notes-container">
+        <div class="notes-header">
+            <h3><span class="icon">📝</span>我的学习笔记</h3>
+        </div>
+        <div id="notesList">
+            <!-- 笔记内容将通过JavaScript动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 笔记弹窗 -->
+    <div id="noteModal" class="note-modal">
+        <div class="note-modal-content">
+            <div class="note-modal-header">
+                <h3>添加学习笔记</h3>
+                <button class="note-modal-close" onclick="toggleNoteModal()">&times;</button>
+            </div>
+            <div class="note-modal-body">
+                <!-- 笔记类型标签页 -->
+                <div class="note-type-tabs">
+                    <button class="note-type-tab active" onclick="switchNoteType('text')">📝 文本笔记</button>
+                    <button class="note-type-tab" onclick="switchNoteType('image')">🖼️ 图片笔记</button>
+                    <button class="note-type-tab" onclick="switchNoteType('mindmap')">🧠 思维导图</button>
+                </div>
+                
+                <!-- 文本笔记内容 -->
+                <div id="textNoteContent" class="note-type-content active">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">笔记标题:</label>
+                        <input type="text" id="noteTitle" placeholder="请输入笔记标题" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">笔记内容:</label>
+                        <textarea id="noteText" class="note-textarea" placeholder="请输入笔记内容..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- 图片笔记内容 -->
+                <div id="imageNoteContent" class="note-type-content">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">笔记标题:</label>
+                        <input type="text" id="imageNoteTitle" placeholder="请输入图片笔记标题" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">上传图片:</label>
+                        <div class="note-image-upload" onclick="document.getElementById('imageUpload').click()">
+                            <span style="font-size: 48px;">📁</span>
+                            <span style="margin-top: 10px;">点击上传图片或拖拽图片到此处</span>
+                            <input type="file" id="imageUpload" accept="image/*" onchange="previewImage()">
+                        </div>
+                        <img id="imagePreview" class="note-image-preview" alt="图片预览">
+                    </div>
+                </div>
+                
+                <!-- 思维导图笔记内容 -->
+                <div id="mindmapNoteContent" class="note-type-content">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">笔记标题:</label>
+                        <input type="text" id="mindmapNoteTitle" placeholder="请输入思维导图标题" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">思维导图:</label>
+                        <div class="note-mindmap">
+                            <div style="padding: 20px; text-align: center; color: #666;">
+                                <span style="font-size: 48px;">🧠</span>
+                                <div style="margin-top: 10px;">思维导图功能开发中，敬请期待</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="note-modal-footer">
+                <button class="note-cancel-btn" onclick="toggleNoteModal()">取消</button>
+                <button class="note-save-btn" onclick="saveNote()">保存笔记</button>
+            </div>
         </div>
     </div>
     
@@ -1634,6 +1995,249 @@ int main() {
             
             calendarGrid.innerHTML = html;
         }
+        
+        // 笔记功能相关变量
+        let currentNoteType = 'text';
+        let notes = JSON.parse(localStorage.getItem('studyNotes')) || [];
+        let currentImageData = '';
+        
+        // 切换笔记类型
+        function switchNoteType(type) {
+            currentNoteType = type;
+            
+            // 移除所有标签的active状态
+            document.querySelectorAll('.note-type-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有内容的active状态
+            document.querySelectorAll('.note-type-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 添加当前标签和内容的active状态
+            document.querySelector(`[onclick="switchNoteType('${type}')"]`).classList.add('active');
+            document.getElementById(`${type}NoteContent`).classList.add('active');
+        }
+        
+        // 切换笔记模态框
+        function toggleNoteModal() {
+            const modal = document.getElementById('noteModal');
+            modal.classList.toggle('active');
+        }
+        
+        // 预览图片
+        function previewImage() {
+            const fileInput = document.getElementById('imageUpload');
+            const preview = document.getElementById('imagePreview');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                    currentImageData = e.target.result; // 存储图片数据
+                }
+                
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+        
+        // 保存笔记
+        function saveNote() {
+            let note = {};
+            
+            console.log('saveNote called, currentNoteType:', currentNoteType);
+            
+            switch(currentNoteType) {
+                case 'text':
+                    note = {
+                        id: Date.now(),
+                        type: 'text',
+                        title: document.getElementById('noteTitle').value,
+                        content: document.getElementById('noteText').value,
+                        date: new Date().toISOString()
+                    };
+                    break;
+                case 'image':
+                    console.log('Image note saving, currentImageData exists:', !!currentImageData);
+                    if (currentImageData) {
+                        note = {
+                            id: Date.now(),
+                            type: 'image',
+                            title: document.getElementById('imageNoteTitle').value,
+                            content: currentImageData,
+                            date: new Date().toISOString()
+                        };
+                        console.log('Image note created:', note);
+                    } else {
+                        alert('请选择要上传的图片！');
+                        return;
+                    }
+                    break;
+                case 'mindmap':
+                    note = {
+                        id: Date.now(),
+                        type: 'mindmap',
+                        title: document.getElementById('mindmapNoteTitle').value,
+                        content: '',
+                        date: new Date().toISOString()
+                    };
+                    break;
+            }
+            
+            saveNoteToStorage(note);
+        }
+        
+        // 预览图片
+        function previewImage() {
+            const fileInput = document.getElementById('imageUpload');
+            const preview = document.getElementById('imagePreview');
+            
+            console.log('previewImage called');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                    currentImageData = e.target.result;
+                    console.log('Image data loaded, currentImageData set:', !!currentImageData);
+                }
+                
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+        
+        // 保存笔记到本地存储
+        function saveNoteToStorage(note) {
+            // 添加笔记
+            notes.push(note);
+            
+            // 保存到本地存储
+            localStorage.setItem('studyNotes', JSON.stringify(notes));
+            
+            // 刷新笔记列表
+            renderNotes();
+            
+            // 关闭模态框
+            toggleNoteModal();
+            
+            // 重置表单
+            resetNoteForm();
+        }
+        
+        // 重置笔记表单
+        function resetNoteForm() {
+            // 重置文本笔记表单
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteText').value = '';
+            
+            // 重置图片笔记表单
+            document.getElementById('imageNoteTitle').value = '';
+            document.getElementById('imageUpload').value = '';
+            document.getElementById('imagePreview').classList.remove('active');
+            currentImageData = ''; // 清空当前图片数据
+            
+            // 重置思维导图笔记表单
+            document.getElementById('mindmapNoteTitle').value = '';
+        }
+        
+        // 渲染笔记列表
+        function renderNotes() {
+            const notesList = document.getElementById('notesList');
+            
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无笔记，点击"添加笔记"按钮创建第一条笔记吧！</p>';
+                return;
+            }
+            
+            // 按日期降序排序
+            notes.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            
+            notes.forEach(note => {
+                const noteDate = new Date(note.date).toLocaleString('zh-CN');
+                
+                html += `
+                    <div class="note-item">
+                        <div class="note-item-header">
+                            <div>
+                                <div class="note-item-title">${note.title}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 3px;">
+                                    ${noteDate} | ${getNoteTypeIcon(note.type)} ${getNoteTypeText(note.type)}
+                                </div>
+                            </div>
+                            <button class="note-btn" onclick="deleteNote(${note.id})" style="margin-left: auto;">
+                                删除
+                            </button>
+                        </div>
+                        <div class="note-item-content">
+                `;
+                
+                // 根据笔记类型渲染内容
+                switch(note.type) {
+                    case 'text':
+                        html += `<div>${note.content.replace(/\n/g, '<br>')}</div>`;
+                        break;
+                    case 'image':
+                        html += `<img src="${note.content}" class="note-item-image" alt="笔记图片">`;
+                        break;
+                    case 'mindmap':
+                        html += `
+                            <div class="note-item-mindmap">
+                                <div style="padding: 20px; text-align: center; color: #666;">
+                                    <span style="font-size: 32px;">🧠</span>
+                                    <div style="margin-top: 10px;">思维导图</div>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notesList.innerHTML = html;
+        }
+        
+        // 获取笔记类型图标
+        function getNoteTypeIcon(type) {
+            switch(type) {
+                case 'text': return '📝';
+                case 'image': return '🖼️';
+                case 'mindmap': return '🧠';
+                default: return '📝';
+            }
+        }
+        
+        // 获取笔记类型文本
+        function getNoteTypeText(type) {
+            switch(type) {
+                case 'text': return '文本笔记';
+                case 'image': return '图片笔记';
+                case 'mindmap': return '思维导图';
+                default: return '文本笔记';
+            }
+        }
+        
+        // 删除笔记
+        function deleteNote(id) {
+            if (confirm('确定要删除这条笔记吗？')) {
+                notes = notes.filter(note => note.id !== id);
+                localStorage.setItem('studyNotes', JSON.stringify(notes));
+                renderNotes();
+            }
+        }
+        
+        // 初始化笔记列表
+        renderNotes();
         
         function changeMonth(direction) {
             currentDate.setMonth(currentDate.getMonth() + direction);
