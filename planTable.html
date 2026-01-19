@@ -1094,6 +1094,11 @@
     <div class="notes-container">
         <div class="notes-header">
             <h3><span class="icon">📝</span>我的学习笔记</h3>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <input type="text" id="noteSearchInput" placeholder="按标题或时间搜索笔记..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                <button class="btn-small" onclick="searchNotes()" style="cursor: pointer;">🔍 搜索</button>
+                <button class="btn-small" onclick="clearSearch()" style="cursor: pointer;">🗑️ 清空</button>
+            </div>
         </div>
         <div id="notesList">
             <!-- 笔记内容将通过JavaScript动态生成 -->
@@ -2787,6 +2792,9 @@ int main() {
             fullSizeImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
         }
         
+        // 所有笔记的副本，用于搜索功能
+        let allNotes = [];
+        
         // 初始化笔记列表
         async function initNotes() {
             try {
@@ -2795,6 +2803,8 @@ int main() {
                 
                 // 从IndexedDB获取所有笔记
                 notes = await getAllNotesFromDB();
+                // 保存所有笔记的副本
+                allNotes = [...notes];
                 
                 // 渲染笔记列表
                 renderNotes();
@@ -2802,6 +2812,53 @@ int main() {
                 console.error('初始化笔记失败:', error);
             }
         }
+        
+        // 搜索笔记功能
+        function searchNotes() {
+            const searchInput = document.getElementById('noteSearchInput');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                // 如果搜索词为空，显示所有笔记
+                notes = [...allNotes];
+            } else {
+                // 根据搜索词过滤笔记
+                notes = allNotes.filter(note => {
+                    // 检查标题是否包含搜索词
+                    const titleMatch = note.title.toLowerCase().includes(searchTerm);
+                    // 检查内容是否包含搜索词（仅文本笔记）
+                    const contentMatch = note.type === 'text' ? note.content.toLowerCase().includes(searchTerm) : false;
+                    
+                    return titleMatch || contentMatch;
+                });
+            }
+            
+            // 重新渲染笔记列表
+            renderNotes();
+        }
+        
+        // 清空搜索功能
+        function clearSearch() {
+            const searchInput = document.getElementById('noteSearchInput');
+            // 清空搜索输入框
+            searchInput.value = '';
+            // 恢复显示所有笔记
+            notes = [...allNotes];
+            // 重新渲染笔记列表
+            renderNotes();
+        }
+        
+        // 监听搜索输入框的回车键事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('noteSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchNotes();
+                    }
+                });
+            }
+        });
         
         // 调用初始化函数
         initNotes();
