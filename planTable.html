@@ -2512,11 +2512,14 @@ int main() {
             notes.forEach(note => {
                 const noteDate = new Date(note.date).toLocaleString('zh-CN');
                 
+                // 高亮显示标题中的搜索词
+                const highlightedTitle = highlightText(note.title, currentSearchTerm);
+                
                 html += `
                     <div class="note-item">
                         <div class="note-item-header">
                             <div>
-                                <div class="note-item-title">${note.title}</div>
+                                <div class="note-item-title">${highlightedTitle}</div>
                                 <div style="font-size: 12px; color: #666; margin-top: 3px;">
                                     ${noteDate} | ${getNoteTypeIcon(note.type)} ${getNoteTypeText(note.type)}
                                 </div>
@@ -2531,7 +2534,9 @@ int main() {
                 // 根据笔记类型渲染内容
                 switch(note.type) {
                     case 'text':
-                        html += `<div>${note.content.replace(/\n/g, '<br>')}</div>`;
+                        // 高亮显示文本内容中的搜索词
+                        const highlightedContent = highlightText(note.content, currentSearchTerm);
+                        html += `<div>${highlightedContent.replace(/\n/g, '<br>')}</div>`;
                         break;
                     case 'image':
                         // 检查是否为多张图片（数组）
@@ -2794,6 +2799,8 @@ int main() {
         
         // 所有笔记的副本，用于搜索功能
         let allNotes = [];
+        // 当前搜索词，用于高亮显示
+        let currentSearchTerm = '';
         
         // 初始化笔记列表
         async function initNotes() {
@@ -2813,10 +2820,25 @@ int main() {
             }
         }
         
+        // 高亮显示匹配的搜索词
+        function highlightText(text, searchTerm) {
+            if (!searchTerm || !text) return text;
+            
+            // 转义正则特殊字符
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // 创建正则表达式，忽略大小写
+            const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+            // 使用span标签包裹匹配的文本，添加高亮样式
+            return text.replace(regex, '<span style="background-color: #90caf9; font-weight: bold;">$1</span>');
+        }
+        
         // 搜索笔记功能
         function searchNotes() {
             const searchInput = document.getElementById('noteSearchInput');
             const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            // 保存当前搜索词用于高亮显示
+            currentSearchTerm = searchTerm;
             
             if (searchTerm === '') {
                 // 如果搜索词为空，显示所有笔记
@@ -2842,6 +2864,8 @@ int main() {
             const searchInput = document.getElementById('noteSearchInput');
             // 清空搜索输入框
             searchInput.value = '';
+            // 重置当前搜索词
+            currentSearchTerm = '';
             // 恢复显示所有笔记
             notes = [...allNotes];
             // 重新渲染笔记列表
