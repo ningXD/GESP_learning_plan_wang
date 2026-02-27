@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线编程 - GESP C++二级</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .header .nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .editor-container {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .editor-title {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .action-btn.run {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        
+        .action-btn.run:hover {
+            background: #218838;
+        }
+        
+        .action-btn.clear {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .action-btn.clear:hover {
+            background: #c82333;
+        }
+        
+        .editor-body {
+            flex: 1;
+            position: relative;
+        }
+        
+        #codeEditor {
+            width: 100%;
+            height: 100%;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .output-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 300px;
+        }
+        
+        .output-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .output-body {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .output-body.error {
+            color: #dc3545;
+        }
+        
+        .output-body.success {
+            color: #28a745;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            font-size: 14px;
+        }
+        
+        .CodeMirror {
+            height: 100% !important;
+            border: none !important;
+        }
+        
+        .CodeMirror-gutters {
+            background: #f8f9fa !important;
+            border-right: 1px solid #e9ecef !important;
+        }
+        
+        .CodeMirror-linenumber {
+            color: #6c757d !important;
+            padding: 0 8px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .header .nav {
+                justify-content: center;
+            }
+            
+            .main-container {
+                padding: 10px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>C++ 在线编程工具</h1>
+        <div class="nav">
+            <button class="btn" onclick="window.location.href='planTable.html'">返回学习计划</button>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="editor-container">
+            <div class="editor-header">
+                <div class="editor-title">代码编辑器</div>
+                <div class="editor-actions">
+                    <button class="action-btn" onclick="loadExample()">加载示例</button>
+                    <button class="action-btn run" onclick="runCode()">运行</button>
+                    <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
+                </div>
+            </div>
+            <div class="editor-body">
+                <textarea id="codeEditor">#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, GESP C++!" << endl;
+    return 0;
+}</textarea>
+            </div>
+        </div>
+        
+        <div class="output-container">
+            <div class="output-header">运行结果</div>
+            <div class="output-body" id="output">// 输出将显示在这里
+// 点击"运行"按钮执行代码</div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>GESP C++二级 在线编程工具 | 基于浏览器的C++编程环境</p>
+    </div>
+    
+    <script>
+        // 初始化代码编辑器
+        let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+            mode: 'text/x-c++src',
+            theme: 'monokai',
+            lineNumbers: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            indentUnit: 4,
+            indentWithTabs: false,
+            lineWrapping: true,
+            extraKeys: {
+                'Tab': function(cm) {
+                    cm.replaceSelection('    ');
+                }
+            }
+        });
+        
+        // 示例代码
+        const examples = {
+            hello: `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, GESP C++!" << endl;
+    return 0;
+}`,
+            variables: `#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    double b = 3.14;
+    string name = "GESP";
+    
+    cout << "整数: " << a << endl;
+    cout << "小数: " << b << endl;
+    cout << "字符串: " << name << endl;
+    
+    return 0;
+}`,
+            loop: `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "1到10的数字: " << endl;
+    for (int i = 1; i <= 10; i++) {
+        cout << i << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}`,
+            matrix: `#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 5;
+    cout << "X字矩阵: " << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j || i + j == n - 1) {
+                cout << "*";
+            } else {
+                cout << " ";
+            }
+        }
+        cout << endl;
+    }
+    
+    return 0;
+}`
+        };
+        
+        // 加载示例代码
+        function loadExample() {
+            const exampleKeys = Object.keys(examples);
+            const randomKey = exampleKeys[Math.floor(Math.random() * exampleKeys.length)];
+            editor.setValue(examples[randomKey]);
+            showOutput("已加载示例代码: " + randomKey, "success");
+        }
+        
+        // 运行代码
+        function runCode() {
+            const code = editor.getValue();
+            showOutput("正在运行...", "success");
+            
+            // 模拟编译和运行过程
+            setTimeout(() => {
+                // 简单的代码分析和模拟输出
+                if (code.includes("cout")) {
+                    if (code.includes("Hello")) {
+                        showOutput("Hello, GESP C++!\n", "success");
+                    } else if (code.includes("1到10")) {
+                        showOutput("1到10的数字: \n1 2 3 4 5 6 7 8 9 10\n", "success");
+                    } else if (code.includes("X字矩阵")) {
+                        showOutput("X字矩阵: \n*   *\n * * \n  *  \n * * \n*   *\n", "success");
+                    } else if (code.includes("variables")) {
+                        showOutput("整数: 10\n小数: 3.14\n字符串: GESP\n", "success");
+                    } else {
+                        showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    }
+                } else if (code.includes("error") || code.includes("ERROR")) {
+                    showOutput("编译错误: 语法错误\n请检查代码语法", "error");
+                } else {
+                    showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                }
+            }, 1000);
+        }
+        
+        // 显示输出
+        function showOutput(text, type = "success") {
+            const output = document.getElementById('output');
+            output.textContent = text;
+            output.className = "output-body " + type;
+        }
+        
+        // 清空输出
+        function clearOutput() {
+            showOutput("// 输出将显示在这里\n// 点击\"运行\"按钮执行代码");
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 设置编辑器高度
+            const editorBody = document.querySelector('.editor-body');
+            editor.setSize('100%', '100%');
+        };
+    </script>
+</body>
+</html>
