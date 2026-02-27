@@ -390,6 +390,17 @@ int main() {
             
             // 模拟编译和运行过程
             setTimeout(() => {
+                // 检查头文件
+                const headers = {
+                    iostream: code.includes("#include <iostream>"),
+                    cstdio: code.includes("#include <cstdio>"),
+                    cmath: code.includes("#include <cmath>"),
+                    cstring: code.includes("#include <cstring>"),
+                    algorithm: code.includes("#include <algorithm>"),
+                    vector: code.includes("#include <vector>"),
+                    string: code.includes("#include <string>")
+                };
+                
                 // 简单的代码分析和模拟输出
                 if (code.includes("cout")) {
                     if (code.includes("Hello")) {
@@ -402,10 +413,39 @@ int main() {
                         showOutput("整数: 10\n小数: 3.14\n字符串: GESP\n", "success");
                     } else if (code.includes("max(")) {
                         // 简单处理max函数
-                        if (code.includes("max(3, 5)")) {
-                            showOutput("5\n", "success");
-                        } else if (code.includes("max(5, 3)")) {
-                            showOutput("5\n", "success");
+                        const maxMatch = code.match(/max\((\d+),\s*(\d+)\)/);
+                        if (maxMatch) {
+                            const num1 = parseInt(maxMatch[1]);
+                            const num2 = parseInt(maxMatch[2]);
+                            showOutput(Math.max(num1, num2) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("min(")) {
+                        // 简单处理min函数
+                        const minMatch = code.match(/min\((\d+),\s*(\d+)\)/);
+                        if (minMatch) {
+                            const num1 = parseInt(minMatch[1]);
+                            const num2 = parseInt(minMatch[2]);
+                            showOutput(Math.min(num1, num2) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("sqrt(")) {
+                        // 简单处理sqrt函数
+                        const sqrtMatch = code.match(/sqrt\((\d+)\)/);
+                        if (sqrtMatch) {
+                            const num = parseInt(sqrtMatch[1]);
+                            showOutput(Math.sqrt(num).toFixed(2) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("abs(")) {
+                        // 简单处理abs函数
+                        const absMatch = code.match(/abs\((-?\d+)\)/);
+                        if (absMatch) {
+                            const num = parseInt(absMatch[1]);
+                            showOutput(Math.abs(num) + "\n", "success");
                         } else {
                             showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                         }
@@ -425,6 +465,9 @@ int main() {
                             showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                         }
                     }
+                } else if (code.includes("printf")) {
+                    // 处理C风格输出
+                    showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                 } else if (code.includes("error") || code.includes("ERROR")) {
                     showOutput("编译错误: 语法错误\n请检查代码语法", "error");
                 } else {
