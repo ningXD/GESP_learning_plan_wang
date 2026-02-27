@@ -398,7 +398,24 @@ int main() {
                     cstring: code.includes("#include <cstring>"),
                     algorithm: code.includes("#include <algorithm>"),
                     vector: code.includes("#include <vector>"),
-                    string: code.includes("#include <string>")
+                    string: code.includes("#include <string>"),
+                    map: code.includes("#include <map>"),
+                    set: code.includes("#include <set>"),
+                    queue: code.includes("#include <queue>"),
+                    stack: code.includes("#include <stack>"),
+                    deque: code.includes("#include <deque>"),
+                    list: code.includes("#include <list>"),
+                    bitset: code.includes("#include <bitset>"),
+                    unordered_map: code.includes("#include <unordered_map>"),
+                    unordered_set: code.includes("#include <unordered_set>"),
+                    functional: code.includes("#include <functional>"),
+                    iterator: code.includes("#include <iterator>"),
+                    utility: code.includes("#include <utility>"),
+                    tuple: code.includes("#include <tuple>"),
+                    array: code.includes("#include <array>"),
+                    regex: code.includes("#include <regex>"),
+                    sstream: code.includes("#include <sstream>"),
+                    fstream: code.includes("#include <fstream>")
                 };
                 
                 // 简单的代码分析和模拟输出
@@ -449,6 +466,49 @@ int main() {
                         } else {
                             showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                         }
+                    } else if (code.includes("pow(")) {
+                        // 简单处理pow函数
+                        const powMatch = code.match(/pow\((\d+),\s*(\d+)\)/);
+                        if (powMatch) {
+                            const base = parseInt(powMatch[1]);
+                            const exponent = parseInt(powMatch[2]);
+                            showOutput(Math.pow(base, exponent) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("sin(")) {
+                        // 简单处理sin函数
+                        const sinMatch = code.match(/sin\((\d+)\)/);
+                        if (sinMatch) {
+                            const angle = parseInt(sinMatch[1]);
+                            showOutput(Math.sin(angle * Math.PI / 180).toFixed(4) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("cos(")) {
+                        // 简单处理cos函数
+                        const cosMatch = code.match(/cos\((\d+)\)/);
+                        if (cosMatch) {
+                            const angle = parseInt(cosMatch[1]);
+                            showOutput(Math.cos(angle * Math.PI / 180).toFixed(4) + "\n", "success");
+                        } else {
+                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                        }
+                    } else if (code.includes("sort(")) {
+                        // 处理排序函数
+                        showOutput("排序操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("reverse(")) {
+                        // 处理反转函数
+                        showOutput("反转操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("find(")) {
+                        // 处理查找函数
+                        showOutput("查找操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("substr(")) {
+                        // 处理字符串子串函数
+                        showOutput("字符串子串操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("length()") || code.includes("size()")) {
+                        // 处理长度函数
+                        showOutput("长度计算执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                     } else {
                         // 尝试提取cout的内容
                         const coutMatch = code.match(/cout\s*<<\s*([^;]+);/);
