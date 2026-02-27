@@ -274,8 +274,12 @@
                 <div class="editor-title">代码编辑器</div>
                 <div class="editor-actions">
                     <button class="action-btn" onclick="loadExample()">加载示例</button>
+                    <button class="action-btn" onclick="decreaseFontSize()">-</button>
+                    <button class="action-btn" onclick="increaseFontSize()">+</button>
+                    <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn run" onclick="runCode()">运行</button>
                     <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
+                    <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
             </div>
             <div class="editor-body">
@@ -418,9 +422,256 @@ int main() {
                     fstream: code.includes("#include <fstream>")
                 };
                 
+                // 解析变量声明
+                const variables = {};
+                const varDeclarations = code.match(/(int|double|float|string|char|bool)\s+([a-zA-Z_]\w*(\s*,\s*[a-zA-Z_]\w*)*)\s*(=\s*([^;]+))?;/g);
+                if (varDeclarations) {
+                    varDeclarations.forEach(declaration => {
+                        const typeMatch = declaration.match(/(int|double|float|string|char|bool)\s+([a-zA-Z_]\w*(\s*,\s*[a-zA-Z_]\w*)*)\s*(=\s*([^;]+))?;/);
+                        if (typeMatch) {
+                            const type = typeMatch[1];
+                            const varList = typeMatch[2];
+                            const values = typeMatch[5];
+                            
+                            // 处理多个变量
+                            const variablesArray = varList.split(/\s*,\s*/);
+                            let valuesArray = [];
+                            
+                            if (values) {
+                                // 处理多个值
+                                valuesArray = values.split(/\s*,\s*/);
+                            }
+                            
+                            variablesArray.forEach((varName, index) => {
+                                let value = valuesArray[index] || '';
+                                value = value.trim();
+                                
+                                // 处理字符串值
+                                if (value.startsWith('"') && value.endsWith('"')) {
+                                    // 处理转义符
+                                    value = value.substring(1, value.length - 1)
+                                        .replace(/\\n/g, '\n')
+                                        .replace(/\\t/g, '\t')
+                                        .replace(/\\r/g, '\r')
+                                        .replace(/\\'/g, "'")
+                                        .replace(/\\"/g, '"')
+                                        .replace(/\\\\/g, '\\')
+                                        .replace(/\\a/g, '\a')
+                                        .replace(/\\b/g, '\b')
+                                        .replace(/\\f/g, '\f')
+                                        .replace(/\\v/g, '\v')
+                                        .replace(/\\0/g, '\0');
+                                } else if (value.startsWith('0b')) {
+                                    // 处理二进制编码
+                                    value = parseInt(value.substring(2), 2);
+                                } else if (value === "true") {
+                                    value = true;
+                                } else if (value === "false") {
+                                    value = false;
+                                } else if (!isNaN(value)) {
+                                    value = parseFloat(value);
+                                }
+                                
+                                variables[varName] = value;
+                            });
+                        }
+                    });
+                }
+                
+                // 处理变量赋值
+                const assignments = code.match(/([a-zA-Z_]\w*)\s*=\s*([^;]+);/g);
+                if (assignments) {
+                    assignments.forEach(assignment => {
+                        const match = assignment.match(/([a-zA-Z_]\w*)\s*=\s*([^;]+);/);
+                        if (match) {
+                            const varName = match[1];
+                            let value = match[2].trim();
+                            // 处理表达式
+                            if (!isNaN(value)) {
+                                value = parseFloat(value);
+                            } else if (value === "true") {
+                                value = true;
+                            } else if (value === "false") {
+                                value = false;
+                            } else if (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/') || value.includes('%') || 
+                                      value.includes('++') || value.includes('--') || value.includes('==') || value.includes('!=') || 
+                                      value.includes('>') || value.includes('<') || value.includes('>=') || value.includes('<=') || 
+                                      value.includes('&&') || value.includes('||') || value.includes('!') || 
+                                      value.includes('&') || value.includes('|') || value.includes('^') || value.includes('~') || 
+                                      value.includes('<<') || value.includes('>>') || value.includes('?')) {
+                                // 处理各种运算符表达式
+                                try {
+                                    // 替换变量
+                                    let expr = value;
+                                    for (const [key, val] of Object.entries(variables)) {
+                                        expr = expr.replace(new RegExp('\\b' + key + '\\b', 'g'), val);
+                                    }
+                                    // 处理位运算符和其他特殊运算符
+                                    expr = expr.replace(/~/g, '-'); // 简化处理取反运算
+                                    // 计算表达式
+                                    value = eval(expr);
+                                } catch (e) {
+                                    // 表达式计算失败，保持原值
+                                }
+                            }
+                            variables[varName] = value;
+                        }
+                    });
+                }
+                
                 // 简单的代码分析和模拟输出
                 if (code.includes("cout")) {
-                    if (code.includes("Hello")) {
+                    // 提取所有cout语句
+                    const coutStatements = code.match(/cout\s*<<[^;]+;/g);
+                    if (coutStatements) {
+                        let output = "";
+                        coutStatements.forEach(statement => {
+                            // 提取输出内容
+                            let content = statement.replace(/^cout\s*<<\s*/, '').replace(/;$/, '').trim();
+                            // 处理endl
+                            content = content.replace(/\s*<<\s*endl/g, '\n');
+                            // 处理变量和字符串
+                            // 先处理字符串，标记字符串部分，避免变量替换影响字符串内容
+                            let processedContent = content;
+                            const stringMarkers = [];
+                            
+                            // 标记字符串部分
+                            let tempContent = content;
+                            let match;
+                            const stringRegex = /"([^"]+)"/g;
+                            while ((match = stringRegex.exec(content)) !== null) {
+                                const start = match.index;
+                                const end = start + match[0].length;
+                                stringMarkers.push({ start, end, content: match[0] });
+                            }
+                            
+                            // 处理非字符串部分的变量
+                            let hasError = false;
+                            let errorMessage = '';
+                            
+                            if (stringMarkers.length > 0) {
+                                let lastEnd = 0;
+                                let result = '';
+                                
+                                stringMarkers.forEach(marker => {
+                                    // 处理标记前的部分
+                                    const beforeString = content.substring(lastEnd, marker.start);
+                                    if (beforeString) {
+                                        // 处理变量
+                                        let processedBefore = beforeString;
+                                        const varMatches = beforeString.match(/\b([a-zA-Z_]\w*)\b/g);
+                                        if (varMatches) {
+                                            varMatches.forEach(varName => {
+                                                if (variables[varName] !== undefined) {
+                                                    processedBefore = processedBefore.replace(new RegExp('\\b' + varName + '\\b', 'g'), variables[varName]);
+                                                } else if (!varName.match(/^(cout|endl|true|false)$/)) {
+                                                    // 变量未定义且不是关键字
+                                                    hasError = true;
+                                                    errorMessage = `错误：变量 '${varName}' 未定义`;
+                                                }
+                                            });
+                                        }
+                                        result += processedBefore;
+                                    }
+                                    
+                                    // 处理字符串部分（不替换变量）
+                                    const stringContent = marker.content;
+                                    const cleanStr = stringContent.replace(/"/g, '');
+                                    // 处理转义符
+                                    const processedStr = cleanStr
+                                        .replace(/\\n/g, '\n')
+                                        .replace(/\\t/g, '\t')
+                                        .replace(/\\r/g, '\r')
+                                        .replace(/\\'/g, "'")
+                                        .replace(/\\"/g, '"')
+                                        .replace(/\\\\/g, '\\')
+                                        .replace(/\\a/g, '\a')
+                                        .replace(/\\b/g, '\b')
+                                        .replace(/\\f/g, '\f')
+                                        .replace(/\\v/g, '\v')
+                                        .replace(/\\0/g, '\0');
+                                    result += processedStr;
+                                    
+                                    lastEnd = marker.end;
+                                });
+                                
+                                // 处理最后一个标记后的部分
+                                const afterString = content.substring(lastEnd);
+                                if (afterString) {
+                                    // 处理变量
+                                    let processedAfter = afterString;
+                                    const varMatches = afterString.match(/\b([a-zA-Z_]\w*)\b/g);
+                                    if (varMatches) {
+                                        varMatches.forEach(varName => {
+                                            if (variables[varName] !== undefined) {
+                                                processedAfter = processedAfter.replace(new RegExp('\\b' + varName + '\\b', 'g'), variables[varName]);
+                                            } else if (!varName.match(/^(cout|endl|true|false)$/)) {
+                                                // 变量未定义且不是关键字
+                                                hasError = true;
+                                                errorMessage = `错误：变量 '${varName}' 未定义`;
+                                            }
+                                        });
+                                    }
+                                    result += processedAfter;
+                                }
+                                
+                                processedContent = result;
+                            } else {
+                                // 没有字符串，直接处理变量
+                                processedContent = content;
+                                const varMatches = content.match(/\b([a-zA-Z_]\w*)\b/g);
+                                if (varMatches) {
+                                    varMatches.forEach(varName => {
+                                        if (variables[varName] !== undefined) {
+                                            processedContent = processedContent.replace(new RegExp('\\b' + varName + '\\b', 'g'), variables[varName]);
+                                        } else if (!varName.match(/^(cout|endl|true|false)$/)) {
+                                            // 变量未定义且不是关键字
+                                            hasError = true;
+                                            errorMessage = `错误：变量 '${varName}' 未定义`;
+                                        }
+                                    });
+                                }
+                            }
+                            
+                            // 处理表达式 - 只对真正的表达式进行计算
+                            if (!hasError) {
+                                // 检查是否包含算术运算符
+                                const hasOperator = processedContent.includes('+') || processedContent.includes('-') || 
+                                                 processedContent.includes('*') || processedContent.includes('/') || 
+                                                 processedContent.includes('%');
+                                
+                                // 检查是否是纯表达式（不包含字母字符，除了变量名）
+                                const isPureExpression = /^[\d+\-*/%\s()]+$/.test(processedContent.replace(/\b[a-zA-Z_]\w*\b/g, ''));
+                                
+                                if (hasOperator && isPureExpression) {
+                                    try {
+                                        // 替换变量
+                                        let expr = processedContent;
+                                        for (const [key, val] of Object.entries(variables)) {
+                                            expr = expr.replace(new RegExp('\\b' + key + '\\b', 'g'), val);
+                                        }
+                                        // 计算表达式
+                                        const result = eval(expr);
+                                        processedContent = result.toString();
+                                    } catch (e) {
+                                        // 表达式计算失败，输出错误信息
+                                        hasError = true;
+                                        errorMessage = `错误：表达式计算失败 - ${e.message}`;
+                                    }
+                                }
+                            }
+                            
+                            if (hasError) {
+                                output += errorMessage + '\n';
+                            } else {
+                                content = processedContent;
+                                // 移除多余的<<符号
+                                content = content.replace(/\s*<<\s*/g, '');
+                                output += content;
+                            }
+                        });
+                        showOutput(output + "\n", "success");
+                    } else if (code.includes("Hello")) {
                         showOutput("Hello, GESP C++!\n", "success");
                     } else if (code.includes("1到10")) {
                         showOutput("1到10的数字: \n1 2 3 4 5 6 7 8 9 10\n", "success");
@@ -509,21 +760,41 @@ int main() {
                     } else if (code.includes("length()") || code.includes("size()")) {
                         // 处理长度函数
                         showOutput("长度计算执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("vector<")) {
+                        // 处理vector操作
+                        showOutput("Vector操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("map<")) {
+                        // 处理map操作
+                        showOutput("Map操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("set<")) {
+                        // 处理set操作
+                        showOutput("Set操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("queue<")) {
+                        // 处理queue操作
+                        showOutput("Queue操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("stack<")) {
+                        // 处理stack操作
+                        showOutput("Stack操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("deque<")) {
+                        // 处理deque操作
+                        showOutput("Deque操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("list<")) {
+                        // 处理list操作
+                        showOutput("List操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("bitset<")) {
+                        // 处理bitset操作
+                        showOutput("Bitset操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("unordered_map<")) {
+                        // 处理unordered_map操作
+                        showOutput("Unordered_map操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("unordered_set<")) {
+                        // 处理unordered_set操作
+                        showOutput("Unordered_set操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
+                    } else if (code.includes("array<")) {
+                        // 处理array操作
+                        showOutput("Array操作执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                     } else {
-                        // 尝试提取cout的内容
-                        const coutMatch = code.match(/cout\s*<<\s*([^;]+);/);
-                        if (coutMatch) {
-                            let output = coutMatch[1].trim();
-                            // 处理字符串
-                            if (output.startsWith('"') && output.endsWith('"')) {
-                                output = output.substring(1, output.length - 1);
-                                showOutput(output + "\n", "success");
-                            } else {
-                                showOutput("代码执行成功！\n输出: " + output + "\n注意：这是模拟运行，实际编译需要后端支持。", "success");
-                            }
-                        } else {
-                            showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
-                        }
+                        showOutput("代码执行成功！\n注意：这是模拟运行，实际编译需要后端支持。", "success");
                     }
                 } else if (code.includes("printf")) {
                     // 处理C风格输出
@@ -548,11 +819,58 @@ int main() {
             showOutput("// 输出将显示在这里\n// 点击\"运行\"按钮执行代码");
         }
         
+        // 字体大小控制
+        let fontSize = 14;
+        
+        function increaseFontSize() {
+            if (fontSize < 24) {
+                fontSize += 2;
+                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+            }
+        }
+        
+        function decreaseFontSize() {
+            if (fontSize > 10) {
+                fontSize -= 2;
+                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+            }
+        }
+        
+        // 清空代码
+        function clearCode() {
+            if (confirm('确定要清空所有代码吗？')) {
+                editor.setValue('');
+                showOutput('代码已清空', 'success');
+            }
+        }
+        
+        // 下载代码
+        function downloadCode() {
+            const code = editor.getValue();
+            if (!code.trim()) {
+                showOutput('代码为空，无法下载', 'error');
+                return;
+            }
+            
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'code.cpp';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showOutput('代码已下载', 'success');
+        }
+        
         // 页面加载完成后初始化
         window.onload = function() {
             // 设置编辑器高度
             const editorBody = document.querySelector('.editor-body');
             editor.setSize('100%', '100%');
+            // 设置初始字体大小
+            editor.setOption('fontSize', fontSize + 'px');
         };
     </script>
 </body>
