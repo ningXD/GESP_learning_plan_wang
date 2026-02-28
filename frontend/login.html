@@ -190,7 +190,7 @@
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     // 登录成功，跳转到学习计划表
-                    window.location.href = 'core/planTable.html';
+                    window.location.href = 'core/study_plan.html';
                 } else {
                     const errorData = await response.json();
                     // 登录失败，显示错误信息
