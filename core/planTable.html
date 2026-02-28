@@ -2170,53 +2170,20 @@ int main() {
         let notes = [];
         let currentImageData = []; // 改为数组，支持多张图片
         
-        // IndexedDB配置
-        const DB_NAME = 'StudyNotesDB';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'notes';
-        let db = null;
-        
         // 最大图片数量限制
         const MAX_IMAGES = 5;
         
-        // 初始化IndexedDB
-        function initIndexedDB() {
-            return new Promise((resolve, reject) => {
-                if (db) {
-                    resolve(db);
-                    return;
-                }
-                
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                
-                request.onerror = (event) => {
-                    console.error('IndexedDB打开失败:', event.target.error);
-                    reject(event.target.error);
-                };
-                
-                request.onsuccess = (event) => {
-                    db = event.target.result;
-                    console.log('IndexedDB打开成功');
-                    resolve(db);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    db = event.target.result;
-                    
-                    // 创建对象存储空间
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        const objectStore = db.createObjectStore(STORE_NAME, {
-                            keyPath: 'id',
-                            autoIncrement: false
-                        });
-                        
-                        // 创建索引（可选，用于更快的查询）
-                        objectStore.createIndex('type', 'type', { unique: false });
-                        objectStore.createIndex('date', 'date', { unique: false });
-                        console.log('对象存储空间创建成功');
-                    }
-                };
-            });
+        // 获取token
+        function getToken() {
+            return localStorage.getItem('access_token');
+        }
+        
+        // 检查登录状态
+        function checkLogin() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '../index.html';
+            }
         }
         
         // 切换笔记类型
@@ -2264,48 +2231,42 @@ int main() {
         
         // 保存笔记
         async function saveNote() {
-            let note = {};
+            let noteData = {};
             
             console.log('saveNote called, currentNoteType:', currentNoteType);
             
             switch(currentNoteType) {
                 case 'text':
-                    note = {
-                        id: Date.now(),
-                        type: 'text',
+                    noteData = {
                         title: document.getElementById('noteTitle').value,
                         content: document.getElementById('noteText').value,
-                        date: new Date().toISOString()
+                        type: 'text'
                     };
                     break;
                 case 'image':
-                    console.log('Image note saving, currentImageData exists:', !!currentImageData);
-                    if (currentImageData) {
-                        note = {
-                            id: Date.now(),
-                            type: 'image',
+                    console.log('Image note saving, currentImageData exists:', currentImageData.length > 0);
+                    if (currentImageData.length > 0) {
+                        noteData = {
                             title: document.getElementById('imageNoteTitle').value,
-                            content: currentImageData,
-                            date: new Date().toISOString()
+                            type: 'image',
+                            images: currentImageData
                         };
-                        console.log('Image note created:', note);
+                        console.log('Image note created:', noteData);
                     } else {
                         alert('请选择要上传的图片！');
                         return;
                     }
                     break;
                 case 'mindmap':
-                    note = {
-                        id: Date.now(),
-                        type: 'mindmap',
+                    noteData = {
                         title: document.getElementById('mindmapNoteTitle').value,
-                        content: '',
-                        date: new Date().toISOString()
+                        type: 'mindmap',
+                        content: ''
                     };
                     break;
             }
             
-            await saveNoteToStorage(note);
+            await saveNoteToServer(noteData);
         }
         
         // 预览图片
@@ -2326,43 +2287,59 @@ int main() {
                     alert(`最多只能上传${MAX_IMAGES}张图片，已跳过${files.length - remainingSlots}张`);
                 }
                 
-                // 逐个处理文件
-                filesToProcess.forEach((file, index) => {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const imageData = e.target.result;
+                // 逐个上传文件
+                filesToProcess.forEach(async (file, index) => {
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', file);
                         
-                        // 添加到当前图片数据数组
-                        currentImageData.push(imageData);
+                        const response = await fetch('http://localhost:5000/api/notes/upload', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${getToken()}`
+                            },
+                            body: formData
+                        });
                         
-                        // 创建预览项
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'image-preview-item';
-                        previewItem.dataset.index = currentImageData.length - 1;
-                        
-                        // 创建图片元素
-                        const img = document.createElement('img');
-                        img.src = imageData;
-                        img.alt = `图片${currentImageData.length}`;
-                        
-                        // 创建删除按钮
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'image-delete-btn';
-                        deleteBtn.innerHTML = '&times;';
-                        deleteBtn.onclick = function() {
-                            deletePreviewImage(parseInt(previewItem.dataset.index));
-                        };
-                        
-                        // 添加到预览容器
-                        previewItem.appendChild(img);
-                        previewItem.appendChild(deleteBtn);
-                        previewContainer.appendChild(previewItem);
-                        
-                        console.log('Image data loaded, currentImageData length:', currentImageData.length);
-                    };
-                    
-                    reader.readAsDataURL(file);
+                        if (response.ok) {
+                            const data = await response.json();
+                            const imageUrl = `http://localhost:5000/api/notes/uploads/${data.filename}`;
+                            
+                            // 添加到当前图片数据数组
+                            currentImageData.push(imageUrl);
+                            
+                            // 创建预览项
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'image-preview-item';
+                            previewItem.dataset.index = currentImageData.length - 1;
+                            
+                            // 创建图片元素
+                            const img = document.createElement('img');
+                            img.src = imageUrl;
+                            img.alt = `图片${currentImageData.length}`;
+                            
+                            // 创建删除按钮
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.className = 'image-delete-btn';
+                            deleteBtn.innerHTML = '&times;';
+                            deleteBtn.onclick = function() {
+                                deletePreviewImage(parseInt(previewItem.dataset.index));
+                            };
+                            
+                            // 添加到预览容器
+                            previewItem.appendChild(img);
+                            previewItem.appendChild(deleteBtn);
+                            previewContainer.appendChild(previewItem);
+                            
+                            console.log('Image uploaded, currentImageData length:', currentImageData.length);
+                        } else {
+                            console.error('图片上传失败');
+                            alert('图片上传失败，请重试');
+                        }
+                    } catch (error) {
+                        console.error('上传图片出错:', error);
+                        alert('上传图片出错，请重试');
+                    }
                 });
             }
             
@@ -2380,13 +2357,13 @@ int main() {
             previewContainer.innerHTML = '';
             
             // 重新渲染所有预览图片
-            currentImageData.forEach((imageData, idx) => {
+            currentImageData.forEach((imageUrl, idx) => {
                 const previewItem = document.createElement('div');
                 previewItem.className = 'image-preview-item';
                 previewItem.dataset.index = idx;
                 
                 const img = document.createElement('img');
-                img.src = imageData;
+                img.src = imageUrl;
                 img.alt = `图片${idx + 1}`;
                 
                 const deleteBtn = document.createElement('button');
@@ -2404,114 +2381,83 @@ int main() {
             console.log('Image deleted, currentImageData length:', currentImageData.length);
         }
         
-        // IndexedDB CRUD操作
-        
-        // 保存笔记到IndexedDB
-        async function saveNoteToDB(note) {
+        // 保存笔记到服务器
+        async function saveNoteToServer(noteData) {
             try {
-                const database = await initIndexedDB();
-                const transaction = database.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                
-                await new Promise((resolve, reject) => {
-                    const request = store.add(note);
-                    
-                    request.onsuccess = () => {
-                        console.log('笔记保存成功:', note.id);
-                        resolve();
-                    };
-                    
-                    request.onerror = (event) => {
-                        console.error('笔记保存失败:', event.target.error);
-                        reject(event.target.error);
-                    };
+                const response = await fetch('http://localhost:5000/api/notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: JSON.stringify(noteData)
                 });
                 
-                await transaction.complete;
-                return true;
-            } catch (error) {
-                console.error('保存到IndexedDB失败:', error);
-                throw error;
-            }
-        }
-        
-        // 从IndexedDB获取所有笔记
-        async function getAllNotesFromDB() {
-            try {
-                const database = await initIndexedDB();
-                const transaction = database.transaction([STORE_NAME], 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                
-                return new Promise((resolve, reject) => {
-                    const request = store.getAll();
+                if (response.ok) {
+                    // 重新获取所有笔记
+                    await loadNotes();
                     
-                    request.onsuccess = () => {
-                        console.log('获取笔记成功，共', request.result.length, '条');
-                        resolve(request.result);
-                    };
+                    // 关闭模态框
+                    toggleNoteModal();
                     
-                    request.onerror = (event) => {
-                        console.error('获取笔记失败:', event.target.error);
-                        reject(event.target.error);
-                    };
-                });
-            } catch (error) {
-                console.error('从IndexedDB获取笔记失败:', error);
-                return [];
-            }
-        }
-        
-        // 从IndexedDB删除笔记
-        async function deleteNoteFromDB(id) {
-            try {
-                const database = await initIndexedDB();
-                const transaction = database.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                
-                await new Promise((resolve, reject) => {
-                    const request = store.delete(id);
-                    
-                    request.onsuccess = () => {
-                        console.log('笔记删除成功:', id);
-                        resolve();
-                    };
-                    
-                    request.onerror = (event) => {
-                        console.error('笔记删除失败:', event.target.error);
-                        reject(event.target.error);
-                    };
-                });
-                
-                await transaction.complete;
-                return true;
-            } catch (error) {
-                console.error('从IndexedDB删除笔记失败:', error);
-                throw error;
-            }
-        }
-        
-        // 保存笔记（整合函数）
-        async function saveNoteToStorage(note) {
-            try {
-                // 保存到IndexedDB
-                await saveNoteToDB(note);
-                
-                // 重新获取所有笔记
-                notes = await getAllNotesFromDB();
-                // 更新所有笔记的副本，用于搜索功能
-                allNotes = [...notes];
-                
-                // 刷新笔记列表
-                renderNotes();
-                
-                // 关闭模态框
-                toggleNoteModal();
-                
-                // 重置表单
-                resetNoteForm();
+                    // 重置表单
+                    resetNoteForm();
+                } else {
+                    const errorData = await response.json();
+                    console.error('保存笔记失败:', errorData.error);
+                    alert('保存笔记失败: ' + errorData.error);
+                }
             } catch (error) {
                 console.error('保存笔记失败:', error);
-                alert('保存笔记失败，请稍后重试。');
+                alert('网络错误，请稍后重试。');
+            }
+        }
+        
+        // 从服务器获取所有笔记
+        async function loadNotes() {
+            try {
+                const response = await fetch('http://localhost:5000/api/notes', {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+                
+                if (response.ok) {
+                    notes = await response.json();
+                    // 更新所有笔记的副本，用于搜索功能
+                    allNotes = [...notes];
+                    
+                    // 刷新笔记列表
+                    renderNotes();
+                } else {
+                    console.error('获取笔记失败');
+                }
+            } catch (error) {
+                console.error('获取笔记失败:', error);
+            }
+        }
+        
+        // 从服务器删除笔记
+        async function deleteNote(noteId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // 重新获取所有笔记
+                    await loadNotes();
+                } else {
+                    const errorData = await response.json();
+                    console.error('删除笔记失败:', errorData.error);
+                    alert('删除笔记失败: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('删除笔记失败:', error);
+                alert('网络错误，请稍后重试。');
             }
         }
         
@@ -3087,7 +3033,12 @@ int main() {
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态
+            checkLogin();
             updateProgress();
+            
+            // 初始化笔记功能
+            initNotes();
             
             // 为每一行添加点击事件
             const rows = document.querySelectorAll('tbody tr');

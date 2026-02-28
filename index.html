@@ -167,19 +167,42 @@
     </div>
     
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
             
-            // 简单的登录验证
-            if (username === 'demo' && password === '123456') {
-                // 登录成功，跳转到学习计划表
-                window.location.href = 'core/planTable.html';
-            } else {
-                // 登录失败，显示错误信息
+            try {
+                // 调用后端登录API
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    // 存储token到本地存储
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    // 登录成功，跳转到学习计划表
+                    window.location.href = 'core/planTable.html';
+                } else {
+                    const errorData = await response.json();
+                    // 登录失败，显示错误信息
+                    errorMessage.textContent = errorData.error || '登录失败，请重试';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('登录请求失败:', error);
+                errorMessage.textContent = '网络错误，请稍后重试';
                 errorMessage.style.display = 'block';
                 setTimeout(() => {
                     errorMessage.style.display = 'none';
