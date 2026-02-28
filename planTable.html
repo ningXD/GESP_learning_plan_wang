@@ -978,15 +978,21 @@
         }
         
         .notes-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
         }
         
         .notes-header h3 {
-            margin: 0;
+            margin: 0 0 15px 0;
             color: #2c3e50;
+        }
+        
+        .notes-search-container {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            position: relative;
+            margin-bottom: 20px;
         }
         
         .note-item {
@@ -1081,9 +1087,9 @@
                 <span class="icon">📝</span>
                 添加笔记
             </button>
-            <button class="btn" onclick="convertNotesToPPT()">
-                <span class="icon">📊</span>
-                笔记转PPT
+            <button class="btn" onclick="window.location.href='online_programming.html'">
+                <span class="icon">🌐</span>
+                在线编程
             </button>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -1091,6 +1097,28 @@
             <button class="btn-small" onclick="toggleCalendar()" title="查看日历">
                 <span class="icon">📅</span>
             </button>
+            <button class="btn" onclick="window.location.href='course_system.html'">
+                <span class="icon">🔐</span>
+                消课系统
+            </button>
+        </div>
+    </div>
+    
+    <div class="info-box">
+        <h3>📚 学习计划说明</h3>
+        <div class="info-content">
+            <div class="info-item">
+                <h4>学习时间</h4>
+                <p>每周五 19:00-21:00，共2小时</p>
+                <p>第1部分 (30分钟): 知识点学习 + 代码练习</p>
+                <p>第2部分 (90分钟): 真题实战 + 错题分析</p>
+            </div>
+            <div class="info-item">
+                <h4>学习目标</h4>
+                <p>• 掌握GESP C++二级所有考点</p>
+                <p>• 熟练完成选择题和判断题</p>
+                <p>• 独立解决编程题（特别是矩阵绘制题）</p>
+            </div>
         </div>
     </div>
     
@@ -1098,6 +1126,31 @@
     <div class="notes-container">
         <div class="notes-header">
             <h3><span class="icon">📝</span>我的学习笔记</h3>
+            <div class="notes-search-container">
+                <input type="text" id="noteSearchInput" placeholder="输入内容搜索笔记" autocomplete="off" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; min-width: 200px;">
+                <button class="btn-small" id="datePickerBtn" onclick="toggleDatePicker()" style="cursor: pointer; min-width: 40px;">📅</button>
+                <button class="btn-small" onclick="searchNotes()" style="cursor: pointer;">🔍 搜索</button>
+                <button class="btn-small" onclick="clearSearch()" style="cursor: pointer;">🗑️ 清空</button>
+                
+                <!-- 日期选择器弹窗 -->
+                <div id="datePickerModal" style="display: none; position: absolute; z-index: 1000; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-width: 220px; max-width: 220px; left: auto; right: 0; top: 100%; margin-top: 5px;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <button id="prevMonth" style="background: #f0f0f0; border: none; border-radius: 3px; padding: 3px 6px; cursor: pointer; font-size: 10px;">&lt;</button>
+                    <h4 id="currentMonthYear" style="margin: 0; font-size: 12px; font-weight: bold;"></h4>
+                    <button id="nextMonth" style="background: #f0f0f0; border: none; border-radius: 3px; padding: 3px 6px; cursor: pointer; font-size: 10px;">&gt;</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">日</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">一</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">二</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">三</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">四</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">五</div>
+                    <div style="text-align: center; font-weight: bold; font-size: 10px; color: #666;">六</div>
+                    <div id="calendarDays" style="grid-column: 1 / span 7; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;"></div>
+                </div>
+            </div>
         </div>
         <div id="notesList">
             <!-- 笔记内容将通过JavaScript动态生成 -->
@@ -1196,24 +1249,6 @@
                     <button class="calendar-nav-btn" onclick="changeMonth(1)">&gt;</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="info-box">
-        <h3>📚 学习计划说明</h3>
-        <div class="info-content">
-            <div class="info-item">
-                <h4>学习时间</h4>
-                <p>每周五 19:00-21:00，共2小时</p>
-                <p>第1部分 (30分钟): 知识点学习 + 代码练习</p>
-                <p>第2部分 (90分钟): 真题实战 + 错题分析</p>
-            </div>
-            <div class="info-item">
-                <h4>学习目标</h4>
-                <p>• 掌握GESP C++二级所有考点</p>
-                <p>• 熟练完成选择题和判断题</p>
-                <p>• 独立解决编程题（特别是矩阵绘制题）</p>
             </div>
         </div>
     </div>
@@ -2463,6 +2498,8 @@ int main() {
                 
                 // 重新获取所有笔记
                 notes = await getAllNotesFromDB();
+                // 更新所有笔记的副本，用于搜索功能
+                allNotes = [...notes];
                 
                 // 刷新笔记列表
                 renderNotes();
@@ -2511,11 +2548,14 @@ int main() {
             notes.forEach(note => {
                 const noteDate = new Date(note.date).toLocaleString('zh-CN');
                 
+                // 高亮显示标题中的搜索词
+                const highlightedTitle = highlightText(note.title, currentSearchTerm);
+                
                 html += `
                     <div class="note-item">
                         <div class="note-item-header">
                             <div>
-                                <div class="note-item-title">${note.title}</div>
+                                <div class="note-item-title">${highlightedTitle}</div>
                                 <div style="font-size: 12px; color: #666; margin-top: 3px;">
                                     ${noteDate} | ${getNoteTypeIcon(note.type)} ${getNoteTypeText(note.type)}
                                 </div>
@@ -2530,7 +2570,9 @@ int main() {
                 // 根据笔记类型渲染内容
                 switch(note.type) {
                     case 'text':
-                        html += `<div>${note.content.replace(/\n/g, '<br>')}</div>`;
+                        // 高亮显示文本内容中的搜索词
+                        const highlightedContent = highlightText(note.content, currentSearchTerm);
+                        html += `<div>${highlightedContent.replace(/\n/g, '<br>')}</div>`;
                         break;
                     case 'image':
                         // 检查是否为多张图片（数组）
@@ -2595,6 +2637,8 @@ int main() {
                     
                     // 重新获取所有笔记
                     notes = await getAllNotesFromDB();
+                    // 更新所有笔记的副本，用于搜索功能
+                    allNotes = [...notes];
                     
                     // 刷新笔记列表
                     renderNotes();
@@ -2791,6 +2835,11 @@ int main() {
             fullSizeImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
         }
         
+        // 所有笔记的副本，用于搜索功能
+        let allNotes = [];
+        // 当前搜索词，用于高亮显示
+        let currentSearchTerm = '';
+        
         // 初始化笔记列表
         async function initNotes() {
             try {
@@ -2799,6 +2848,8 @@ int main() {
                 
                 // 从IndexedDB获取所有笔记
                 notes = await getAllNotesFromDB();
+                // 保存所有笔记的副本
+                allNotes = [...notes];
                 
                 // 渲染笔记列表
                 renderNotes();
@@ -2807,202 +2858,206 @@ int main() {
             }
         }
         
-        // 将笔记转换为PPT
-        async function convertNotesToPPT() {
-            try {
-                // 获取所有笔记
-                const notes = await getAllNotesFromDB();
-                
-                if (notes.length === 0) {
-                    alert('没有可用的笔记来生成PPT！');
-                    return;
-                }
-                
-                // 创建PPT HTML内容
-                let pptContent = `
-                    <!DOCTYPE html>
-                    <html lang="zh-CN">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>学习笔记PPT</title>
-                        <style>
-                            * {
-                                margin: 0;
-                                padding: 0;
-                                box-sizing: border-box;
-                            }
-                            
-                            body {
-                                font-family: 'Microsoft YaHei', sans-serif;
-                                background: #f5f5f5;
-                            }
-                            
-                            .slide {
-                                width: 960px;
-                                height: 720px;
-                                background: white;
-                                margin: 20px auto;
-                                padding: 50px;
-                                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-                                page-break-after: always;
-                            }
-                            
-                            .slide:last-child {
-                                page-break-after: avoid;
-                            }
-                            
-                            .title-slide {
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: center;
-                                align-items: center;
-                                text-align: center;
-                            }
-                            
-                            .title-slide h1 {
-                                font-size: 48px;
-                                color: #2c3e50;
-                                margin-bottom: 20px;
-                            }
-                            
-                            .title-slide p {
-                                font-size: 24px;
-                                color: #7f8c8d;
-                            }
-                            
-                            .slide h2 {
-                                font-size: 36px;
-                                color: #3498db;
-                                margin-bottom: 30px;
-                                border-bottom: 3px solid #3498db;
-                                padding-bottom: 10px;
-                            }
-                            
-                            .slide h3 {
-                                font-size: 28px;
-                                color: #2c3e50;
-                                margin-bottom: 20px;
-                            }
-                            
-                            .slide p {
-                                font-size: 20px;
-                                line-height: 1.6;
-                                color: #34495e;
-                                margin-bottom: 15px;
-                            }
-                            
-                            .slide img {
-                                max-width: 100%;
-                                max-height: 400px;
-                                margin: 20px 0;
-                                border-radius: 8px;
-                            }
-                            
-                            .note-item {
-                                background: #f8f9fa;
-                                padding: 20px;
-                                border-radius: 8px;
-                                margin-bottom: 20px;
-                                border-left: 4px solid #3498db;
-                            }
-                            
-                            .note-item-title {
-                                font-weight: bold;
-                                font-size: 24px;
-                                color: #2c3e50;
-                                margin-bottom: 10px;
-                            }
-                            
-                            .note-item-date {
-                                font-size: 16px;
-                                color: #7f8c8d;
-                                margin-bottom: 15px;
-                            }
-                            
-                            @media print {
-                                .slide {
-                                    box-shadow: none;
-                                    margin: 0;
-                                    padding: 30px;
-                                }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <!-- 标题页 -->
-                        <div class="slide title-slide">
-                            <h1>学习笔记PPT</h1>
-                            <p>生成时间：${new Date().toLocaleString()}</p>
-                            <p>共 ${notes.length} 条笔记</p>
-                        </div>
-                `;
-                
-                // 添加每条笔记作为一页幻灯片
-                notes.forEach((note, index) => {
-                    pptContent += `
-                        <div class="slide">
-                            <h2>第 ${index + 1} 条笔记</h2>
-                            <div class="note-item">
-                                <div class="note-item-title">${note.title || '无标题笔记'}</div>
-                                <div class="note-item-date">${new Date(note.createdAt).toLocaleString()}</div>
-                                <div class="note-item-content">
-                    `;
+        // 高亮显示匹配的搜索词
+        function highlightText(text, searchTerm) {
+            if (!searchTerm || !text) return text;
+            
+            // 转义正则特殊字符
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // 创建正则表达式，忽略大小写
+            const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+            // 使用span标签包裹匹配的文本，添加高亮样式
+            return text.replace(regex, '<span style="background-color: #90caf9; font-weight: bold;">$1</span>');
+        }
+        
+        // 搜索笔记功能
+        function searchNotes() {
+            const searchInput = document.getElementById('noteSearchInput');
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            // 保存当前搜索词用于高亮显示
+            currentSearchTerm = searchTerm;
+            
+            if (searchTerm === '') {
+                // 如果搜索词为空，显示所有笔记
+                notes = [...allNotes];
+            } else {
+                // 根据搜索词过滤笔记
+                notes = allNotes.filter(note => {
+                    // 检查标题是否包含搜索词
+                    const titleMatch = note.title.toLowerCase().includes(searchTerm);
+                    // 检查内容是否包含搜索词（仅文本笔记）
+                    const contentMatch = note.type === 'text' ? note.content.toLowerCase().includes(searchTerm) : false;
                     
-                    // 根据笔记类型添加内容
-                    switch(note.type) {
-                        case 'text':
-                            pptContent += `<p>${note.content.replace(/\n/g, '</p><p>')}</p>`;
-                            break;
-                        case 'image':
-                            if (Array.isArray(note.content)) {
-                                note.content.forEach(imgData => {
-                                    pptContent += `<img src="${imgData}" alt="笔记图片">`;
-                                });
-                            } else {
-                                pptContent += `<img src="${note.content}" alt="笔记图片">`;
-                            }
-                            break;
-                        case 'mindmap':
-                            pptContent += `
-                                <div style="text-align: center; padding: 50px;">
-                                    <span style="font-size: 64px;">🧠</span>
-                                    <p>思维导图</p>
-                                </div>
-                            `;
-                            break;
-                    }
-                    
-                    pptContent += `
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    return titleMatch || contentMatch;
                 });
-                
-                pptContent += `
-                    </body>
-                    </html>
-                `;
-                
-                // 创建Blob并下载
-                const blob = new Blob([pptContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `学习笔记PPT_${new Date().toISOString().slice(0, 10)}.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                alert('笔记已转换为PPT格式！请将下载的HTML文件用浏览器打开或直接打印。');
-            } catch (error) {
-                console.error('转换笔记为PPT失败:', error);
-                alert('转换笔记为PPT失败，请稍后重试。');
+            }
+            
+            // 重新渲染笔记列表
+            renderNotes();
+        }
+        
+        // 日期选择器相关变量
+        let datePickerCurrentDate = new Date();
+        let selectedDate = null;
+        
+        // 切换日期选择器显示/隐藏
+        function toggleDatePicker() {
+            const modal = document.getElementById('datePickerModal');
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                // 显示日期选择器
+                modal.style.display = 'block';
+                generateDatePickerCalendar();
+            } else {
+                // 隐藏日期选择器
+                modal.style.display = 'none';
             }
         }
-
+        
+        // 生成日期选择器日历
+        function generateDatePickerCalendar() {
+            const year = datePickerCurrentDate.getFullYear();
+            const month = datePickerCurrentDate.getMonth();
+            
+            // 更新月份年份显示
+            document.getElementById('currentMonthYear').textContent = `${year}年${month + 1}月`;
+            
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+            
+            // 获取当月第一天是星期几
+            const firstDay = new Date(year, month, 1).getDay();
+            // 获取当月最后一天
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            
+            // 填充前一个月的空白
+            for (let i = 0; i < firstDay; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.style.textAlign = 'center';
+                dayElement.style.padding = '5px';
+                dayElement.style.fontSize = '12px';
+                dayElement.style.color = '#ccc';
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // 填充当月日期
+            for (let i = 1; i <= lastDate; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.style.textAlign = 'center';
+                dayElement.style.padding = '3px 0';
+                dayElement.style.fontSize = '11px';
+                dayElement.style.width = '25px';
+                dayElement.style.height = '25px';
+                dayElement.style.lineHeight = '25px';
+                dayElement.style.borderRadius = '3px';
+                dayElement.style.cursor = 'pointer';
+                dayElement.style.transition = 'background-color 0.2s';
+                dayElement.textContent = i;
+                
+                // 设置当前日期样式
+                const today = new Date();
+                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                    dayElement.style.backgroundColor = '#e3f2fd';
+                    dayElement.style.fontWeight = 'bold';
+                }
+                
+                // 添加鼠标悬停效果
+                dayElement.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f0f0f0';
+                });
+                
+                dayElement.addEventListener('mouseleave', function() {
+                    if (selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month && selectedDate.getDate() === i) {
+                        this.style.backgroundColor = '#90caf9';
+                        this.style.fontWeight = 'bold';
+                    } else if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                        this.style.backgroundColor = '#e3f2fd';
+                    } else {
+                        this.style.backgroundColor = 'transparent';
+                    }
+                });
+                
+                // 处理日期点击
+                dayElement.addEventListener('click', function() {
+                    selectedDate = new Date(year, month, i);
+                    // 关闭日期选择器
+                    document.getElementById('datePickerModal').style.display = 'none';
+                    // 根据选择的日期搜索笔记
+                    searchNotesByDate(selectedDate);
+                });
+                
+                calendarDays.appendChild(dayElement);
+            }
+        }
+        
+        // 切换到上个月
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                datePickerCurrentDate.setMonth(datePickerCurrentDate.getMonth() - 1);
+                generateDatePickerCalendar();
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                datePickerCurrentDate.setMonth(datePickerCurrentDate.getMonth() + 1);
+                generateDatePickerCalendar();
+            });
+        });
+        
+        // 根据日期搜索笔记
+        function searchNotesByDate(date) {
+            if (!date) return;
+            
+            // 清空文本搜索词
+            currentSearchTerm = '';
+            document.getElementById('noteSearchInput').value = '';
+            
+            // 格式化日期，只比较年、月、日（使用本地时间）
+            const searchYear = date.getFullYear();
+            const searchMonth = String(date.getMonth() + 1).padStart(2, '0');
+            const searchDay = String(date.getDate()).padStart(2, '0');
+            const searchDateStr = `${searchYear}-${searchMonth}-${searchDay}`;
+            
+            // 过滤笔记
+            notes = allNotes.filter(note => {
+                const noteDate = new Date(note.date);
+                const noteYear = noteDate.getFullYear();
+                const noteMonth = String(noteDate.getMonth() + 1).padStart(2, '0');
+                const noteDay = String(noteDate.getDate()).padStart(2, '0');
+                const noteDateStr = `${noteYear}-${noteMonth}-${noteDay}`;
+                return noteDateStr === searchDateStr;
+            });
+            
+            // 重新渲染笔记列表
+            renderNotes();
+        }
+        
+        // 清空搜索功能
+        function clearSearch() {
+            const searchInput = document.getElementById('noteSearchInput');
+            // 清空搜索输入框
+            searchInput.value = '';
+            // 重置当前搜索词
+            currentSearchTerm = '';
+            // 重置选中日期
+            selectedDate = null;
+            // 恢复显示所有笔记
+            notes = [...allNotes];
+            // 重新渲染笔记列表
+            renderNotes();
+        }
+        
+        // 监听搜索输入框的回车键事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('noteSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchNotes();
+                    }
+                });
+            }
+        });
+        
         // 调用初始化函数
         initNotes();
         

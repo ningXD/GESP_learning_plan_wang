@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消课系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .form-group button:hover {
+            background-color: #219a52;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .add-class-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .class-record-form {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>消课系统</h1>
+        
+        <div class="tab-container">
+            <button class="tab active" onclick="openTab(event, 'student')">学员管理</button>
+            <button class="tab" onclick="openTab(event, 'class')">上课记录</button>
+            <button class="tab" onclick="openTab(event, 'record')">消课记录</button>
+        </div>
+        
+        <!-- 学员管理 -->
+        <div id="student" class="tab-content active">
+            <h2>添加学员信息</h2>
+            <div class="form-group">
+                <label for="name">姓名:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">性别:</label>
+                <select id="gender" required>
+                    <option value="">请选择</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="age">年龄:</label>
+                <input type="number" id="age" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="grade">年级:</label>
+                <input type="text" id="grade" required>
+            </div>
+            <div class="form-group">
+                <label for="project">学习项目:</label>
+                <input type="text" id="project" required>
+            </div>
+            <div class="form-group">
+                <button onclick="addStudent()">添加学员</button>
+            </div>
+            <div class="success-message" id="studentMessage"></div>
+            
+            <h3>学员列表</h3>
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>年级</th>
+                        <th>学习项目</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 上课记录 -->
+        <div id="class" class="tab-content">
+            <h2>添加上课记录</h2>
+            <div class="form-group">
+                <label for="studentSelect">选择学员:</label>
+                <select id="studentSelect" required>
+                    <option value="">请选择学员</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="classDate">上课时间:</label>
+                <input type="datetime-local" id="classDate" required>
+            </div>
+            <div class="form-group">
+                <label for="classContent">课程内容:</label>
+                <input type="text" id="classContent" required>
+            </div>
+            <div class="form-group">
+                <button onclick="addClassRecord()">添加记录</button>
+            </div>
+            <div class="success-message" id="classMessage"></div>
+            
+            <h3>上课记录列表</h3>
+            <table id="classTable">
+                <thead>
+                    <tr>
+                        <th>学员姓名</th>
+                        <th>上课时间</th>
+                        <th>课程内容</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 消课记录 -->
+        <div id="record" class="tab-content">
+            <h2>消课记录</h2>
+            <table id="recordTable">
+                <thead>
+                    <tr>
+                        <th>学员姓名</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>年级</th>
+                        <th>学习项目</th>
+                        <th>上课时间</th>
+                        <th>课程内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化数据
+        function initData() {
+            if (!localStorage.getItem('students')) {
+                localStorage.setItem('students', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('classRecords')) {
+                localStorage.setItem('classRecords', JSON.stringify([]));
+            }
+        }
+        
+        // 打开标签页
+        function openTab(evt, tabName) {
+            var i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            tabLinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // 切换到对应标签时刷新数据
+            if (tabName === 'student') {
+                loadStudents();
+            } else if (tabName === 'class') {
+                loadStudentSelect();
+                loadClassRecords();
+            } else if (tabName === 'record') {
+                loadAllRecords();
+            }
+        }
+        
+        // 添加学员
+        function addStudent() {
+            const name = document.getElementById('name').value;
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
+            const grade = document.getElementById('grade').value;
+            const project = document.getElementById('project').value;
+            
+            if (!name || !gender || !age || !grade || !project) {
+                alert('请填写所有必填项');
+                return;
+            }
+            
+            const students = JSON.parse(localStorage.getItem('students'));
+            const newStudent = {
+                id: Date.now(),
+                name,
+                gender,
+                age,
+                grade,
+                project
+            };
+            
+            students.push(newStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+            
+            // 显示成功消息
+            const message = document.getElementById('studentMessage');
+            message.textContent = '学员添加成功！';
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+            
+            // 清空表单
+            document.getElementById('name').value = '';
+            document.getElementById('gender').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('grade').value = '';
+            document.getElementById('project').value = '';
+            
+            // 刷新学员列表
+            loadStudents();
+        }
+        
+        // 加载学员列表
+        function loadStudents() {
+            const students = JSON.parse(localStorage.getItem('students'));
+            const tableBody = document.querySelector('#studentTable tbody');
+            tableBody.innerHTML = '';
+            
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.gender}</td>
+                    <td>${student.age}</td>
+                    <td>${student.grade}</td>
+                    <td>${student.project}</td>
+                    <td>
+                        <button class="action-btn add-class-btn" onclick="goToAddClass(${student.id})">添加课程</button>
+                        <button class="action-btn delete-btn" onclick="deleteStudent(${student.id})">删除</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 跳转到添加课程页面并选择学员
+        function goToAddClass(studentId) {
+            // 切换到上课记录标签
+            document.getElementsByClassName('tab')[1].click();
+            // 选择对应学员
+            document.getElementById('studentSelect').value = studentId;
+        }
+        
+        // 删除学员
+        function deleteStudent(studentId) {
+            if (confirm('确定要删除该学员吗？')) {
+                let students = JSON.parse(localStorage.getItem('students'));
+                students = students.filter(student => student.id !== studentId);
+                localStorage.setItem('students', JSON.stringify(students));
+                
+                // 同时删除该学员的所有上课记录
+                let classRecords = JSON.parse(localStorage.getItem('classRecords'));
+                classRecords = classRecords.filter(record => record.studentId !== studentId);
+                localStorage.setItem('classRecords', JSON.stringify(classRecords));
+                
+                loadStudents();
+            }
+        }
+        
+        // 加载学员选择下拉框
+        function loadStudentSelect() {
+            const students = JSON.parse(localStorage.getItem('students'));
+            const select = document.getElementById('studentSelect');
+            select.innerHTML = '<option value="">请选择学员</option>';
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = student.name;
+                select.appendChild(option);
+            });
+        }
+        
+        // 添加上课记录
+        function addClassRecord() {
+            const studentId = document.getElementById('studentSelect').value;
+            const classDate = document.getElementById('classDate').value;
+            const classContent = document.getElementById('classContent').value;
+            
+            if (!studentId || !classDate || !classContent) {
+                alert('请填写所有必填项');
+                return;
+            }
+            
+            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
+            const newRecord = {
+                id: Date.now(),
+                studentId: parseInt(studentId),
+                classDate,
+                classContent
+            };
+            
+            classRecords.push(newRecord);
+            localStorage.setItem('classRecords', JSON.stringify(classRecords));
+            
+            // 显示成功消息
+            const message = document.getElementById('classMessage');
+            message.textContent = '上课记录添加成功！';
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+            
+            // 清空表单
+            document.getElementById('classDate').value = '';
+            document.getElementById('classContent').value = '';
+            
+            // 刷新上课记录列表
+            loadClassRecords();
+        }
+        
+        // 加载上课记录列表
+        function loadClassRecords() {
+            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
+            const students = JSON.parse(localStorage.getItem('students'));
+            const tableBody = document.querySelector('#classTable tbody');
+            tableBody.innerHTML = '';
+            
+            classRecords.forEach(record => {
+                const student = students.find(s => s.id === record.studentId);
+                if (student) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${formatDateTime(record.classDate)}</td>
+                        <td>${record.classContent}</td>
+                        <td>
+                            <button class="action-btn delete-btn" onclick="deleteClassRecord(${record.id})">删除</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            });
+        }
+        
+        // 删除上课记录
+        function deleteClassRecord(recordId) {
+            if (confirm('确定要删除该上课记录吗？')) {
+                let classRecords = JSON.parse(localStorage.getItem('classRecords'));
+                classRecords = classRecords.filter(record => record.id !== recordId);
+                localStorage.setItem('classRecords', JSON.stringify(classRecords));
+                loadClassRecords();
+            }
+        }
+        
+        // 加载所有消课记录
+        function loadAllRecords() {
+            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
+            const students = JSON.parse(localStorage.getItem('students'));
+            const tableBody = document.querySelector('#recordTable tbody');
+            tableBody.innerHTML = '';
+            
+            classRecords.forEach(record => {
+                const student = students.find(s => s.id === record.studentId);
+                if (student) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.age}</td>
+                        <td>${student.grade}</td>
+                        <td>${student.project}</td>
+                        <td>${formatDateTime(record.classDate)}</td>
+                        <td>${record.classContent}</td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            });
+        }
+        
+        // 格式化日期时间
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // 初始化
+        window.onload = function() {
+            initData();
+            loadStudents();
+        };
+    </script>
+</body>
+</html>

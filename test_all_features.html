@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试所有功能 - C++ 在线编程工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #6a11cb;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #2575fc;
+            margin: 20px 0 10px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+        
+        .test-code {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #2575fc;
+        }
+        
+        .output {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>测试所有功能 - C++ 在线编程工具</h1>
+        
+        <div class="test-section">
+            <h2>1. 运算符测试</h2>
+            <div class="test-code">
+#include <iostream>
+using namespace std;
+
+int main() {
+    // 算术运算符
+    int a = 10, b = 3;
+    cout << "a + b = " << a + b << endl;
+    cout << "a - b = " << a - b << endl;
+    cout << "a * b = " << a * b << endl;
+    cout << "a / b = " << a / b << endl;
+    cout << "a % b = " << a % b << endl;
+    
+    // 自增自减
+    int c = 5;
+    cout << "c++ = " << c++ << endl;
+    cout << "++c = " << ++c << endl;
+    cout << "c-- = " << c-- << endl;
+    cout << "--c = " << --c << endl;
+    
+    // 关系运算符
+    cout << "a == b: " << (a == b) << endl;
+    cout << "a != b: " << (a != b) << endl;
+    cout << "a > b: " << (a > b) << endl;
+    cout << "a < b: " << (a < b) << endl;
+    cout << "a >= b: " << (a >= b) << endl;
+    cout << "a <= b: " << (a <= b) << endl;
+    
+    // 逻辑运算符
+    bool x = true, y = false;
+    cout << "x && y: " << (x && y) << endl;
+    cout << "x || y: " << (x || y) << endl;
+    cout << "!x: " << !x << endl;
+    
+    // 位运算符
+    int m = 5, n = 3;
+    cout << "m & n: " << (m & n) << endl;
+    cout << "m | n: " << (m | n) << endl;
+    cout << "m ^ n: " << (m ^ n) << endl;
+    cout << "~m: " << (~m) << endl;
+    cout << "m << 1: " << (m << 1) << endl;
+    cout << "m >> 1: " << (m >> 1) << endl;
+    
+    // 赋值运算符
+    int z = 10;
+    z += 5;
+    cout << "z += 5: " << z << endl;
+    z -= 3;
+    cout << "z -= 3: " << z << endl;
+    z *= 2;
+    cout << "z *= 2: " << z << endl;
+    z /= 4;
+    cout << "z /= 4: " << z << endl;
+    
+    // 三元运算符
+    int max_val = (a > b) ? a : b;
+    cout << "max(a, b) = " << max_val << endl;
+    
+    return 0;
+}
+            </div>
+            <button class="btn" onclick="copyCode(this)">复制代码</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. 转义符测试</h2>
+            <div class="test-code">
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "换行符: line1\nline2" << endl;
+    cout << "制表符: col1\tcol2\tcol3" << endl;
+    cout << "回车符: before\rafter" << endl;
+    cout << "单引号: \'Hello\'" << endl;
+    cout << "双引号: \"World\"" << endl;
+    cout << "反斜杠: \\path\\to\\file" << endl;
+    cout << "响铃符: \a" << endl;
+    cout << "退格符: hello\bworld" << endl;
+    cout << "换页符: page1\fpage2" << endl;
+    cout << "垂直制表符: line1\vline2" << endl;
+    cout << "空字符: hello\0world" << endl;
+    return 0;
+}
+            </div>
+            <button class="btn" onclick="copyCode(this)">复制代码</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. 二进制编码测试</h2>
+            <div class="test-code">
+#include <iostream>
+using namespace std;
+
+int main() {
+    // 二进制编码
+    int binary1 = 0b1010;      // 10
+    int binary2 = 0b1111;      // 15
+    int binary3 = 0b10000000;  // 128
+    
+    cout << "0b1010 = " << binary1 << endl;
+    cout << "0b1111 = " << binary2 << endl;
+    cout << "0b10000000 = " << binary3 << endl;
+    
+    // 二进制运算
+    cout << "0b1010 + 0b1111 = " << (binary1 + binary2) << endl;
+    cout << "0b1010 * 0b1111 = " << (binary1 * binary2) << endl;
+    
+    return 0;
+}
+            </div>
+            <button class="btn" onclick="copyCode(this)">复制代码</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. 算法测试</h2>
+            <div class="test-code">
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <cmath>
+using namespace std;
+
+int main() {
+    // 数学算法
+    cout << "max(10, 20) = " << max(10, 20) << endl;
+    cout << "min(10, 20) = " << min(10, 20) << endl;
+    cout << "sqrt(16) = " << sqrt(16) << endl;
+    cout << "abs(-5) = " << abs(-5) << endl;
+    cout << "pow(2, 3) = " << pow(2, 3) << endl;
+    cout << "sin(90) = " << sin(90 * M_PI / 180) << endl;
+    cout << "cos(0) = " << cos(0 * M_PI / 180) << endl;
+    
+    // 排序算法
+    vector<int> nums = {3, 1, 4, 1, 5, 9, 2, 6};
+    sort(nums.begin(), nums.end());
+    cout << "排序后: ";
+    for (int num : nums) {
+        cout << num << " ";
+    }
+    cout << endl;
+    
+    // 反转算法
+    reverse(nums.begin(), nums.end());
+    cout << "反转后: ";
+    for (int num : nums) {
+        cout << num << " ";
+    }
+    cout << endl;
+    
+    // 查找算法
+    string str = "Hello, GESP!";
+    size_t found = str.find("GESP");
+    if (found != string::npos) {
+        cout << "找到 'GESP' 在位置: " << found << endl;
+    }
+    
+    // 字符串操作
+    string substr = str.substr(7, 4);
+    cout << "子串: " << substr << endl;
+    cout << "字符串长度: " << str.length() << endl;
+    
+    return 0;
+}
+            </div>
+            <button class="btn" onclick="copyCode(this)">复制代码</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. 数据结构测试</h2>
+            <div class="test-code">
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+#include <queue>
+#include <stack>
+using namespace std;
+
+int main() {
+    // Vector
+    vector<int> vec = {1, 2, 3, 4, 5};
+    cout << "Vector 元素: ";
+    for (int v : vec) {
+        cout << v << " ";
+    }
+    cout << endl;
+    
+    // Map
+    map<string, int> m;
+    m["one"] = 1;
+    m["two"] = 2;
+    cout << "Map 元素: one = " << m["one"] << ", two = " << m["two"] << endl;
+    
+    // Set
+    set<int> s = {1, 2, 3, 2, 1};
+    cout << "Set 元素: ";
+    for (int num : s) {
+        cout << num << " ";
+    }
+    cout << endl;
+    
+    // Queue
+    queue<int> q;
+    q.push(1);
+    q.push(2);
+    q.push(3);
+    cout << "Queue  front: " << q.front() << ", size: " << q.size() << endl;
+    
+    // Stack
+    stack<int> st;
+    st.push(1);
+    st.push(2);
+    st.push(3);
+    cout << "Stack top: " << st.top() << ", size: " << st.size() << endl;
+    
+    return 0;
+}
+            </div>
+            <button class="btn" onclick="copyCode(this)">复制代码</button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn" onclick="window.location.href='online_programming.html'">返回编程工具</button>
+        </div>
+    </div>
+    
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const code = codeBlock.textContent;
+            navigator.clipboard.writeText(code).then(function() {
+                alert('代码已复制到剪贴板！');
+            }, function() {
+                alert('复制失败，请手动复制');
+            });
+        }
+    </script>
+</body>
+</html>
