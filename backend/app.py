@@ -1,9 +1,7 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager
-from flask_cors import CORS
 import os
 from dotenv import load_dotenv
+from extensions import db, jwt, cors
 
 # 加载环境变量
 load_dotenv()
@@ -22,9 +20,9 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # 初始化扩展
-db = SQLAlchemy(app)
-jwt = JWTManager(app)
-CORS(app, origins=['*'])
+db.init_app(app)
+jwt.init_app(app)
+cors.init_app(app, origins=['*'])
 
 # 错误处理
 @app.errorhandler(404)
@@ -37,10 +35,12 @@ def internal_error(error):
     return {'error': 'Internal server error'}, 500
 
 # 导入并注册蓝图
-from routes import auth, notes, users
-app.register_blueprint(auth.bp)
-app.register_blueprint(notes.bp)
-app.register_blueprint(users.bp)
+from routes.auth import bp as auth_bp
+from routes.notes import bp as notes_bp
+from routes.users import bp as users_bp
+app.register_blueprint(auth_bp)
+app.register_blueprint(notes_bp)
+app.register_blueprint(users_bp)
 
 if __name__ == '__main__':
     try:

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 from models import User
-from app import db
+from extensions import db
 import bcrypt
 
 # 创建蓝图
