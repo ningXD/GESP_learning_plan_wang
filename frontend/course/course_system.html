@@ -821,11 +821,7 @@
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher') {
-                    document.getElementById('courseSystemLink').style.display = 'none';
-                } else {
-                    document.getElementById('courseSystemLink').style.display = 'block';
-                }
+                // 消课系统页面本身不需要控制消课系统链接的显示
                 
                 // 只显示Wiki链接给管理员用户
                 if (user.admin) {
@@ -837,7 +833,6 @@
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('userSection').style.display = 'none';
-                document.getElementById('courseSystemLink').style.display = 'none';
                 document.getElementById('wikiLink').style.display = 'none';
             }
         }
