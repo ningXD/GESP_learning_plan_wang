@@ -134,6 +134,101 @@
             gap: 15px;
         }
         
+        /* 目录系统样式 */
+        .toc-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .toc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toc-header:hover {
+            background: #e9ecef;
+        }
+        
+        .toc-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .toc-toggle {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .toc-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .toc-content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .toc-content.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+            overflow: hidden;
+        }
+        
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .toc-list li {
+            margin-bottom: 10px;
+        }
+        
+        .toc-list a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            padding: 5px 0;
+        }
+        
+        .toc-list a:hover {
+            color: #2980b9;
+            transform: translateX(5px);
+        }
+        
+        .toc-sub-list {
+            list-style: none;
+            margin: 5px 0 10px 20px;
+            padding: 0;
+        }
+        
+        .toc-sub-list li {
+            margin-bottom: 5px;
+        }
+        
+        .toc-sub-list a {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .toc-sub-list a:hover {
+            color: #3498db;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -141,6 +236,10 @@
             
             .header h1 {
                 font-size: 1.8rem;
+            }
+            
+            .toc-content {
+                max-height: 300px;
             }
         }
     </style>
@@ -155,15 +254,75 @@
         <button class="btn" onclick="window.location.href='../index.html'">返回首页</button>
     </div>
     
+    <!-- 目录系统 -->
+    <div class="toc-container">
+        <div class="toc-header" onclick="toggleTOC()">
+            <h3>📑 目录</h3>
+            <span class="toc-toggle" id="tocToggle">▼</span>
+        </div>
+        <div class="toc-content" id="tocContent">
+            <ul class="toc-list">
+                <li><a href="#section1">1. 项目概述</a></li>
+                <li>
+                    <a href="#section2">2. 系统架构</a>
+                    <ul class="toc-sub-list">
+                        <li><a href="#section2-1">2.1 前端</a></li>
+                        <li><a href="#section2-2">2.2 后端</a></li>
+                        <li><a href="#section2-3">2.3 数据库</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#section3">3. 核心功能</a>
+                    <ul class="toc-sub-list">
+                        <li><a href="#section3-1">3.1 学习计划表</a></li>
+                        <li><a href="#section3-2">3.2 消课系统</a></li>
+                        <li><a href="#section3-3">3.3 线上编程</a></li>
+                        <li><a href="#section3-4">3.4 认证功能</a></li>
+                        <li><a href="#section3-5">3.5 笔记功能</a></li>
+                        <li><a href="#section3-6">3.6 用户管理</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#section4">4. 权限控制</a>
+                    <ul class="toc-sub-list">
+                        <li><a href="#section4-1">4.1 学生端</a></li>
+                        <li><a href="#section4-2">4.2 教师端</a></li>
+                        <li><a href="#section4-3">4.3 管理端</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#section5">5. 使用指南</a>
+                    <ul class="toc-sub-list">
+                        <li><a href="#section5-1">5.1 登录系统</a></li>
+                        <li><a href="#section5-2">5.2 注册账号</a></li>
+                        <li><a href="#section5-3">5.3 启动服务器</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#section6">6. 技术栈</a>
+                    <ul class="toc-sub-list">
+                        <li><a href="#section6-1">6.1 前端</a></li>
+                        <li><a href="#section6-2">6.2 后端</a></li>
+                        <li><a href="#section6-3">6.3 数据库</a></li>
+                        <li><a href="#section6-4">6.4 服务器启动</a></li>
+                        <li><a href="#section6-5">6.5 数据库初始化</a></li>
+                        <li><a href="#section6-6">6.6 数据安全</a></li>
+                    </ul>
+                </li>
+                <li><a href="#section7">7. 系统更新</a></li>
+            </ul>
+        </div>
+    </div>
+    
     <div class="container">
-        <div class="section">
+        <div class="section" id="section1">
             <h2>1. 项目概述</h2>
             <p>GESP C++学习计划系统是一个专为C++学习者设计的在线学习平台，包含学习计划、消课系统、线上编程等功能模块。系统支持三种用户角色：学生、教师和管理员，每种角色拥有不同的权限。</p>
         </div>
         
-        <div class="section">
+        <div class="section" id="section2">
             <h2>2. 系统架构</h2>
-            <h3>2.1 前端</h3>
+            <h3 id="section2-1">2.1 前端</h3>
             <p>前端使用HTML、CSS和JavaScript构建，包含以下主要文件：</p>
             <ul>
                 <li><strong>auth/login.html</strong> - 登录和注册页面，支持用户登录和注册功能，包含角色选择（学生/教师）</li>
@@ -175,7 +334,7 @@
                 <li><strong>tests/test_all_features.html</strong> - 全功能测试页面，用于测试系统的所有功能</li>
             </ul>
             
-            <h3>2.2 后端</h3>
+            <h3 id="section2-2">2.2 后端</h3>
             <p>后端使用Flask框架构建，包含以下主要文件：</p>
             <ul>
                 <li><strong>app.py</strong> - 应用主文件，配置应用、初始化扩展、注册路由</li>
@@ -198,7 +357,7 @@
                 <li><strong>instance/gesp_study_plan.db</strong> - SQLite数据库文件</li>
             </ul>
             
-            <h3>2.3 数据库</h3>
+            <h3 id="section2-3">2.3 数据库</h3>
             <p>使用SQLite数据库（默认），包含以下主要表：</p>
             <ul>
                 <li><strong>users</strong> - 用户表，存储用户信息和权限</li>
@@ -231,10 +390,10 @@
             </ul>
         </div>
         
-        <div class="section">
+        <div class="section" id="section3">
             <h2>3. 核心功能</h2>
             
-            <h3>3.1 学习计划表</h3>
+            <h3 id="section3-1">3.1 学习计划表</h3>
             <p>学习计划表是系统的核心功能，提供8周冲刺学习计划，包含：</p>
             <ul>
                 <li>学习周期表：展示每周的学习主题和日期</li>
@@ -245,7 +404,7 @@
                 <li>根据用户角色显示或隐藏消课系统按钮</li>
             </ul>
             
-            <h3>3.2 消课系统</h3>
+            <h3 id="section3-2">3.2 消课系统</h3>
             <p>消课系统面向教师和管理员，包含：</p>
             <ul>
                 <li>学员管理：添加、删除学员信息</li>
@@ -254,7 +413,7 @@
                 <li>管理员设置：只有管理员可以访问，用于管理教师账户权限</li>
             </ul>
             
-            <h3>3.3 线上编程</h3>
+            <h3 id="section3-3">3.3 线上编程</h3>
             <p>线上编程功能提供编程练习环境，支持：</p>
             <ul>
                 <li>代码编写：在线编写C++代码</li>
@@ -262,7 +421,7 @@
                 <li>练习题目：提供编程练习题目</li>
             </ul>
             
-            <h3>3.4 认证功能</h3>
+            <h3 id="section3-4">3.4 认证功能</h3>
             <p>认证功能负责用户身份验证和权限管理，包含：</p>
             <ul>
                 <li>用户注册：支持创建新用户，可指定角色（学生/教师）</li>
@@ -270,7 +429,7 @@
                 <li>权限控制：基于角色和管理员权限的访问控制</li>
             </ul>
             
-            <h3>3.5 笔记功能</h3>
+            <h3 id="section3-5">3.5 笔记功能</h3>
             <p>笔记功能支持用户记录和管理学习笔记，包含：</p>
             <ul>
                 <li>创建笔记：支持文本、图片和思维导图类型的笔记</li>
@@ -280,7 +439,7 @@
                 <li>图片上传：支持上传图片作为笔记附件</li>
             </ul>
             
-            <h3>3.6 用户管理</h3>
+            <h3 id="section3-6">3.6 用户管理</h3>
             <p>用户管理功能仅对管理员开放，包含：</p>
             <ul>
                 <li>用户列表：获取所有用户信息</li>
@@ -290,16 +449,16 @@
             </ul>
         </div>
         
-        <div class="section">
+        <div class="section" id="section4">
             <h2>4. 权限控制</h2>
-            <h3>4.1 学生端</h3>
+            <h3 id="section4-1">4.1 学生端</h3>
             <ul>
                 <li>可以访问学习计划表</li>
                 <li>可以使用线上编程功能</li>
                 <li>看不到消课系统</li>
             </ul>
             
-            <h3>4.2 教师端</h3>
+            <h3 id="section4-2">4.2 教师端</h3>
             <ul>
                 <li>可以访问学习计划表</li>
                 <li>可以使用线上编程功能</li>
@@ -307,7 +466,7 @@
                 <li>看不到管理员设置</li>
             </ul>
             
-            <h3>4.3 管理端</h3>
+            <h3 id="section4-3">4.3 管理端</h3>
             <ul>
                 <li>可以访问所有功能</li>
                 <li>可以管理用户账号和权限</li>
@@ -315,16 +474,16 @@
             </ul>
         </div>
         
-        <div class="section">
+        <div class="section" id="section5">
             <h2>5. 使用指南</h2>
-            <h3>5.1 登录系统</h3>
+            <h3 id="section5-1">5.1 登录系统</h3>
             <ol>
                 <li>打开 <code>auth/login.html</code> 页面</li>
                 <li>输入用户名和密码</li>
                 <li>点击登录按钮</li>
             </ol>
             
-            <h3>5.2 注册账号</h3>
+            <h3 id="section5-2">5.2 注册账号</h3>
             <ol>
                 <li>打开 <code>auth/login.html</code> 页面</li>
                 <li>点击"立即注册"链接</li>
@@ -333,7 +492,7 @@
                 <li>点击注册按钮</li>
             </ol>
             
-            <h3>5.3 启动服务器</h3>
+            <h3 id="section5-3">5.3 启动服务器</h3>
             <ol>
                 <li>进入 <code>backend</code> 目录</li>
                 <li>运行 <code>python app.py</code> 命令</li>
@@ -341,16 +500,16 @@
             </ol>
         </div>
         
-        <div class="section">
+        <div class="section" id="section6">
             <h2>6. 技术栈</h2>
-            <h3>6.1 前端</h3>
+            <h3 id="section6-1">6.1 前端</h3>
             <ul>
                 <li>HTML5</li>
                 <li>CSS3</li>
                 <li>JavaScript</li>
             </ul>
             
-            <h3>6.2 后端</h3>
+            <h3 id="section6-2">6.2 后端</h3>
             <ul>
                 <li>Python 3.14</li>
                 <li>Flask</li>
@@ -361,26 +520,26 @@
                 <li>python-dotenv（环境变量管理）</li>
             </ul>
             
-            <h3>6.3 数据库</h3>
+            <h3 id="section6-3">6.3 数据库</h3>
             <ul>
                 <li>SQLite（默认）</li>
                 <li>MySQL（可选）</li>
             </ul>
             
-            <h3>6.4 服务器启动</h3>
+            <h3 id="section6-4">6.4 服务器启动</h3>
             <ol>
                 <li>确保安装了所有依赖包：<code>pip install -r requirements.txt</code></li>
                 <li>运行服务器：<code>python app.py</code></li>
                 <li>服务器默认运行在 <code>http://127.0.0.1:5000</code></li>
             </ol>
             
-            <h3>6.5 数据库初始化</h3>
+            <h3 id="section6-5">6.5 数据库初始化</h3>
             <ol>
                 <li>系统启动时会自动创建数据库表结构</li>
                 <li>会自动创建demo管理员账号（用户名：demo，密码：123456）</li>
             </ol>
             
-            <h3>6.6 数据安全</h3>
+            <h3 id="section6-6">6.6 数据安全</h3>
             <ul>
                 <li>密码使用bcrypt加密存储</li>
                 <li>JWT令牌用于身份验证</li>
@@ -388,7 +547,7 @@
             </ul>
         </div>
         
-        <div class="section">
+        <div class="section" id="section7">
             <h2>7. 系统更新</h2>
             <p>系统会定期更新，主要更新内容包括：</p>
             <ul>
@@ -414,6 +573,15 @@
                 // 未登录用户，重定向到登录页面
                 window.location.href = '../auth/login.html';
             }
+        }
+        
+        // 切换目录展开/折叠
+        function toggleTOC() {
+            const tocContent = document.getElementById('tocContent');
+            const tocToggle = document.getElementById('tocToggle');
+            
+            tocContent.classList.toggle('collapsed');
+            tocToggle.classList.toggle('collapsed');
         }
         
         // 页面加载时检查权限
