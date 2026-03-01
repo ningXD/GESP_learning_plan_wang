@@ -533,7 +533,7 @@ int main() {
                 <div style="padding: 10px 20px; border-top: 1px solid #333;">
                     <div style="display: flex; align-items: center;">
                         <span class="prompt" style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
-                        <input type="text" id="userInput" style="flex: 1; background: #252526; border: 1px solid #333; color: #cccccc; padding: 8px; border-radius: 4px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">
+                        <input type="text" id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">
                         <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
                     </div>
                 </div>
@@ -961,11 +961,10 @@ int main() {
             const hasCin = code.includes('cin');
             let userInput = '';
             
-            // 先打开弹窗，显示正在编译
-            showModal("正在编译...", "success");
-            
-            // 如果有cin语句，显示输入界面
+            // 先打开弹窗
             if (hasCin) {
+                // 显示等待输入
+                showModal("等待输入...", "success");
                 // 显示输入部分
                 document.getElementById('inputSection').style.display = 'block';
                 
@@ -987,6 +986,10 @@ int main() {
                     // 添加提交按钮点击事件
                     submitBtn.onclick = function() {
                         const input = inputField.value;
+                        // 禁用输入框
+                        inputField.disabled = true;
+                        // 隐藏提交按钮
+                        submitBtn.style.display = 'none';
                         resolve(input);
                     };
                     
@@ -994,15 +997,22 @@ int main() {
                     inputField.onkeypress = function(e) {
                         if (e.key === 'Enter') {
                             const input = inputField.value;
+                            // 禁用输入框
+                            inputField.disabled = true;
+                            // 隐藏提交按钮
+                            submitBtn.style.display = 'none';
                             resolve(input);
                         }
                     };
                 });
                 
-                // 隐藏输入部分
-                document.getElementById('inputSection').style.display = 'none';
+                // 不再隐藏输入部分，保持可见
+                // document.getElementById('inputSection').style.display = 'none';
                 
                 // 更新弹窗显示正在编译
+                showModal("正在编译...", "success");
+            } else {
+                // 显示正在编译
                 showModal("正在编译...", "success");
             }
             
@@ -1063,13 +1073,13 @@ int main() {
             modal.style.display = "none";
         }
         
-        // 点击弹窗外部关闭
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('resultModal');
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
+        // 点击弹窗外部不再关闭
+        // window.addEventListener('click', function(event) {
+        //     const modal = document.getElementById('resultModal');
+        //     if (event.target === modal) {
+        //         modal.style.display = "none";
+        //     }
+        // });
         
         // 弹窗拖拽功能
         document.addEventListener('DOMContentLoaded', function() {
