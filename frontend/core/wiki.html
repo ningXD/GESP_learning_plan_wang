@@ -19,6 +19,9 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         
         .header {
@@ -41,12 +44,30 @@
             opacity: 0.9;
         }
         
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 30px;
+        }
+        
+        .toc-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 20%; /* 占据页面的1/5 */
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+        }
+        
         .container {
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 30px;
-            margin-bottom: 30px;
+            flex: 1;
+            min-width: 0;
         }
         
         h2 {
@@ -139,8 +160,17 @@
             background: white;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            width: 20%; /* 占据页面的1/5 */
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            transition: all 0.3s ease;
             overflow: hidden;
+        }
+        
+        .toc-container.collapsed {
+            width: 60px; /* 折叠后占据更小的空间 */
         }
         
         .toc-header {
@@ -162,11 +192,21 @@
             margin: 0;
             color: #2c3e50;
             font-size: 1.1rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .toc-container.collapsed .toc-header h3 {
+            width: 0;
+            opacity: 0;
         }
         
         .toc-toggle {
             font-size: 12px;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
         
         .toc-toggle.collapsed {
@@ -184,6 +224,10 @@
             max-height: 0;
             padding: 0 20px;
             overflow: hidden;
+        }
+        
+        .toc-container.collapsed .toc-content {
+            display: none;
         }
         
         .toc-list {
@@ -230,6 +274,16 @@
         }
         
         @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .toc-container {
+                width: 100%;
+                position: static;
+                max-height: none;
+            }
+            
             .container {
                 padding: 20px;
             }
@@ -254,67 +308,68 @@
         <button class="btn" onclick="window.location.href='../index.html'">返回首页</button>
     </div>
     
-    <!-- 目录系统 -->
-    <div class="toc-container">
-        <div class="toc-header" onclick="toggleTOC()">
-            <h3>📑 目录</h3>
-            <span class="toc-toggle" id="tocToggle">▼</span>
+    <div class="main-content">
+        <!-- 目录系统 -->
+        <div class="toc-container">
+            <div class="toc-header" onclick="toggleTOC()">
+                <h3>📑 目录</h3>
+                <span class="toc-toggle" id="tocToggle">▼</span>
+            </div>
+            <div class="toc-content" id="tocContent">
+                <ul class="toc-list">
+                    <li><a href="#section1">1. 项目概述</a></li>
+                    <li>
+                        <a href="#section2">2. 系统架构</a>
+                        <ul class="toc-sub-list">
+                            <li><a href="#section2-1">2.1 前端</a></li>
+                            <li><a href="#section2-2">2.2 后端</a></li>
+                            <li><a href="#section2-3">2.3 数据库</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#section3">3. 核心功能</a>
+                        <ul class="toc-sub-list">
+                            <li><a href="#section3-1">3.1 学习计划表</a></li>
+                            <li><a href="#section3-2">3.2 消课系统</a></li>
+                            <li><a href="#section3-3">3.3 线上编程</a></li>
+                            <li><a href="#section3-4">3.4 认证功能</a></li>
+                            <li><a href="#section3-5">3.5 笔记功能</a></li>
+                            <li><a href="#section3-6">3.6 用户管理</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#section4">4. 权限控制</a>
+                        <ul class="toc-sub-list">
+                            <li><a href="#section4-1">4.1 学生端</a></li>
+                            <li><a href="#section4-2">4.2 教师端</a></li>
+                            <li><a href="#section4-3">4.3 管理端</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#section5">5. 使用指南</a>
+                        <ul class="toc-sub-list">
+                            <li><a href="#section5-1">5.1 登录系统</a></li>
+                            <li><a href="#section5-2">5.2 注册账号</a></li>
+                            <li><a href="#section5-3">5.3 启动服务器</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#section6">6. 技术栈</a>
+                        <ul class="toc-sub-list">
+                            <li><a href="#section6-1">6.1 前端</a></li>
+                            <li><a href="#section6-2">6.2 后端</a></li>
+                            <li><a href="#section6-3">6.3 数据库</a></li>
+                            <li><a href="#section6-4">6.4 服务器启动</a></li>
+                            <li><a href="#section6-5">6.5 数据库初始化</a></li>
+                            <li><a href="#section6-6">6.6 数据安全</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#section7">7. 系统更新</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="toc-content" id="tocContent">
-            <ul class="toc-list">
-                <li><a href="#section1">1. 项目概述</a></li>
-                <li>
-                    <a href="#section2">2. 系统架构</a>
-                    <ul class="toc-sub-list">
-                        <li><a href="#section2-1">2.1 前端</a></li>
-                        <li><a href="#section2-2">2.2 后端</a></li>
-                        <li><a href="#section2-3">2.3 数据库</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#section3">3. 核心功能</a>
-                    <ul class="toc-sub-list">
-                        <li><a href="#section3-1">3.1 学习计划表</a></li>
-                        <li><a href="#section3-2">3.2 消课系统</a></li>
-                        <li><a href="#section3-3">3.3 线上编程</a></li>
-                        <li><a href="#section3-4">3.4 认证功能</a></li>
-                        <li><a href="#section3-5">3.5 笔记功能</a></li>
-                        <li><a href="#section3-6">3.6 用户管理</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#section4">4. 权限控制</a>
-                    <ul class="toc-sub-list">
-                        <li><a href="#section4-1">4.1 学生端</a></li>
-                        <li><a href="#section4-2">4.2 教师端</a></li>
-                        <li><a href="#section4-3">4.3 管理端</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#section5">5. 使用指南</a>
-                    <ul class="toc-sub-list">
-                        <li><a href="#section5-1">5.1 登录系统</a></li>
-                        <li><a href="#section5-2">5.2 注册账号</a></li>
-                        <li><a href="#section5-3">5.3 启动服务器</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#section6">6. 技术栈</a>
-                    <ul class="toc-sub-list">
-                        <li><a href="#section6-1">6.1 前端</a></li>
-                        <li><a href="#section6-2">6.2 后端</a></li>
-                        <li><a href="#section6-3">6.3 数据库</a></li>
-                        <li><a href="#section6-4">6.4 服务器启动</a></li>
-                        <li><a href="#section6-5">6.5 数据库初始化</a></li>
-                        <li><a href="#section6-6">6.6 数据安全</a></li>
-                    </ul>
-                </li>
-                <li><a href="#section7">7. 系统更新</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <div class="container">
+        
+        <div class="container">
         <div class="section" id="section1">
             <h2>1. 项目概述</h2>
             <p>GESP C++学习计划系统是一个专为C++学习者设计的在线学习平台，包含学习计划、消课系统、线上编程等功能模块。系统支持三种用户角色：学生、教师和管理员，每种角色拥有不同的权限。</p>
@@ -558,6 +613,7 @@
             <p>每次更新后，本Wiki会实时更新，确保您获取到最新的功能信息。</p>
         </div>
     </div>
+    </div>
     
     <script>
         // 检查用户权限
@@ -577,9 +633,11 @@
         
         // 切换目录展开/折叠
         function toggleTOC() {
+            const tocContainer = document.querySelector('.toc-container');
             const tocContent = document.getElementById('tocContent');
             const tocToggle = document.getElementById('tocToggle');
             
+            tocContainer.classList.toggle('collapsed');
             tocContent.classList.toggle('collapsed');
             tocToggle.classList.toggle('collapsed');
         }
