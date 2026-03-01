@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++代码示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #3498db;
+            margin-bottom: 30px;
+        }
+        
+        .example {
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .example-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: bold;
+            font-size: 18px;
+            color: #495057;
+        }
+        
+        .example-content {
+            position: relative;
+            padding: 0;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        
+        code {
+            display: block;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+        
+        .copy-btn.copied {
+            background: #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>C++代码示例</h1>
+        
+        <!-- 示例1：基本输出 -->
+        <div class="example">
+            <div class="example-header">1. 基本输出</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    cout &lt;&lt; "Hello, GESP C++!" &lt;&lt; endl;
+    cout &lt;&lt; "Welcome to online programming!" &lt;&lt; endl;
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例2：变量和数据类型 -->
+        <div class="example">
+            <div class="example-header">2. 变量和数据类型</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main() {
+    int age = 15;
+    double height = 1.75;
+    string name = "GESP Student";
+    bool isStudent = true;
+    
+    cout &lt;&lt; "Name: " &lt;&lt; name &lt;&lt; endl;
+    cout &lt;&lt; "Age: " &lt;&lt; age &lt;&lt; endl;
+    cout &lt;&lt; "Height: " &lt;&lt; height &lt;&lt; endl;
+    cout &lt;&lt; "Is student: " &lt;&lt; (isStudent ? "Yes" : "No") &lt;&lt; endl;
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例3：循环和条件判断 -->
+        <div class="example">
+            <div class="example-header">3. 循环和条件判断</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    cout &lt;&lt; "Even numbers from 1 to 20:" &lt;&lt; endl;
+    for (int i = 1; i &lt;= 20; i++) {
+        if (i % 2 == 0) {
+            cout &lt;&lt; i &lt;&lt; " ";
+        }
+    }
+    cout &lt;&lt; endl;
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例4：数组操作 -->
+        <div class="example">
+            <div class="example-header">4. 数组操作</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int numbers[] = {10, 20, 30, 40, 50};
+    int sum = 0;
+    
+    cout &lt;&lt; "Array elements: ";
+    for (int i = 0; i < 5; i++) {
+        cout &lt;&lt; numbers[i] &lt;&lt; " ";
+        sum += numbers[i];
+    }
+    cout &lt;&lt; endl;
+    
+    cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt; endl;
+    cout &lt;&lt; "Average: " &lt;&lt; static_cast&lt;double&gt;(sum) / 5 &lt;&lt; endl;
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例5：函数调用 -->
+        <div class="example">
+            <div class="example-header">5. 函数调用</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int factorial(int n) {
+    if (n == 0 || n == 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+int main() {
+    for (int i = 1; i <= 5; i++) {
+        cout &lt;&lt; i &lt;&lt; "! = " &lt;&lt; factorial(i) &lt;&lt; endl;
+    }
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例6：输入输出 -->
+        <div class="example">
+            <div class="example-header">6. 输入输出</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int a, b;
+    cout &lt;&lt; "Enter two numbers: ";
+    cin &gt;&gt; a &gt;&gt; b;
+    
+    cout &lt;&lt; "Sum: " &lt;&lt; a + b &lt;&lt; endl;
+    cout &lt;&lt; "Difference: " &lt;&lt; a - b &lt;&lt; endl;
+    cout &lt;&lt; "Product: " &lt;&lt; a * b &lt;&lt; endl;
+    
+    if (b != 0) {
+        cout &lt;&lt; "Quotient: " &lt;&lt; static_cast&lt;double&gt;(a) / b &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; "Cannot divide by zero!" &lt;&lt; endl;
+    }
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例7：二维数组（矩阵） -->
+        <div class="example">
+            <div class="example-header">7. 二维数组（矩阵）</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int matrix[3][3] = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+    
+    cout &lt;&lt; "3x3 Matrix:" &lt;&lt; endl;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            cout &lt;&lt; matrix[i][j] &lt;&lt; " ";
+        }
+        cout &lt;&lt; endl;
+    }
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+        
+        <!-- 示例8：字符串操作 -->
+        <div class="example">
+            <div class="example-header">8. 字符串操作</div>
+            <div class="example-content">
+                <button class="copy-btn" onclick="copyCode(this)">复制代码</button>
+                <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main() {
+    string s = "Hello, GESP!";
+    
+    cout &lt;&lt; "Original string: " &lt;&lt; s &lt;&lt; endl;
+    cout &lt;&lt; "Length: " &lt;&lt; s.length() &lt;&lt; endl;
+    cout &lt;&lt; "First character: " &lt;&lt; s[0] &lt;&lt; endl;
+    cout &lt;&lt; "Substring: " &lt;&lt; s.substr(7, 4) &lt;&lt; endl;
+    
+    s += " Welcome!";
+    cout &lt;&lt; "Modified string: " &lt;&lt; s &lt;&lt; endl;
+    
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyCode(button) {
+            // 获取代码块
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            // 复制到剪贴板
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    // 更改按钮文本和样式
+                    const originalText = button.textContent;
+                    button.textContent = "已复制";
+                    button.classList.add("copied");
+                    
+                    // 3秒后恢复原状
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove("copied");
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('复制失败:', err);
+                    button.textContent = "复制失败";
+                    setTimeout(() => {
+                        button.textContent = "复制代码";
+                    }, 3000);
+                });
+        }
+    </script>
+</body>
+</html>
