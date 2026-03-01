@@ -265,11 +265,34 @@
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
         }
         
         .CodeMirror-scroll {
             height: 100% !important;
             overflow: auto !important;
+        }
+        
+        .CodeMirror-gutters {
+            background: #f8f9fa !important;
+            border-right: 1px solid #e9ecef !important;
+            min-width: 40px !important;
+        }
+        
+        .CodeMirror-linenumber {
+            color: #6c757d !important;
+            padding: 0 8px !important;
+            text-align: right !important;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+        }
+        
+        .CodeMirror-line {
+            padding: 0 4px !important;
+            line-height: 1.5 !important;
         }
         
         .output-container {
@@ -323,21 +346,6 @@
             padding: 10px;
             margin-top: auto;
             font-size: 14px;
-        }
-        
-        .CodeMirror {
-            height: 100% !important;
-            border: none !important;
-        }
-        
-        .CodeMirror-gutters {
-            background: #f8f9fa !important;
-            border-right: 1px solid #e9ecef !important;
-        }
-        
-        .CodeMirror-linenumber {
-            color: #6c757d !important;
-            padding: 0 8px !important;
         }
         
         @media (max-width: 768px) {
