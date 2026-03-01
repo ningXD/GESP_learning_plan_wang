@@ -38,9 +38,11 @@ def internal_error(error):
 from routes.auth import bp as auth_bp
 from routes.notes import bp as notes_bp
 from routes.users import bp as users_bp
+from routes.compile import bp as compile_bp
 app.register_blueprint(auth_bp)
 app.register_blueprint(notes_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(compile_bp)
 
 if __name__ == '__main__':
     try:

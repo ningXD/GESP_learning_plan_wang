@@ -628,7 +628,7 @@ int main() {
         // 编译代码
         async function compileCode(code) {
             try {
-                const response = await fetch('http://localhost:3000/api/compile', {
+                const response = await fetch('http://localhost:5000/api/compile', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -841,14 +841,15 @@ int main() {
                 // 尝试编译代码
                 const compileResult = await compileCode(code);
                 
+                const endTime = performance.now();
+                const executionTime = (endTime - startTime).toFixed(2);
+                
                 if (compileResult.success) {
-                    showOutput("正在执行...", "success");
-                    
-                    // 执行WebAssembly
-                    const output = await executeWasm(compileResult.data.wasm, compileResult.data.js);
-                    
-                    const endTime = performance.now();
-                    const executionTime = (endTime - startTime).toFixed(2);
+                    // 编译成功
+                    let output = compileResult.data.output || '';
+                    if (compileResult.data.error) {
+                        output += `\n错误: ${compileResult.data.error}`;
+                    }
                     
                     if (output) {
                         showOutput(output + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
@@ -856,24 +857,15 @@ int main() {
                         showOutput(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
                     }
                 } else {
-                    // 编译服务不可用，使用模拟执行
-                    showOutput("编译服务不可用，使用模拟执行...", "success");
-                    const simulatedOutput = simulateExecution(code);
-                    
-                    const endTime = performance.now();
-                    const executionTime = (endTime - startTime).toFixed(2);
-                    
-                    showOutput(simulatedOutput + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                    // 编译失败
+                    const errorMessage = compileResult.error.message || "编译失败";
+                    showOutput(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
                 }
             } catch (error) {
-                // 执行错误，使用模拟执行
-                showOutput("执行错误，使用模拟执行...", "success");
-                const simulatedOutput = simulateExecution(code);
-                
+                // 执行错误
                 const endTime = performance.now();
                 const executionTime = (endTime - startTime).toFixed(2);
-                
-                showOutput(simulatedOutput + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                showOutput(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
             }
         }
         
