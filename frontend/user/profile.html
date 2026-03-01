@@ -121,12 +121,19 @@
             border-radius: 8px;
             padding: 10px 0;
             min-width: 180px;
-            margin-top: 5px;
+            margin-top: 2px;
             display: none;
             z-index: 1001;
+            /* 增加一点向上的重叠，确保鼠标移动时不会有间隙 */
+            transform: translateY(-2px);
         }
         
         .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        
+        /* 确保下拉菜单本身也能保持显示状态 */
+        .user-profile:hover .dropdown-menu:hover {
             display: block;
         }
         
@@ -378,7 +385,6 @@
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
                     <button type="submit" class="btn btn-primary">保存</button>
                 </div>
             </form>
@@ -504,14 +510,7 @@
             gesp_checkLoginStatus();
         }
         
-        // 重置表单
-        function resetForm() {
-            const userStr = sessionStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                populateUserInfo(user);
-            }
-        }
+
         
         // 退出登录
         function gesp_logout() {

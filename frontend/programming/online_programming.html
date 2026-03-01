@@ -1072,7 +1072,9 @@ int main() {
                 // document.getElementById('inputSection').style.display = 'none';
                 
                 // 更新弹窗显示正在编译
-                showModal("正在编译...", "success");
+                updateModal("正在编译...", "success");
+                // 确保输入部分仍然可见
+                document.getElementById('inputSection').style.display = 'block';
             } else {
                 // 显示正在编译
                 showModal("正在编译...", "success");
@@ -1099,16 +1101,28 @@ int main() {
                     } else {
                         updateModal(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
                     }
+                    // 确保输入部分仍然可见
+                    if (hasCin) {
+                        document.getElementById('inputSection').style.display = 'block';
+                    }
                 } else {
                     // 编译失败
                     const errorMessage = compileResult.error.message || "编译失败";
                     updateModal(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                    // 确保输入部分仍然可见
+                    if (hasCin) {
+                        document.getElementById('inputSection').style.display = 'block';
+                    }
                 }
             } catch (error) {
                 // 执行错误
                 const endTime = performance.now();
                 const executionTime = (endTime - startTime).toFixed(2);
                 updateModal(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                // 确保输入部分仍然可见
+                if (hasCin) {
+                    document.getElementById('inputSection').style.display = 'block';
+                }
             }
         }
         
