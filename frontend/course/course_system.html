@@ -18,6 +18,132 @@
             background-color: #f4f4f4;
         }
         
+        /* 导航栏样式 */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        /* 登录按钮样式 */
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        /* 用户头像样式 */
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* 下拉菜单样式 */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 180px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.logout {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -158,6 +284,36 @@
     </style>
 </head>
 <body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="logo">
+                <span>📚</span>
+                GESP C++ 学习计划
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../core/study_plan.html" class="nav-link">学习计划表</a>
+                <a href="../programming/online_programming.html" class="nav-link">线上编程</a>
+                <a href="course_system.html" class="nav-link active">消课系统</a>
+                <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
+                <div id="authSection">
+                    <a href="../auth/login.html" class="login-btn">登录</a>
+                </div>
+                <div id="userSection" style="display: none;">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" id="userName">用户名</div>
+                            <a href="#" class="dropdown-item">个人空间</a>
+                            <a href="#" class="dropdown-item logout" onclick="gesp_logout()">退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
     <div class="container">
         <h1>消课系统</h1>
         
@@ -672,6 +828,50 @@
                 gesp_loadAdminUsers();
             }
         }
+        
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                
+                // 检查用户角色，控制消课系统的显示
+                if (user.role !== 'teacher') {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                }
+                
+                // 检查用户是否为管理员，控制Wiki链接的显示
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
+            }
+        }
+        
+        // 退出登录
+        function gesp_logout() {
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('user');
+            gesp_checkLoginStatus();
+            window.location.href = '../index.html';
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', gesp_checkLoginStatus);
     </script>
 </body>
 </html>
