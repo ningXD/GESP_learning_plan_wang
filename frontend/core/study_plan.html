@@ -1083,11 +1083,11 @@
                 <span class="icon">💻</span>
                 常用代码模板
             </button>
-            <button class="btn" onclick="toggleNoteModal()">
+            <button class="btn" onclick="if(checkLoginAndPrompt()) toggleNoteModal()">
                 <span class="icon">📝</span>
                 添加笔记
             </button>
-            <button class="btn" onclick="window.location.href='../programming/online_programming.html'">
+            <button class="btn" onclick="if(checkLoginAndPrompt()) window.location.href='../programming/online_programming.html'">
                 <span class="icon">🌐</span>
                 在线编程
             </button>
@@ -1098,7 +1098,7 @@
                 <span class="icon">📅</span>
             </button>
             <div id="courseSystemBtnContainer">
-                <button class="btn" onclick="window.location.href='../course/course_system.html'">
+                <button class="btn" onclick="if(checkLoginAndPrompt()) window.location.href='../course/course_system.html'">
                     <span class="icon">🔐</span>
                     消课系统
                 </button>
@@ -2184,8 +2184,19 @@ int main() {
         function checkLogin() {
             const token = getToken();
             if (!token) {
-                window.location.href = '../index.html';
+                return false;
             }
+            return true;
+        }
+        
+        // 检查登录并提示
+        function checkLoginAndPrompt() {
+            if (!checkLogin()) {
+                alert('请先登录后再使用此功能');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
         }
         
         // 切换笔记类型
@@ -3035,12 +3046,13 @@ int main() {
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 检查登录状态
-            checkLogin();
+            // 不强制检查登录，允许用户查看页面内容
             updateProgress();
             
-            // 初始化笔记功能
-            initNotes();
+            // 初始化笔记功能（如果已登录）
+            if (checkLogin()) {
+                initNotes();
+            }
             
             // 为每一行添加点击事件
             const rows = document.querySelectorAll('tbody tr');

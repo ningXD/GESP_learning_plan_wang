@@ -277,7 +277,7 @@
                     <button class="action-btn" onclick="decreaseFontSize()">-</button>
                     <button class="action-btn" onclick="increaseFontSize()">+</button>
                     <button class="action-btn" onclick="clearCode()">清空代码</button>
-                    <button class="action-btn run" onclick="runCode()">运行</button>
+                    <button class="action-btn run" onclick="if(checkLoginAndPrompt()) runCode()">运行</button>
                     <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
                     <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
@@ -305,6 +305,21 @@ int main() {
     </div>
     
     <script>
+        // 检查登录状态
+        function checkLogin() {
+            return localStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并提示
+        function checkLoginAndPrompt() {
+            if (!checkLogin()) {
+                alert('请先登录后再使用此功能');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',
