@@ -533,7 +533,7 @@ int main() {
                 <div style="padding: 10px 20px; border-top: 1px solid #333;">
                     <div style="display: flex; align-items: center;">
                         <span class="prompt" style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
-                        <input type="text" id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">
+                        <textarea id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; resize: none; min-height: 80px;"></textarea>
                         <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
                     </div>
                 </div>
@@ -968,11 +968,17 @@ int main() {
                 // 显示输入部分
                 document.getElementById('inputSection').style.display = 'block';
                 
+                // 重置输入框和提交按钮
+                const inputField = document.getElementById('userInput');
+                const submitBtn = document.getElementById('submitInput');
+                inputField.disabled = false;
+                submitBtn.style.display = 'block';
+                
                 // 清空输入框
-                document.getElementById('userInput').value = '';
+                inputField.value = '';
                 
                 // 聚焦输入框
-                document.getElementById('userInput').focus();
+                inputField.focus();
                 
                 // 等待用户输入
                 userInput = await new Promise((resolve) => {
@@ -995,14 +1001,8 @@ int main() {
                     
                     // 添加回车键事件
                     inputField.onkeypress = function(e) {
-                        if (e.key === 'Enter') {
-                            const input = inputField.value;
-                            // 禁用输入框
-                            inputField.disabled = true;
-                            // 隐藏提交按钮
-                            submitBtn.style.display = 'none';
-                            resolve(input);
-                        }
+                        // 回车键现在用于换行，而不是提交
+                        // 只有点击提交按钮才会提交输入
                     };
                 });
                 
