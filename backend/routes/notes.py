@@ -1,8 +1,7 @@
-from flask import Blueprint, request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import Note
 from extensions import db
-from app import app
 import os
 import uuid
 
@@ -83,7 +82,7 @@ def delete_note(note_id):
     # 删除关联的图片文件
     if note.images:
         for image_path in note.images:
-            full_path = os.path.join(app.config['UPLOAD_FOLDER'], image_path)
+            full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image_path)
             if os.path.exists(full_path):
                 os.remove(full_path)
     
@@ -104,7 +103,7 @@ def upload_image():
     
     # 生成唯一文件名
     filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)
     
     # 返回相对路径
@@ -113,4 +112,4 @@ def upload_image():
 @bp.route('/uploads/<filename>', methods=['GET'])
 def serve_image(filename):
     """提供图片访问"""
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)

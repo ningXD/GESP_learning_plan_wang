@@ -1097,10 +1097,12 @@
             <button class="btn-small" onclick="toggleCalendar()" title="查看日历">
                 <span class="icon">📅</span>
             </button>
-            <button class="btn" onclick="window.location.href='../course/course_system.html'">
-                <span class="icon">🔐</span>
-                消课系统
-            </button>
+            <div id="courseSystemBtnContainer">
+                <button class="btn" onclick="window.location.href='../course/course_system.html'">
+                    <span class="icon">🔐</span>
+                    消课系统
+                </button>
+            </div>
         </div>
     </div>
     
@@ -3100,7 +3102,31 @@ int main() {
                 codeContainer.appendChild(codeHeader);
                 codeContainer.appendChild(block);
             });
-        });
+        });}
+        
+        // 检查用户角色并控制消课系统按钮的显示
+        function checkUserRole() {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'teacher') {
+                    // 学生角色，隐藏消课系统按钮
+                    const container = document.getElementById('courseSystemBtnContainer');
+                    if (container) {
+                        container.style.display = 'none';
+                    }
+                }
+            } else {
+                // 未登录用户，隐藏消课系统按钮
+                const container = document.getElementById('courseSystemBtnContainer');
+                if (container) {
+                    container.style.display = 'none';
+                }
+            }
+        }
+        
+        // 页面加载时检查用户角色
+        window.addEventListener('load', checkUserRole);
     </script>
 </body>
 </html>

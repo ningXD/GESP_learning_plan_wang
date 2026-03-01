@@ -165,6 +165,7 @@
             <button class="tab active" onclick="openTab(event, 'student')">学员管理</button>
             <button class="tab" onclick="openTab(event, 'class')">上课记录</button>
             <button class="tab" onclick="openTab(event, 'record')">消课记录</button>
+            <button class="tab" id="adminTab" onclick="openTab(event, 'admin')">管理员设置</button>
         </div>
         
         <!-- 学员管理 -->
@@ -266,6 +267,26 @@
                         <th>学习项目</th>
                         <th>上课时间</th>
                         <th>课程内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 管理员设置 -->
+        <div id="admin" class="tab-content">
+            <h2>管理员设置</h2>
+            <p>此功能仅对demo账号开放，用于设置教师端账户的权限。</p>
+            
+            <h3>教师账户管理</h3>
+            <table id="adminUserTable">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>角色</th>
+                        <th>管理员权限</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -525,11 +546,107 @@
             });
         }
         
+        // 检查用户权限并控制管理员标签页的显示
+        function checkAdminPermission() {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.username !== 'demo') {
+                    // 非demo账号，隐藏管理员标签页
+                    const adminTab = document.getElementById('adminTab');
+                    if (adminTab) {
+                        adminTab.style.display = 'none';
+                    }
+                }
+            } else {
+                // 未登录用户，隐藏管理员标签页
+                const adminTab = document.getElementById('adminTab');
+                if (adminTab) {
+                    adminTab.style.display = 'none';
+                }
+            }
+        }
+        
+        // 加载教师用户列表
+        function loadAdminUsers() {
+            // 这里应该从后端API获取用户列表
+            // 暂时使用模拟数据
+            const mockUsers = [
+                { id: 1, username: 'demo', role: 'teacher', admin: true },
+                { id: 2, username: 'teacher1', role: 'teacher', admin: false },
+                { id: 3, username: 'teacher2', role: 'teacher', admin: false }
+            ];
+            
+            const tableBody = document.querySelector('#adminUserTable tbody');
+            tableBody.innerHTML = '';
+            
+            mockUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.role === 'teacher' ? '教师' : '学生'}</td>
+                    <td><input type="checkbox" ${user.admin ? 'checked' : ''} onchange="toggleAdminPermission(${user.id}, this.checked)"></td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})">删除</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 切换管理员权限
+        function toggleAdminPermission(userId, isAdmin) {
+            // 这里应该调用后端API更新用户权限
+            console.log(`更新用户 ${userId} 的管理员权限为: ${isAdmin}`);
+            // 显示成功消息
+            alert(`用户权限已更新`);
+        }
+        
+        // 删除用户
+        function deleteUser(userId) {
+            if (confirm('确定要删除该用户吗？')) {
+                // 这里应该调用后端API删除用户
+                console.log(`删除用户 ${userId}`);
+                // 显示成功消息
+                alert('用户已删除');
+                // 重新加载用户列表
+                loadAdminUsers();
+            }
+        }
+        
         // 初始化
         window.onload = function() {
             initData();
             loadStudents();
+            checkAdminPermission();
         };
+        
+        // 打开标签页
+        function openTab(evt, tabName) {
+            var i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            tabLinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // 切换到对应标签时刷新数据
+            if (tabName === 'student') {
+                loadStudents();
+            } else if (tabName === 'class') {
+                loadStudentSelect();
+                loadClassRecords();
+            } else if (tabName === 'record') {
+                loadAllRecords();
+            } else if (tabName === 'admin') {
+                loadAdminUsers();
+            }
+        }
     </script>
 </body>
 </html>
