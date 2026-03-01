@@ -961,12 +961,8 @@ int main() {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
-                // 检查用户是否为管理员，控制Wiki链接的显示
-                if (user.admin) {
-                    document.getElementById('wikiLink').style.display = 'block';
-                } else {
-                    document.getElementById('wikiLink').style.display = 'none';
-                }
+                // 显示Wiki链接给所有登录用户
+                document.getElementById('wikiLink').style.display = 'block';
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';

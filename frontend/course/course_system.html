@@ -435,12 +435,7 @@
             <h2>管理员设置</h2>
             <p>此功能仅对demo账号开放，用于设置教师端账户的权限。</p>
             
-            <div style="margin-bottom: 20px;">
-                <button class="action-btn add-class-btn" onclick="window.location.href='../core/wiki.html'">
-                    <span class="icon">📚</span> 项目功能 Wiki
-                </button>
-                <p style="margin-top: 10px; color: #7f8c8d; font-size: 14px;">查看项目的详细功能介绍和使用指南</p>
-            </div>
+
             
             <h3>教师账户管理</h3>
             <table id="adminUserTable">
@@ -847,12 +842,8 @@
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
-                // 检查用户是否为管理员，控制Wiki链接的显示
-                if (user.admin) {
-                    document.getElementById('wikiLink').style.display = 'block';
-                } else {
-                    document.getElementById('wikiLink').style.display = 'none';
-                }
+                // 显示Wiki链接给所有登录用户
+                document.getElementById('wikiLink').style.display = 'block';
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
