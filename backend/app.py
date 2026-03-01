@@ -44,6 +44,26 @@ app.register_blueprint(users_bp)
 
 if __name__ == '__main__':
     try:
+        # 创建数据库表
+        with app.app_context():
+            db.create_all()
+            # 初始化demo账号
+            from models.models import User
+            import bcrypt
+            # 检查demo账号是否存在
+            demo_user = User.query.filter_by(username='demo').first()
+            if not demo_user:
+                # 创建demo账号
+                hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                demo_user = User(
+                    username='demo',
+                    password=hashed_password,
+                    role='teacher',
+                    admin=True
+                )
+                db.session.add(demo_user)
+                db.session.commit()
+                print("Demo account created successfully")
         app.run(debug=True)
     except Exception as e:
         print(f"Error starting server: {e}")

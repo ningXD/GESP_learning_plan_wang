@@ -60,6 +60,11 @@
             background: rgba(255,255,255,0.3);
         }
         
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
         .main-container {
             flex: 1;
             display: flex;
@@ -72,7 +77,7 @@
         }
         
         .editor-container {
-            flex: 3;
+            flex: 4;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -264,7 +269,7 @@
     <div class="header">
         <h1>C++ 在线编程工具</h1>
         <div class="nav">
-            <button class="btn" onclick="window.location.href='planTable.html'">返回学习计划</button>
+            <button class="btn btn-small" onclick="window.location.href='../index.html'">返回首页</button>
         </div>
     </div>
     
@@ -277,7 +282,7 @@
                     <button class="action-btn" onclick="decreaseFontSize()">-</button>
                     <button class="action-btn" onclick="increaseFontSize()">+</button>
                     <button class="action-btn" onclick="clearCode()">清空代码</button>
-                    <button class="action-btn run" onclick="runCode()">运行</button>
+                    <button class="action-btn run" onclick="if(gesp_checkLoginAndPrompt()) runCode()">运行</button>
                     <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
                     <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
@@ -305,6 +310,34 @@ int main() {
     </div>
     
     <script>
+        // 检查登录状态
+        function gesp_checkLogin() {
+            return sessionStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并提示
+        function gesp_checkLoginAndPrompt() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再使用此功能');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 检查登录并重定向
+        function gesp_checkLoginAndRedirect() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', gesp_checkLoginAndRedirect);
+        
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',

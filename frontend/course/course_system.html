@@ -162,9 +162,10 @@
         <h1>消课系统</h1>
         
         <div class="tab-container">
-            <button class="tab active" onclick="openTab(event, 'student')">学员管理</button>
-            <button class="tab" onclick="openTab(event, 'class')">上课记录</button>
-            <button class="tab" onclick="openTab(event, 'record')">消课记录</button>
+            <button class="tab active" onclick="gesp_openTab(event, 'student')">学员管理</button>
+            <button class="tab" onclick="gesp_openTab(event, 'class')">上课记录</button>
+            <button class="tab" onclick="gesp_openTab(event, 'record')">消课记录</button>
+            <button class="tab" id="adminTab" onclick="gesp_openTab(event, 'admin')">管理员设置</button>
         </div>
         
         <!-- 学员管理 -->
@@ -195,7 +196,7 @@
                 <input type="text" id="project" required>
             </div>
             <div class="form-group">
-                <button onclick="addStudent()">添加学员</button>
+                <button onclick="gesp_addStudent()">添加学员</button>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
@@ -234,7 +235,7 @@
                 <input type="text" id="classContent" required>
             </div>
             <div class="form-group">
-                <button onclick="addClassRecord()">添加记录</button>
+                <button onclick="gesp_addClassRecord()">添加记录</button>
             </div>
             <div class="success-message" id="classMessage"></div>
             
@@ -272,11 +273,53 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- 管理员设置 -->
+        <div id="admin" class="tab-content">
+            <h2>管理员设置</h2>
+            <p>此功能仅对demo账号开放，用于设置教师端账户的权限。</p>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="action-btn add-class-btn" onclick="window.location.href='../core/wiki.html'">
+                    <span class="icon">📚</span> 项目功能 Wiki
+                </button>
+                <p style="margin-top: 10px; color: #7f8c8d; font-size: 14px;">查看项目的详细功能介绍和使用指南</p>
+            </div>
+            
+            <h3>教师账户管理</h3>
+            <table id="adminUserTable">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>角色</th>
+                        <th>管理员权限</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
     
     <script>
+        // 检查登录状态
+        function gesp_checkLogin() {
+            return sessionStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并重定向
+        function gesp_checkLoginAndRedirect() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
+                return false;
+            }
+            return true;
+        }
+        
         // 初始化数据
-        function initData() {
+        function gesp_initData() {
             if (!localStorage.getItem('students')) {
                 localStorage.setItem('students', JSON.stringify([]));
             }
@@ -285,8 +328,11 @@
             }
         }
         
+        // 页面加载时检查登录状态
+        window.addEventListener('load', gesp_checkLoginAndRedirect);
+        
         // 打开标签页
-        function openTab(evt, tabName) {
+        function gesp_openTab(evt, tabName) {
             var i, tabContent, tabLinks;
             tabContent = document.getElementsByClassName("tab-content");
             for (i = 0; i < tabContent.length; i++) {
@@ -301,17 +347,17 @@
             
             // 切换到对应标签时刷新数据
             if (tabName === 'student') {
-                loadStudents();
+                gesp_loadStudents();
             } else if (tabName === 'class') {
-                loadStudentSelect();
-                loadClassRecords();
+                gesp_loadStudentSelect();
+                gesp_loadClassRecords();
             } else if (tabName === 'record') {
-                loadAllRecords();
+                gesp_loadAllRecords();
             }
         }
         
         // 添加学员
-        function addStudent() {
+        function gesp_addStudent() {
             const name = document.getElementById('name').value;
             const gender = document.getElementById('gender').value;
             const age = document.getElementById('age').value;
@@ -352,11 +398,11 @@
             document.getElementById('project').value = '';
             
             // 刷新学员列表
-            loadStudents();
+            gesp_loadStudents();
         }
         
         // 加载学员列表
-        function loadStudents() {
+        function gesp_loadStudents() {
             const students = JSON.parse(localStorage.getItem('students'));
             const tableBody = document.querySelector('#studentTable tbody');
             tableBody.innerHTML = '';
@@ -370,8 +416,8 @@
                     <td>${student.grade}</td>
                     <td>${student.project}</td>
                     <td>
-                        <button class="action-btn add-class-btn" onclick="goToAddClass(${student.id})">添加课程</button>
-                        <button class="action-btn delete-btn" onclick="deleteStudent(${student.id})">删除</button>
+                        <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
+                        <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -379,7 +425,7 @@
         }
         
         // 跳转到添加课程页面并选择学员
-        function goToAddClass(studentId) {
+        function gesp_goToAddClass(studentId) {
             // 切换到上课记录标签
             document.getElementsByClassName('tab')[1].click();
             // 选择对应学员
@@ -387,7 +433,7 @@
         }
         
         // 删除学员
-        function deleteStudent(studentId) {
+        function gesp_deleteStudent(studentId) {
             if (confirm('确定要删除该学员吗？')) {
                 let students = JSON.parse(localStorage.getItem('students'));
                 students = students.filter(student => student.id !== studentId);
@@ -398,12 +444,12 @@
                 classRecords = classRecords.filter(record => record.studentId !== studentId);
                 localStorage.setItem('classRecords', JSON.stringify(classRecords));
                 
-                loadStudents();
+                gesp_loadStudents();
             }
         }
         
         // 加载学员选择下拉框
-        function loadStudentSelect() {
+        function gesp_loadStudentSelect() {
             const students = JSON.parse(localStorage.getItem('students'));
             const select = document.getElementById('studentSelect');
             select.innerHTML = '<option value="">请选择学员</option>';
@@ -417,7 +463,7 @@
         }
         
         // 添加上课记录
-        function addClassRecord() {
+        function gesp_addClassRecord() {
             const studentId = document.getElementById('studentSelect').value;
             const classDate = document.getElementById('classDate').value;
             const classContent = document.getElementById('classContent').value;
@@ -451,11 +497,11 @@
             document.getElementById('classContent').value = '';
             
             // 刷新上课记录列表
-            loadClassRecords();
+            gesp_loadClassRecords();
         }
         
         // 加载上课记录列表
-        function loadClassRecords() {
+        function gesp_loadClassRecords() {
             const classRecords = JSON.parse(localStorage.getItem('classRecords'));
             const students = JSON.parse(localStorage.getItem('students'));
             const tableBody = document.querySelector('#classTable tbody');
@@ -467,10 +513,10 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${student.name}</td>
-                        <td>${formatDateTime(record.classDate)}</td>
+                        <td>${gesp_formatDateTime(record.classDate)}</td>
                         <td>${record.classContent}</td>
                         <td>
-                            <button class="action-btn delete-btn" onclick="deleteClassRecord(${record.id})">删除</button>
+                            <button class="action-btn delete-btn" onclick="gesp_deleteClassRecord(${record.id})">删除</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
@@ -479,17 +525,17 @@
         }
         
         // 删除上课记录
-        function deleteClassRecord(recordId) {
+        function gesp_deleteClassRecord(recordId) {
             if (confirm('确定要删除该上课记录吗？')) {
                 let classRecords = JSON.parse(localStorage.getItem('classRecords'));
                 classRecords = classRecords.filter(record => record.id !== recordId);
                 localStorage.setItem('classRecords', JSON.stringify(classRecords));
-                loadClassRecords();
+                gesp_loadClassRecords();
             }
         }
         
         // 加载所有消课记录
-        function loadAllRecords() {
+        function gesp_loadAllRecords() {
             const classRecords = JSON.parse(localStorage.getItem('classRecords'));
             const students = JSON.parse(localStorage.getItem('students'));
             const tableBody = document.querySelector('#recordTable tbody');
@@ -505,7 +551,7 @@
                         <td>${student.age}</td>
                         <td>${student.grade}</td>
                         <td>${student.project}</td>
-                        <td>${formatDateTime(record.classDate)}</td>
+                        <td>${gesp_formatDateTime(record.classDate)}</td>
                         <td>${record.classContent}</td>
                     `;
                     tableBody.appendChild(row);
@@ -514,7 +560,7 @@
         }
         
         // 格式化日期时间
-        function formatDateTime(dateTimeString) {
+        function gesp_formatDateTime(dateTimeString) {
             const date = new Date(dateTimeString);
             return date.toLocaleString('zh-CN', {
                 year: 'numeric',
@@ -525,11 +571,107 @@
             });
         }
         
+        // 检查用户权限并控制管理员标签页的显示
+        function gesp_checkAdminPermission() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (!user.admin) {
+                    // 非管理员账号，隐藏管理员标签页
+                    const adminTab = document.getElementById('adminTab');
+                    if (adminTab) {
+                        adminTab.style.display = 'none';
+                    }
+                }
+            } else {
+                // 未登录用户，隐藏管理员标签页
+                const adminTab = document.getElementById('adminTab');
+                if (adminTab) {
+                    adminTab.style.display = 'none';
+                }
+            }
+        }
+        
+        // 加载教师用户列表
+        function gesp_loadAdminUsers() {
+            // 这里应该从后端API获取用户列表
+            // 暂时使用模拟数据
+            const mockUsers = [
+                { id: 1, username: 'demo', role: 'teacher', admin: true },
+                { id: 2, username: 'teacher1', role: 'teacher', admin: false },
+                { id: 3, username: 'teacher2', role: 'teacher', admin: false }
+            ];
+            
+            const tableBody = document.querySelector('#adminUserTable tbody');
+            tableBody.innerHTML = '';
+            
+            mockUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.role === 'teacher' ? '教师' : '学生'}</td>
+                    <td><input type="checkbox" ${user.admin ? 'checked' : ''} onchange="gesp_toggleAdminPermission(${user.id}, this.checked)"></td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="gesp_deleteUser(${user.id})">删除</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 切换管理员权限
+        function gesp_toggleAdminPermission(userId, isAdmin) {
+            // 这里应该调用后端API更新用户权限
+            console.log(`更新用户 ${userId} 的管理员权限为: ${isAdmin}`);
+            // 显示成功消息
+            alert(`用户权限已更新`);
+        }
+        
+        // 删除用户
+        function gesp_deleteUser(userId) {
+            if (confirm('确定要删除该用户吗？')) {
+                // 这里应该调用后端API删除用户
+                console.log(`删除用户 ${userId}`);
+                // 显示成功消息
+                alert('用户已删除');
+                // 重新加载用户列表
+                gesp_loadAdminUsers();
+            }
+        }
+        
         // 初始化
         window.onload = function() {
-            initData();
-            loadStudents();
+            gesp_initData();
+            gesp_loadStudents();
+            gesp_checkAdminPermission();
         };
+        
+        // 打开标签页
+        function gesp_openTab(evt, tabName) {
+            var i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            tabLinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // 切换到对应标签时刷新数据
+            if (tabName === 'student') {
+                gesp_loadStudents();
+            } else if (tabName === 'class') {
+                gesp_loadStudentSelect();
+                gesp_loadClassRecords();
+            } else if (tabName === 'record') {
+                gesp_loadAllRecords();
+            } else if (tabName === 'admin') {
+                gesp_loadAdminUsers();
+            }
+        }
     </script>
 </body>
 </html>

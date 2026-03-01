@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
-from models import User
+from models.models import User
 from extensions import db
 import bcrypt
 
@@ -47,7 +47,9 @@ def register():
     user = User(
         username=data['username'],
         password=hashed_password,
-        email=data.get('email')
+        email=data.get('email'),
+        role=data.get('role', 'student'),
+        admin=data['username'] == 'demo'  # demo用户默认为管理员
     )
     
     db.session.add(user)

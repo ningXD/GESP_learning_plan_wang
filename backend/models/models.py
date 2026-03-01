@@ -8,6 +8,8 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=True)
+    role = db.Column(db.String(20), nullable=False, default='student')  # student or teacher
+    admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -19,6 +21,8 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'role': self.role,
+            'admin': self.admin,
             'created_at': self.created_at.isoformat()
         }
 

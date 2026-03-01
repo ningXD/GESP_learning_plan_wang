@@ -16,7 +16,8 @@ GESPC++_studyPlan/
 │   │   └── test_features.html
 │   ├── materials/        # Study materials
 │   │   └── real_test_question_materials/  # Past exam papers
-│   └── login.html        # Login page
+│   ├── auth/             # Authentication pages
+│   │   └── login.html        # Login page
 ├── backend/              # Backend files (Python + Flask)
 │   ├── routes/           # API routes
 │   │   ├── auth.py       # Authentication routes
@@ -72,9 +73,9 @@ GESPC++_studyPlan/
 
 ### 2. Frontend Setup
 
-1. Open the frontend login page in your browser:
+1. Open the frontend home page in your browser:
    ```
-   frontend/login.html
+   frontend/index.html
    ```
 
 2. Use the demo account to login:
