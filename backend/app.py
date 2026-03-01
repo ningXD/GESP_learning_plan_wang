@@ -44,6 +44,9 @@ app.register_blueprint(users_bp)
 
 if __name__ == '__main__':
     try:
+        # 创建数据库表
+        with app.app_context():
+            db.create_all()
         app.run(debug=True)
     except Exception as e:
         print(f"Error starting server: {e}")
