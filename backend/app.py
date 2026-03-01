@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from extensions import db, jwt, cors
 
 # 加载环境变量
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
 
 app = Flask(__name__)
 

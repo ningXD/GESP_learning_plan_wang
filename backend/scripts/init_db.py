@@ -1,5 +1,5 @@
 from app import app, db
-from models import User
+from models.models import User
 import bcrypt
 
 # 创建应用上下文
