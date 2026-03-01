@@ -1386,6 +1386,24 @@ for (int i = 0; i < n; i++) {
     </button>
     
     <script>
+        // 检查登录状态
+        function checkLogin() {
+            return sessionStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并提示
+        function checkLoginAndRedirect() {
+            if (!checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', checkLoginAndRedirect);
+        
         // 实例数据
         const examplesData = {
             1: [

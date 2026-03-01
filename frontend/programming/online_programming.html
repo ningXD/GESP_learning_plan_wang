@@ -320,6 +320,19 @@ int main() {
             return true;
         }
         
+        // 检查登录并重定向
+        function checkLoginAndRedirect() {
+            if (!checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', checkLoginAndRedirect);
+        
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',

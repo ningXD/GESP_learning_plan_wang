@@ -303,6 +303,21 @@
     </div>
     
     <script>
+        // 检查登录状态
+        function checkLogin() {
+            return sessionStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并重定向
+        function checkLoginAndRedirect() {
+            if (!checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
         // 初始化数据
         function initData() {
             if (!localStorage.getItem('students')) {
@@ -312,6 +327,9 @@
                 localStorage.setItem('classRecords', JSON.stringify([]));
             }
         }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', checkLoginAndRedirect);
         
         // 打开标签页
         function openTab(evt, tabName) {
