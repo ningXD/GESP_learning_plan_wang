@@ -350,7 +350,8 @@
                         <ul class="toc-sub-list">
                             <li><a href="#section5-1">5.1 登录系统</a></li>
                             <li><a href="#section5-2">5.2 注册账号</a></li>
-                            <li><a href="#section5-3">5.3 启动服务器</a></li>
+                            <li><a href="#section5-3">5.3 测试账号</a></li>
+                            <li><a href="#section5-4">5.4 启动服务器</a></li>
                         </ul>
                     </li>
                     <li>
@@ -547,7 +548,40 @@
                 <li>点击注册按钮</li>
             </ol>
             
-            <h3 id="section5-3">5.3 启动服务器</h3>
+            <h3 id="section5-3">5.3 测试账号</h3>
+            <p>系统已预创建以下测试账号，可直接使用：</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #3498db;">
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">用户名</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">密码</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">角色</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">权限</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">demo</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">123456</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">管理员</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">访问所有功能</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">student</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">student123</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">学生</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">访问学习计划、线上编程</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">teacher</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">teacher123</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">教师</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">访问学习计划、线上编程、消课系统</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 id="section5-4">5.4 启动服务器</h3>
             <ol>
                 <li>进入 <code>backend</code> 目录</li>
                 <li>运行 <code>python app.py</code> 命令</li>
