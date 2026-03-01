@@ -34,6 +34,8 @@ def compile_code():
                 shell=True,
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=10  # 10秒超时
             )
             
@@ -53,6 +55,8 @@ def compile_code():
                 shell=True,
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=5  # 5秒运行超时
             )
             
