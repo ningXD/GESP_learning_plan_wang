@@ -48,7 +48,7 @@ if __name__ == '__main__':
         with app.app_context():
             db.create_all()
             # 初始化demo账号
-            from models import User
+            from models.models import User
             import bcrypt
             # 检查demo账号是否存在
             demo_user = User.query.filter_by(username='demo').first()
