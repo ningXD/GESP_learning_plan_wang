@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人空间 - GESP C++二级</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        /* 登录按钮样式 */
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        /* 用户头像样式 */
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* 下拉菜单样式 */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 180px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.logout {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .main-container {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .profile-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .profile-username {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .profile-email {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .main-container {
+                padding: 20px 10px;
+            }
+            
+            .profile-container {
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="logo">
+                <span>📚</span>
+                GESP C++ 学习计划
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../core/study_plan.html" class="nav-link">学习计划表</a>
+                <a href="../programming/online_programming.html" class="nav-link">线上编程</a>
+                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
+                <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
+                <a href="profile.html" class="nav-link active">个人空间</a>
+                <div id="authSection">
+                    <a href="../auth/login.html" class="login-btn">登录</a>
+                </div>
+                <div id="userSection" style="display: none;">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" id="userName">用户名</div>
+                            <a href="profile.html" class="dropdown-item">个人空间</a>
+                            <a href="#" class="dropdown-item logout" onclick="gesp_logout()">退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="main-container">
+        <div class="profile-container">
+            <div class="success-message" id="successMessage">个人信息更新成功！</div>
+            
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar" onclick="triggerFileInput()">U</div>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                <div class="profile-username" id="displayName">用户名</div>
+                <div class="profile-email" id="userEmail">邮箱</div>
+            </div>
+            
+            <form class="profile-form" onsubmit="return updateProfile(event)">
+                <div class="form-group">
+                    <label for="nickname">昵称</label>
+                    <input type="text" id="nickname" placeholder="请输入昵称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="account">账号</label>
+                    <input type="text" id="account" disabled placeholder="账号">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" placeholder="请输入邮箱">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>GESP C++二级 学习计划 | 个人空间</p>
+    </div>
+    
+    <script>
+        // 检查登录状态
+        function gesp_checkLogin() {
+            return sessionStorage.getItem('access_token') !== null;
+        }
+        
+        // 检查登录并重定向
+        function gesp_checkLoginAndRedirect() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.nickname || user.username;
+                document.getElementById('userAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
+                
+                // 检查用户角色，控制消课系统的显示
+                if (user.role !== 'teacher') {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                }
+                
+                // 只显示Wiki链接给管理员用户
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
+                
+                // 填充个人信息
+                populateUserInfo(user);
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
+            }
+        }
+        
+        // 填充用户信息
+        function populateUserInfo(user) {
+            document.getElementById('profileAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
+            document.getElementById('displayName').textContent = user.nickname || user.username;
+            document.getElementById('userEmail').textContent = user.email || '未设置邮箱';
+            document.getElementById('nickname').value = user.nickname || '';
+            document.getElementById('account').value = user.username;
+            document.getElementById('email').value = user.email || '';
+        }
+        
+        // 触发文件输入
+        function triggerFileInput() {
+            document.getElementById('avatarInput').click();
+        }
+        
+        // 处理头像上传
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // 这里可以添加头像上传逻辑
+                // 目前只是简单地更新头像显示
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatar = document.getElementById('profileAvatar');
+                    avatar.style.backgroundImage = `url(${e.target.result})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.color = 'transparent';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 更新个人资料
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            const userStr = sessionStorage.getItem('user');
+            if (!userStr) return;
+            
+            const user = JSON.parse(userStr);
+            const nickname = document.getElementById('nickname').value;
+            const email = document.getElementById('email').value;
+            
+            // 更新用户信息
+            user.nickname = nickname;
+            user.email = email;
+            
+            // 保存到sessionStorage
+            sessionStorage.setItem('user', JSON.stringify(user));
+            
+            // 显示成功消息
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // 3秒后隐藏成功消息
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+            
+            // 更新页面显示
+            gesp_checkLoginStatus();
+        }
+        
+        // 重置表单
+        function resetForm() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                populateUserInfo(user);
+            }
+        }
+        
+        // 退出登录
+        function gesp_logout() {
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('user');
+            gesp_checkLoginStatus();
+            window.location.href = '../index.html';
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', function() {
+            if (gesp_checkLoginAndRedirect()) {
+                gesp_checkLoginStatus();
+            }
+        });
+    </script>
+</body>
+</html>
