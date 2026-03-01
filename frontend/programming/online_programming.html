@@ -160,24 +160,12 @@
             display: flex;
             flex-direction: column;
             padding: 20px;
-            gap: 20px;
             height: calc(100vh - 120px);
             max-height: 800px;
             overflow: hidden;
         }
         
         .editor-container {
-            flex: 4;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        .output-container {
             flex: 1;
             background: white;
             border-radius: 8px;
@@ -185,6 +173,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         .editor-header {
@@ -348,6 +337,108 @@
             font-size: 14px;
         }
         
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #1e1e1e;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 0;
+            border: 1px solid #333;
+            width: 80%;
+            max-width: 800px;
+            min-height: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            cursor: move;
+        }
+        
+        .modal-header {
+            background-color: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        
+        .modal-title {
+            color: #cccccc;
+            font-weight: bold;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        .close-btn {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            min-height: 500px;
+            max-height: 700px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            cursor: default;
+        }
+        
+        .modal-body.error {
+            color: #f48771;
+        }
+        
+        .modal-body.success {
+            color: #6a9955;
+        }
+        
+        /* 命令提示符样式 */
+        .cmd-style {
+            background-color: #1e1e1e;
+            color: #cccccc;
+        }
+        
+        .cmd-style .prompt {
+            color: #6a9955;
+            font-weight: bold;
+        }
+        
+        .cmd-style .output {
+            color: #cccccc;
+        }
+        
+        .cmd-style .error {
+            color: #f48771;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -361,6 +452,11 @@
             
             .main-container {
                 padding: 10px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                min-height: 500px;
             }
         }
     </style>
@@ -410,7 +506,6 @@
                     <button class="action-btn" onclick="increaseFontSize()">+</button>
                     <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn run" onclick="if(gesp_checkLoginAndPrompt()) runCode()">运行</button>
-                    <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
                     <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
             </div>
@@ -424,11 +519,16 @@ int main() {
 }</textarea>
             </div>
         </div>
-        
-        <div class="output-container">
-            <div class="output-header">运行结果</div>
-            <div class="output-body" id="output">// 输出将显示在这里
-// 点击"运行"按钮执行代码</div>
+    </div>
+    
+    <!-- 运行结果弹窗 -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content cmd-style">
+            <div class="modal-header">
+                <span class="modal-title">命令提示符</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalOutput"></div>
         </div>
     </div>
     
@@ -847,7 +947,9 @@ int main() {
         // 运行代码
         async function runCode() {
             const code = editor.getValue();
-            showOutput("正在编译...", "success");
+            
+            // 先打开弹窗，显示正在编译
+            showModal("正在编译...", "success");
             
             const startTime = performance.now();
             
@@ -866,34 +968,94 @@ int main() {
                     }
                     
                     if (output) {
-                        showOutput(output + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                        updateModal(output + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
                     } else {
-                        showOutput(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                        updateModal(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
                     }
                 } else {
                     // 编译失败
                     const errorMessage = compileResult.error.message || "编译失败";
-                    showOutput(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                    updateModal(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
                 }
             } catch (error) {
                 // 执行错误
                 const endTime = performance.now();
                 const executionTime = (endTime - startTime).toFixed(2);
-                showOutput(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                updateModal(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
             }
         }
         
-        // 显示输出
-        function showOutput(text, type = "success") {
-            const output = document.getElementById('output');
-            output.textContent = text;
-            output.className = "output-body " + type;
+        // 显示弹窗
+        function showModal(text, type = "success") {
+            const modal = document.getElementById('resultModal');
+            const modalOutput = document.getElementById('modalOutput');
+            
+            modalOutput.textContent = text;
+            modalOutput.className = "modal-body " + type;
+            modal.style.display = "block";
         }
         
-        // 清空输出
-        function clearOutput() {
-            showOutput("// 输出将显示在这里\n// 点击\"运行\"按钮执行代码");
+        // 更新弹窗内容
+        function updateModal(text, type = "success") {
+            const modalOutput = document.getElementById('modalOutput');
+            modalOutput.textContent = text;
+            modalOutput.className = "modal-body " + type;
         }
+        
+        // 关闭弹窗
+        function closeModal() {
+            const modal = document.getElementById('resultModal');
+            modal.style.display = "none";
+        }
+        
+        // 点击弹窗外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('resultModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        // 弹窗拖拽功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.querySelector('.modal-content');
+            const modalHeader = document.querySelector('.modal-header');
+            
+            let isDragging = false;
+            let offsetX, offsetY;
+            
+            modalHeader.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                offsetX = e.clientX - modalContent.getBoundingClientRect().left;
+                offsetY = e.clientY - modalContent.getBoundingClientRect().top;
+                modalContent.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    const x = e.clientX - offsetX;
+                    const y = e.clientY - offsetY;
+                    
+                    // 限制弹窗在视窗内
+                    const maxX = window.innerWidth - modalContent.offsetWidth;
+                    const maxY = window.innerHeight - modalContent.offsetHeight;
+                    
+                    const constrainedX = Math.max(0, Math.min(x, maxX));
+                    const constrainedY = Math.max(0, Math.min(y, maxY));
+                    
+                    modalContent.style.left = constrainedX + 'px';
+                    modalContent.style.top = constrainedY + 'px';
+                    modalContent.style.transform = 'none';
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                modalContent.style.cursor = 'move';
+            });
+        });
         
         // 字体大小控制
         let fontSize = 14;
