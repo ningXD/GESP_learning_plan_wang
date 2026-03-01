@@ -255,8 +255,8 @@
             right: 0 !important;
             bottom: 0 !important;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
-            font-size: 14px !important;
-            line-height: 1.5 !important;
+            font-size: 14px;
+            line-height: 1.5;
         }
         
         .CodeMirror-scroll {
@@ -275,8 +275,8 @@
             padding: 0 8px !important;
             text-align: right !important;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
-            font-size: 14px !important;
-            line-height: 1.5 !important;
+            font-size: 14px;
+            line-height: 1.5;
         }
         
         .CodeMirror-line {
@@ -502,9 +502,9 @@
                 <div class="editor-title">代码编辑器</div>
                 <div class="editor-actions">
                     <button class="action-btn" onclick="loadExample()">加载示例</button>
+                    <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn" onclick="decreaseFontSize()">-</button>
                     <button class="action-btn" onclick="increaseFontSize()">+</button>
-                    <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn run" onclick="if(gesp_checkLoginAndPrompt()) runCode()">运行</button>
                     <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
@@ -574,6 +574,51 @@ int main() {
         // 页面加载时检查登录状态
         window.addEventListener('load', gesp_checkLoginAndRedirect);
         
+
+        
+        // 字体大小控制
+        let codeFontSize = 14;
+        
+        function increaseFontSize() {
+            if (codeFontSize < 24) {
+                codeFontSize += 2;
+                // 直接修改CodeMirror编辑器的字体大小
+                if (editor) {
+                    editor.setOption('fontSize', codeFontSize + 'px');
+                }
+                // 同时修改DOM元素的样式，确保一致性
+                const codeMirrorElement = document.querySelector('.CodeMirror');
+                if (codeMirrorElement) {
+                    codeMirrorElement.style.fontSize = codeFontSize + 'px';
+                }
+                // 同时修改行号的字体大小
+                const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+                lineNumbers.forEach(lineNum => {
+                    lineNum.style.fontSize = codeFontSize + 'px';
+                });
+            }
+        }
+        
+        function decreaseFontSize() {
+            if (codeFontSize > 10) {
+                codeFontSize -= 2;
+                // 直接修改CodeMirror编辑器的字体大小
+                if (editor) {
+                    editor.setOption('fontSize', codeFontSize + 'px');
+                }
+                // 同时修改DOM元素的样式，确保一致性
+                const codeMirrorElement = document.querySelector('.CodeMirror');
+                if (codeMirrorElement) {
+                    codeMirrorElement.style.fontSize = codeFontSize + 'px';
+                }
+                // 同时修改行号的字体大小
+                const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+                lineNumbers.forEach(lineNum => {
+                    lineNum.style.fontSize = codeFontSize + 'px';
+                });
+            }
+        }
+
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',
@@ -1139,25 +1184,6 @@ int main() {
             });
         });
         
-        // 字体大小控制
-        let fontSize = 14;
-        
-        function increaseFontSize() {
-            if (fontSize < 24) {
-                fontSize += 2;
-                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
-                editor.setOption('fontSize', fontSize + 'px');
-            }
-        }
-        
-        function decreaseFontSize() {
-            if (fontSize > 10) {
-                fontSize -= 2;
-                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
-                editor.setOption('fontSize', fontSize + 'px');
-            }
-        }
-        
         // 清空代码
         function clearCode() {
             if (confirm('确定要清空所有代码吗？')) {
@@ -1198,7 +1224,18 @@ int main() {
             const editorBody = document.querySelector('.editor-body');
             editor.setSize('100%', '100%');
             // 设置初始字体大小
-            editor.setOption('fontSize', fontSize + 'px');
+            codeFontSize = 14;
+            editor.setOption('fontSize', codeFontSize + 'px');
+            // 同时设置DOM元素的样式
+            const codeMirrorElement = document.querySelector('.CodeMirror');
+            if (codeMirrorElement) {
+                codeMirrorElement.style.fontSize = codeFontSize + 'px';
+            }
+            // 同时设置行号的字体大小
+            const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+            lineNumbers.forEach(lineNum => {
+                lineNum.style.fontSize = codeFontSize + 'px';
+            });
             
             // 检查登录状态
             gesp_checkLoginStatus();
