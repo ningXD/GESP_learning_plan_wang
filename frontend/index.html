@@ -338,6 +338,7 @@
                 <a href="core/study_plan.html" class="nav-link">学习计划表</a>
                 <a href="programming/online_programming.html" class="nav-link">线上编程</a>
                 <a href="course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
+                <a href="core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
                 <div id="authSection">
                     <a href="auth/login.html" class="login-btn">登录</a>
                 </div>
@@ -440,11 +441,19 @@
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
+                
+                // 检查用户是否为管理员，控制Wiki链接的显示
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('userSection').style.display = 'none';
                 document.getElementById('courseSystemLink').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
             }
         }
         
