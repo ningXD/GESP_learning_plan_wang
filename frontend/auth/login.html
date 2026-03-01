@@ -234,8 +234,8 @@
                     // 存储token到本地存储
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    // 登录成功，跳转到学习计划表
-                    window.location.href = 'core/study_plan.html';
+                    // 登录成功，跳转到首页
+                    window.location.href = '../index.html';
                 } else {
                     const errorData = await response.json();
                     // 登录失败，显示错误信息
@@ -287,7 +287,7 @@
                     // 注册成功，自动登录
                     localStorage.setItem('access_token', data.access_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    window.location.href = 'core/study_plan.html';
+                    window.location.href = '../index.html';
                 } else {
                     const errorData = await response.json();
                     // 注册失败，显示错误信息

@@ -167,7 +167,7 @@
             <h3>2.1 前端</h3>
             <p>前端使用HTML、CSS和JavaScript构建，包含以下主要文件：</p>
             <ul>
-                <li><strong>login.html</strong> - 登录和注册页面</li>
+                <li><strong>auth/login.html</strong> - 登录和注册页面</li>
                 <li><strong>core/study_plan.html</strong> - 学习计划表页面</li>
                 <li><strong>course/course_system.html</strong> - 消课系统页面</li>
                 <li><strong>programming/online_programming.html</strong> - 线上编程页面</li>
@@ -249,14 +249,14 @@
             <h2>5. 使用指南</h2>
             <h3>5.1 登录系统</h3>
             <ol>
-                <li>打开 <code>login.html</code> 页面</li>
+                <li>打开 <code>auth/login.html</code> 页面</li>
                 <li>输入用户名和密码</li>
                 <li>点击登录按钮</li>
             </ol>
             
             <h3>5.2 注册账号</h3>
             <ol>
-                <li>打开 <code>login.html</code> 页面</li>
+                <li>打开 <code>auth/login.html</code> 页面</li>
                 <li>点击"立即注册"链接</li>
                 <li>填写用户名、密码和邮箱</li>
                 <li>选择用户角色（学生/教师）</li>
@@ -320,7 +320,7 @@
                 }
             } else {
                 // 未登录用户，重定向到登录页面
-                window.location.href = '../login.html';
+                window.location.href = '../auth/login.html';
             }
         }
         
