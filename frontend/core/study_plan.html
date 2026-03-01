@@ -1078,22 +1078,22 @@
                 <span class="icon">🏠</span>
                 返回首页
             </button>
-            <button class="btn" onclick="scrollToElement('.table-container')">
+            <button class="btn" onclick="gesp_scrollToElement('.table-container')">
                 <span class="icon">📅</span>
                 学习周期表
             </button>
-            <button class="btn" onclick="scrollToElement('.code-templates')">
+            <button class="btn" onclick="gesp_scrollToElement('.code-templates')">
                 <span class="icon">💻</span>
                 常用代码模板
             </button>
-            <button class="btn" onclick="if(checkLoginAndPrompt()) toggleNoteModal()">
+            <button class="btn" onclick="if(gesp_checkLoginAndPrompt()) gesp_toggleNoteModal()">
                 <span class="icon">📝</span>
                 添加笔记
             </button>
         </div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <span style="font-weight: bold; color: #2c3e50;">总进度: <span id="progress">0/8</span> 周</span>
-            <button class="btn-small" onclick="toggleCalendar()" title="查看日历">
+            <button class="btn-small" onclick="gesp_toggleCalendar()" title="查看日历">
                 <span class="icon">📅</span>
             </button>
         </div>
@@ -1157,14 +1157,14 @@
         <div class="note-modal-content">
             <div class="note-modal-header">
                 <h3>添加学习笔记</h3>
-                <button class="note-modal-close" onclick="toggleNoteModal()">&times;</button>
+                <button class="note-modal-close" onclick="gesp_toggleNoteModal()">&times;</button>
             </div>
             <div class="note-modal-body">
                 <!-- 笔记类型标签页 -->
                 <div class="note-type-tabs">
-                    <button class="note-type-tab active" onclick="switchNoteType('text')">📝 文本笔记</button>
-                    <button class="note-type-tab" onclick="switchNoteType('image')">🖼️ 图片笔记</button>
-                    <button class="note-type-tab" onclick="switchNoteType('mindmap')">🧠 思维导图</button>
+                    <button class="note-type-tab active" onclick="gesp_switchNoteType('text')">📝 文本笔记</button>
+                    <button class="note-type-tab" onclick="gesp_switchNoteType('image')">🖼️ 图片笔记</button>
+                    <button class="note-type-tab" onclick="gesp_switchNoteType('mindmap')">🧠 思维导图</button>
                 </div>
                 
                 <!-- 文本笔记内容 -->
@@ -1214,7 +1214,7 @@
                 </div>
             </div>
             <div class="note-modal-footer">
-                <button class="note-cancel-btn" onclick="toggleNoteModal()">取消</button>
+                <button class="note-cancel-btn" onclick="gesp_toggleNoteModal()">取消</button>
                 <button class="note-save-btn" onclick="saveNote()">保存笔记</button>
             </div>
         </div>
@@ -1379,9 +1379,33 @@ for (int i = 0; i < n; i++) {
     </button>
     
     <script>
+        // 获取token
+        function gesp_getToken() {
+            return sessionStorage.getItem('access_token');
+        }
+        
+        // 检查登录状态
+        function gesp_checkLogin() {
+            const token = gesp_getToken();
+            if (!token) {
+                return false;
+            }
+            return true;
+        }
+        
+        // 检查登录并提示
+        function gesp_checkLoginAndPrompt() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再使用此功能');
+                window.location.href = '../index.html';
+                return false;
+            }
+            return true;
+        }
+        
         // 页面加载时检查登录状态
         window.addEventListener('load', function() {
-            if (!checkLogin()) {
+            if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
                 window.location.href = '../index.html';
                 return false;
@@ -1970,7 +1994,7 @@ int main() {
         };
 
         // 更新进度
-        function updateProgress() {
+        function gesp_updateProgress() {
             const today = new Date();
             
             // 实际的学习日期数组（每周五的日期）
@@ -2008,7 +2032,7 @@ int main() {
         }
 
         // 显示实例
-        function showExamples(weekNum, shouldScroll = true) {
+        function gesp_showExamples(weekNum, shouldScroll = true) {
             const container = document.getElementById('examplesContainer');
             const examples = examplesData[weekNum] || [];
             
@@ -2019,9 +2043,9 @@ int main() {
             
                 examples.forEach((example, index) => {
                     // 对代码进行HTML转义，解决尖括号显示问题
-                    const escapedCode = escapeHtml(example.code);
+                    const escapedCode = gesp_escapeHtml(example.code);
                     // 对运行结果进行格式化，处理换行符
-                    const formattedOutput = formatOutput(example.output);
+                    const formattedOutput = gesp_formatOutput(example.output);
                     
                     html += `
                     <div class="example-item">
@@ -2060,7 +2084,7 @@ int main() {
         }
 
         // HTML转义函数，解决尖括号显示问题
-        function escapeHtml(text) {
+        function gesp_escapeHtml(text) {
             return text
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -2070,13 +2094,13 @@ int main() {
         }
         
         // 处理运行结果，将换行符转换为HTML换行标签
-        function formatOutput(text) {
-            const escaped = escapeHtml(text);
+        function gesp_formatOutput(text) {
+            const escaped = gesp_escapeHtml(text);
             return escaped.replace(/\n/g, '<br>');
         }
         
         // 平滑滚动到指定元素
-        function scrollToElement(selector) {
+        function gesp_scrollToElement(selector) {
             const element = document.querySelector(selector);
             if (element) {
                 element.scrollIntoView({
@@ -2100,15 +2124,15 @@ int main() {
         ];
         const examDay = new Date('2026-03-14');
         
-        function toggleCalendar() {
+        function gesp_toggleCalendar() {
             const modal = document.getElementById('calendarModal');
             modal.classList.toggle('active');
             if (modal.classList.contains('active')) {
-                generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+                gesp_generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
             }
         }
         
-        function generateCalendar(year, month) {
+        function gesp_generateCalendar(year, month) {
             const calendarGrid = document.getElementById('calendarGrid');
             const currentMonthYear = document.getElementById('currentMonthYear');
             
@@ -2170,6 +2194,15 @@ int main() {
             calendarGrid.innerHTML = html;
         }
         
+        // 为了兼容性，添加无前缀版本的函数
+        function toggleCalendar() {
+            gesp_toggleCalendar();
+        }
+        
+        function generateCalendar(year, month) {
+            gesp_generateCalendar(year, month);
+        }
+        
         // 笔记功能相关变量
         let currentNoteType = 'text';
         let notes = [];
@@ -2178,32 +2211,18 @@ int main() {
         // 最大图片数量限制
         const MAX_IMAGES = 5;
         
-        // 获取token
-        function getToken() {
-            return sessionStorage.getItem('access_token');
-        }
-        
-        // 检查登录状态
-        function checkLogin() {
-            const token = getToken();
-            if (!token) {
-                return false;
-            }
-            return true;
-        }
-        
         // 检查登录并提示
-        function checkLoginAndPrompt() {
-            if (!checkLogin()) {
+        function gesp_checkLoginAndPrompt() {
+            if (!gesp_checkLogin()) {
                 alert('请先登录后再使用此功能');
-                window.location.href = '../auth/login.html';
+                window.location.href = '../index.html';
                 return false;
             }
             return true;
         }
         
         // 切换笔记类型
-        function switchNoteType(type) {
+        function gesp_switchNoteType(type) {
             currentNoteType = type;
             
             // 移除所有标签的active状态
@@ -2217,12 +2236,12 @@ int main() {
             });
             
             // 添加当前标签和内容的active状态
-            document.querySelector(`[onclick="switchNoteType('${type}')"]`).classList.add('active');
+            document.querySelector(`[onclick="gesp_switchNoteType('${type}')"]`).classList.add('active');
             document.getElementById(`${type}NoteContent`).classList.add('active');
         }
         
         // 切换笔记模态框
-        function toggleNoteModal() {
+        function gesp_toggleNoteModal() {
             const modal = document.getElementById('noteModal');
             modal.classList.toggle('active');
         }
@@ -2312,7 +2331,7 @@ int main() {
                         const response = await fetch('http://localhost:5000/api/notes/upload', {
                             method: 'POST',
                             headers: {
-                                'Authorization': `Bearer ${getToken()}`
+                                'Authorization': `Bearer ${gesp_getToken()}`
                             },
                             body: formData
                         });
@@ -2404,7 +2423,7 @@ int main() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getToken()}`
+                        'Authorization': `Bearer ${gesp_getToken()}`
                     },
                     body: JSON.stringify(noteData)
                 });
@@ -2414,7 +2433,7 @@ int main() {
                     await loadNotes();
                     
                     // 关闭模态框
-                    toggleNoteModal();
+                    gesp_toggleNoteModal();
                     
                     // 重置表单
                     resetNoteForm();
@@ -2434,7 +2453,7 @@ int main() {
             try {
                 const response = await fetch('http://localhost:5000/api/notes', {
                     headers: {
-                        'Authorization': `Bearer ${getToken()}`
+                        'Authorization': `Bearer ${gesp_getToken()}`
                     }
                 });
                 
@@ -2459,7 +2478,7 @@ int main() {
                 const response = await fetch(`http://localhost:5000/api/notes/${noteId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `Bearer ${getToken()}`
+                        'Authorization': `Bearer ${gesp_getToken()}`
                     }
                 });
                 
@@ -2491,6 +2510,63 @@ int main() {
             
             // 重置思维导图笔记表单
             document.getElementById('mindmapNoteTitle').value = '';
+        }
+        
+        // IndexedDB相关函数
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('GESPStudyNotes', 1);
+                
+                request.onerror = () => reject('IndexedDB打开失败');
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('notes')) {
+                        db.createObjectStore('notes', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+                
+                request.onsuccess = (event) => resolve(event.target.result);
+            });
+        }
+        
+        async function saveNoteToDB(note) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('notes', 'readwrite');
+                const store = transaction.objectStore('notes');
+                const request = store.add({
+                    ...note,
+                    date: new Date().toISOString()
+                });
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject('保存笔记失败');
+            });
+        }
+        
+        async function getAllNotesFromDB() {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('notes', 'readonly');
+                const store = transaction.objectStore('notes');
+                const request = store.getAll();
+                
+                request.onsuccess = (event) => resolve(event.target.result);
+                request.onerror = () => reject('获取笔记失败');
+            });
+        }
+        
+        async function deleteNoteFromDB(id) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction('notes', 'readwrite');
+                const store = transaction.objectStore('notes');
+                const request = store.delete(id);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject('删除笔记失败');
+            });
         }
         
         // 渲染笔记列表
@@ -3050,10 +3126,10 @@ int main() {
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             // 不强制检查登录，允许用户查看页面内容
-            updateProgress();
+            gesp_updateProgress();
             
             // 初始化笔记功能（如果已登录）
-            if (checkLogin()) {
+            if (gesp_checkLogin()) {
                 initNotes();
             }
             
@@ -3068,7 +3144,7 @@ int main() {
                     
                     // 获取周次并显示实例
                     const weekNum = parseInt(this.getAttribute('data-week'));
-                    showExamples(weekNum);
+                    gesp_showExamples(weekNum);
                 });
             });
             
@@ -3099,7 +3175,7 @@ int main() {
                 const preTag = block.querySelector('pre');
                 if (preTag) {
                     const originalCode = preTag.textContent;
-                    const escapedCode = escapeHtml(originalCode);
+                    const escapedCode = gesp_escapeHtml(originalCode);
                     preTag.innerHTML = escapedCode;
                 }
                 
@@ -3117,7 +3193,7 @@ int main() {
                 codeContainer.appendChild(codeHeader);
                 codeContainer.appendChild(block);
             });
-        });}
+        });
         
         // 检查用户角色并控制消课系统按钮的显示
         function checkUserRole() {

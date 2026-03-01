@@ -348,7 +348,7 @@
                         <div class="dropdown-menu">
                             <div class="dropdown-item" id="userName">用户名</div>
                             <a href="#" class="dropdown-item">个人空间</a>
-                            <a href="#" class="dropdown-item logout" onclick="logout()">退出登录</a>
+                            <a href="#" class="dropdown-item logout" onclick="gesp_logout()">退出登录</a>
                         </div>
                     </div>
                 </div>
@@ -418,7 +418,7 @@
     
     <script>
         // 检查用户登录状态
-        function checkLoginStatus() {
+        function gesp_checkLoginStatus() {
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
@@ -451,15 +451,15 @@
         }
         
         // 退出登录
-        function logout() {
+        function gesp_logout() {
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('user');
-            checkLoginStatus();
+            gesp_checkLoginStatus();
             window.location.href = 'index.html';
         }
         
         // 页面加载时检查登录状态
-        window.addEventListener('load', checkLoginStatus);
+        window.addEventListener('load', gesp_checkLoginStatus);
     </script>
 </body>
 </html>

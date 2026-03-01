@@ -196,28 +196,36 @@
     </div>
     
     <script>
-        // 表单切换
-        document.getElementById('registerLink').addEventListener('click', function(e) {
-            e.preventDefault();
+        // 显示错误信息
+        function gesp_showErrorMessage(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 切换到注册表单
+        function gesp_switchToRegister() {
             document.getElementById('loginForm').style.display = 'none';
             document.querySelector('.register-link').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
-        });
+        }
         
-        document.getElementById('loginLink').addEventListener('click', function(e) {
-            e.preventDefault();
+        // 切换到登录表单
+        function gesp_switchToLogin() {
             document.getElementById('registerForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';
             document.querySelector('.register-link').style.display = 'block';
-        });
+        }
         
-        // 登录功能
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        // 处理登录
+        async function gesp_handleLogin(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
             
             try {
                 // 调用后端登录API
@@ -239,36 +247,23 @@
                 } else {
                     const errorData = await response.json();
                     // 登录失败，显示错误信息
-                    errorMessage.textContent = errorData.error || '登录失败，请重试';
-                    errorMessage.style.display = 'block';
-                    setTimeout(() => {
-                        errorMessage.style.display = 'none';
-                    }, 3000);
+                    gesp_showErrorMessage(errorData.error || '登录失败，请重试');
                 }
             } catch (error) {
                 console.error('登录请求失败:', error);
-                errorMessage.textContent = '网络错误，请稍后重试';
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
+                gesp_showErrorMessage('网络错误，请稍后重试');
             }
-        });
+        }
         
-        // 注册功能
-        document.getElementById('registerBtn').addEventListener('click', async function() {
+        // 处理注册
+        async function gesp_handleRegister() {
             const username = document.getElementById('registerUsername').value;
             const password = document.getElementById('registerPassword').value;
             const email = document.getElementById('registerEmail').value;
             const role = document.getElementById('registerRole').value;
-            const errorMessage = document.getElementById('errorMessage');
             
             if (!username || !password) {
-                errorMessage.textContent = '用户名和密码不能为空';
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
+                gesp_showErrorMessage('用户名和密码不能为空');
                 return;
             }
             
@@ -291,21 +286,28 @@
                 } else {
                     const errorData = await response.json();
                     // 注册失败，显示错误信息
-                    errorMessage.textContent = errorData.error || '注册失败，请重试';
-                    errorMessage.style.display = 'block';
-                    setTimeout(() => {
-                        errorMessage.style.display = 'none';
-                    }, 3000);
+                    gesp_showErrorMessage(errorData.error || '注册失败，请重试');
                 }
             } catch (error) {
                 console.error('注册请求失败:', error);
-                errorMessage.textContent = '网络错误，请稍后重试';
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
+                gesp_showErrorMessage('网络错误，请稍后重试');
             }
+        }
+        
+        // 绑定事件监听器
+        document.getElementById('registerLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            gesp_switchToRegister();
         });
+        
+        document.getElementById('loginLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            gesp_switchToLogin();
+        });
+        
+        document.getElementById('loginForm').addEventListener('submit', gesp_handleLogin);
+        
+        document.getElementById('registerBtn').addEventListener('click', gesp_handleRegister);
     </script>
 </body>
 </html>

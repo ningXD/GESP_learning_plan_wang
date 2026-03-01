@@ -311,7 +311,7 @@
     <div class="main-content">
         <!-- 目录系统 -->
         <div class="toc-container">
-            <div class="toc-header" onclick="toggleTOC()">
+            <div class="toc-header" onclick="gesp_toggleTOC()">
                 <h3>📑 目录</h3>
                 <span class="toc-toggle" id="tocToggle">▼</span>
             </div>
@@ -617,7 +617,7 @@
     
     <script>
         // 检查用户权限
-        function checkUserPermission() {
+        function gesp_checkUserPermission() {
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
@@ -632,7 +632,7 @@
         }
         
         // 切换目录展开/折叠
-        function toggleTOC() {
+        function gesp_toggleTOC() {
             const tocContainer = document.querySelector('.toc-container');
             const tocContent = document.getElementById('tocContent');
             const tocToggle = document.getElementById('tocToggle');
@@ -643,7 +643,7 @@
         }
         
         // 页面加载时检查权限
-        window.addEventListener('load', checkUserPermission);
+        window.addEventListener('load', gesp_checkUserPermission);
     </script>
 </body>
 </html>
