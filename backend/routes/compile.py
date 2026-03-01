@@ -11,9 +11,10 @@ bp = Blueprint('compile', __name__, url_prefix='/api')
 def compile_code():
     """编译C++代码并返回执行结果"""
     try:
-        # 获取代码
+        # 获取代码和输入
         data = request.get_json()
         code = data.get('code', '')
+        input_data = data.get('input', '')
         
         if not code:
             return jsonify({"success": False, "error": {"message": "No code provided"}}), 400
@@ -57,6 +58,7 @@ def compile_code():
                 text=True,
                 encoding='utf-8',
                 errors='replace',
+                input=input_data,
                 timeout=5  # 5秒运行超时
             )
             

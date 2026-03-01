@@ -740,14 +740,14 @@ int main() {
         }
         
         // 编译代码
-        async function compileCode(code) {
+        async function compileCode(code, input = '') {
             try {
                 const response = await fetch('http://localhost:5000/api/compile', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ code })
+                    body: JSON.stringify({ code, input })
                 });
                 return await response.json();
             } catch (error) {
@@ -948,6 +948,19 @@ int main() {
         async function runCode() {
             const code = editor.getValue();
             
+            // 检查代码是否包含cin语句
+            const hasCin = code.includes('cin');
+            let userInput = '';
+            
+            // 如果有cin语句，提示用户输入
+            if (hasCin) {
+                userInput = prompt('请输入程序所需的输入数据（多个输入用空格或换行分隔）:');
+                if (userInput === null) {
+                    // 用户取消输入
+                    return;
+                }
+            }
+            
             // 先打开弹窗，显示正在编译
             showModal("正在编译...", "success");
             
@@ -955,7 +968,7 @@ int main() {
             
             try {
                 // 尝试编译代码
-                const compileResult = await compileCode(code);
+                const compileResult = await compileCode(code, userInput);
                 
                 const endTime = performance.now();
                 const executionTime = (endTime - startTime).toFixed(2);
