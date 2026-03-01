@@ -740,12 +740,28 @@ int main() {
 }`
         };
         
+        // 示例代码讲解
+        const exampleExplanations = {
+            hello: "这是一个简单的C++程序，输出'Hello, GESP C++!'到控制台。它展示了C++的基本结构，包括头文件包含、命名空间使用和main函数。",
+            variables: "这个示例展示了C++中不同类型变量的声明和使用，包括整数(int)、浮点数(double)和字符串(string)。",
+            loop: "这个示例使用for循环打印1到10的数字，展示了C++中循环结构的基本用法。",
+            matrix: "这个示例打印一个X字矩阵，展示了嵌套循环的使用和条件判断。",
+            gesp1: "2023年12月真题：计算1到n的奇数和。使用for循环遍历1到n的所有数字，判断每个数字是否为奇数，如果是则累加到sum变量中。",
+            gesp2: "2024年6月真题：黄金格。根据输入的n，打印一个n×n的黄金格图案，边框和两条对角线上的位置打印'*'，其他位置打印空格。",
+            gesp3: "2024年12月真题：数字反转。使用while循环将输入的数字反转，通过取余和整除操作获取每一位数字并重新组合。",
+            gesp4: "2025年6月真题：统计元音字母。使用getline读取一行字符串，然后遍历字符串中的每个字符，统计元音字母的数量。",
+            gesp5: "2025年12月真题：最大公约数。使用辗转相除法计算两个数的最大公约数，通过while循环不断取余直到余数为0。"
+        };
+        
         // 加载示例代码
         function loadExample() {
             const exampleKeys = Object.keys(examples);
             const randomKey = exampleKeys[Math.floor(Math.random() * exampleKeys.length)];
             editor.setValue(examples[randomKey]);
-            showOutput("已加载示例代码: " + randomKey, "success");
+            
+            // 显示详细的代码讲解
+            const explanation = exampleExplanations[randomKey] || "这是一个C++示例代码。";
+            alert("已加载示例代码: " + randomKey + "\n\n代码讲解:\n" + explanation);
         }
         
         // 编译代码
