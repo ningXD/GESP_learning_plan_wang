@@ -426,7 +426,7 @@
     <script>
         // 检查用户登录状态
         function checkLoginStatus() {
-            const userStr = localStorage.getItem('user');
+            const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
                 // 显示用户信息
@@ -459,8 +459,8 @@
         
         // 退出登录
         function logout() {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('user');
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('user');
             checkLoginStatus();
             window.location.href = 'index.html';
         }

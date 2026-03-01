@@ -231,9 +231,9 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    // 存储token到本地存储
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    // 存储token到会话存储
+                    sessionStorage.setItem('access_token', data.access_token);
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
                     // 登录成功，跳转到首页
                     window.location.href = '../index.html';
                 } else {
@@ -285,8 +285,8 @@
                 if (response.ok) {
                     const data = await response.json();
                     // 注册成功，自动登录
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    sessionStorage.setItem('access_token', data.access_token);
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
                     window.location.href = '../index.html';
                 } else {
                     const errorData = await response.json();

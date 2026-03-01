@@ -618,7 +618,7 @@
     <script>
         // 检查用户权限
         function checkUserPermission() {
-            const userStr = localStorage.getItem('user');
+            const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
                 if (!user.admin) {

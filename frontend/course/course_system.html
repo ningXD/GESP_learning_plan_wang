@@ -555,7 +555,7 @@
         
         // 检查用户权限并控制管理员标签页的显示
         function checkAdminPermission() {
-            const userStr = localStorage.getItem('user');
+            const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
                 if (!user.admin) {

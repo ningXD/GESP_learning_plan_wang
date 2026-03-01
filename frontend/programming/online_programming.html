@@ -307,7 +307,7 @@ int main() {
     <script>
         // 检查登录状态
         function checkLogin() {
-            return localStorage.getItem('access_token') !== null;
+            return sessionStorage.getItem('access_token') !== null;
         }
         
         // 检查登录并提示
