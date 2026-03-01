@@ -857,8 +857,12 @@
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
-                // 显示Wiki链接给所有登录用户
-                document.getElementById('wikiLink').style.display = 'block';
+                // 只显示Wiki链接给管理员用户
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
@@ -879,6 +883,5 @@
         // 页面加载时检查登录状态
         window.addEventListener('load', gesp_checkLoginStatus);
     </script>
-    </div>
 </body>
 </html>

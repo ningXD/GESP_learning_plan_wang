@@ -479,33 +479,9 @@
             }
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginAndRedirect);
+
         
-        // 打开标签页
-        function gesp_openTab(evt, tabName) {
-            var i, tabContent, tabLinks;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].classList.remove("active");
-            }
-            tabLinks = document.getElementsByClassName("tab");
-            for (i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-            
-            // 切换到对应标签时刷新数据
-            if (tabName === 'student') {
-                gesp_loadStudents();
-            } else if (tabName === 'class') {
-                gesp_loadStudentSelect();
-                gesp_loadClassRecords();
-            } else if (tabName === 'record') {
-                gesp_loadAllRecords();
-            }
-        }
+
         
         // 添加学员
         function gesp_addStudent() {
@@ -792,6 +768,14 @@
         
         // 初始化
         window.onload = function() {
+            // 检查登录状态
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // 初始化数据
             gesp_initData();
             gesp_loadStudents();
             gesp_checkAdminPermission();
@@ -843,8 +827,12 @@
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
-                // 显示Wiki链接给所有登录用户
-                document.getElementById('wikiLink').style.display = 'block';
+                // 只显示Wiki链接给管理员用户
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
@@ -862,8 +850,7 @@
             window.location.href = '../index.html';
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginStatus);
+
     </script>
 </body>
 </html>
