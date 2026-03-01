@@ -280,6 +280,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         .output-header {
@@ -299,7 +300,12 @@
             line-height: 1.5;
             overflow-y: auto;
             white-space: pre-wrap;
-            overflow-x: hidden;
+            overflow-x: auto;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         .output-body.error {
