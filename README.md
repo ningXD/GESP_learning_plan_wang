@@ -1,136 +1,143 @@
-# C++ 在线编程工具 - WebAssembly 方案
+# GESP C++ Study Plan System
 
-## 项目概述
+## Project Structure
 
-本项目将基于JavaScript模拟执行的C++在线编程工具替换为基于WebAssembly的真实编译执行方案。
-
-## 架构组成
-
-### 1. 前端
-- **文件**：`online_programming.html`
-- **技术**：HTML5, CSS3, JavaScript, CodeMirror 5
-- **功能**：代码编辑、编译请求、WebAssembly加载和执行
-
-### 2. 后端
-- **目录**：`compiler/`
-- **技术**：Node.js, Express.js, Emscripten
-- **功能**：C++代码编译为WebAssembly
-
-## 快速开始
-
-### 步骤1：安装依赖
-
-1. 安装 Node.js：https://nodejs.org/
-2. 安装 Emscripten SDK：https://emscripten.org/docs/getting_started/downloads.html
-3. 进入编译服务目录并安装依赖：
-
-```bash
-cd compiler
-npm install
+```
+GESPC++_studyPlan/
+├── frontend/             # Frontend files
+│   ├── core/             # Core functionality
+│   │   └── study_plan.html  # Main study plan page
+│   ├── course/           # Course system
+│   │   └── course_system.html
+│   ├── programming/      # Online programming tool
+│   │   └── online_programming.html
+│   ├── tests/            # Test files
+│   │   ├── test_all_features.html
+│   │   └── test_features.html
+│   ├── materials/        # Study materials
+│   │   └── real_test_question_materials/  # Past exam papers
+│   └── login.html        # Login page
+├── backend/              # Backend files (Python + Flask)
+│   ├── routes/           # API routes
+│   │   ├── auth.py       # Authentication routes
+│   │   ├── notes.py      # Note management routes
+│   │   └── users.py      # User management routes
+│   ├── app.py            # Flask application
+│   ├── models.py         # Database models
+│   ├── init_db.py        # Database initialization
+│   ├── requirements.txt  # Python dependencies
+│   └── .env              # Environment configuration
+└── database/             # Database configuration
+    └── db_config.py      # Database setup and initialization
 ```
 
-### 步骤2：启动编译服务
+## Technology Stack
 
-```bash
-npm start
-```
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Backend**: Python, Flask, Flask-SQLAlchemy, JWT
+- **Database**: MySQL
+- **Authentication**: JWT tokens
 
-编译服务将在 `http://localhost:3000` 启动。
+## Setup Instructions
 
-### 步骤3：打开前端页面
+### 1. Backend Setup
 
-在浏览器中打开 `online_programming.html` 文件。
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-### 步骤4：测试编译和执行
+2. Install dependencies:
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
 
-1. 在代码编辑器中编写C++代码
-2. 点击"运行"按钮
-3. 查看编译结果和执行输出
+3. Configure environment variables in `.env` file:
+   ```
+   DATABASE_URL=mysql+pymysql://root:password@localhost/gesp_study_plan
+   JWT_SECRET_KEY=your_jwt_secret_key
+   FLASK_APP=app.py
+   FLASK_ENV=development
+   ```
 
-## 测试用例
+4. Initialize database:
+   ```bash
+   python init_db.py
+   ```
 
-### 1. 简单输出
+5. Start the backend server:
+   ```bash
+   python app.py
+   ```
 
-```cpp
-#include <iostream>
-using namespace std;
+### 2. Frontend Setup
 
-int main() {
-    cout << "Hello, GESP C++!" << endl;
-    return 0;
-}
-```
+1. Open the frontend login page in your browser:
+   ```
+   frontend/login.html
+   ```
 
-### 2. 变量和表达式
+2. Use the demo account to login:
+   - Username: demo
+   - Password: 123456
 
-```cpp
-#include <iostream>
-using namespace std;
+## API Endpoints
 
-int main() {
-    int a = 10, b = 5;
-    cout << "a = " << a << endl;
-    cout << "b = " << b << endl;
-    cout << "a + b = " << a + b << endl;
-    return 0;
-}
-```
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
 
-### 3. 循环
+### Notes
+- `GET /api/notes` - Get all notes
+- `GET /api/notes/<id>` - Get single note
+- `POST /api/notes` - Create note
+- `PUT /api/notes/<id>` - Update note
+- `DELETE /api/notes/<id>` - Delete note
+- `POST /api/notes/upload` - Upload image
 
-```cpp
-#include <iostream>
-using namespace std;
+### Users
+- `GET /api/users/me` - Get current user info
+- `PUT /api/users/me` - Update current user info
+- `GET /api/users/<id>` - Get user info
 
-int main() {
-    cout << "1到10的数字: " << endl;
-    for (int i = 1; i <= 10; i++) {
-        cout << i << " ";
-    }
-    cout << endl;
-    return 0;
-}
-```
+## Features
 
-## 技术特点
+1. **User Authentication**: Secure login and registration system
+2. **Study Plan Management**: 8-week study plan for GESP C++ Level 2
+3. **Note Taking**: Create, edit, and delete notes with text and images
+4. **Online Programming**: Access to online programming tools
+5. **Course System**: Course management functionality
+6. **Past Exam Papers**: Access to real test question materials
 
-### 优势
-- **真实编译**：使用Emscripten进行真实的C++编译
-- **完整支持**：支持几乎所有C++特性和标准库
-- **性能提升**：WebAssembly执行速度接近原生
-- **错误处理**：提供详细的编译错误信息
+## Usage
 
-### 限制
-- **环境依赖**：需要安装Emscripten SDK
-- **编译时间**：编译过程可能比模拟执行慢
-- **内存限制**：WebAssembly模块有内存限制
-- **跨浏览器兼容性**：需要确保浏览器支持WebAssembly
+1. Login to the system using your credentials
+2. Access the study plan from the dashboard
+3. View weekly study topics and core knowledge points
+4. Access past exam papers for practice
+5. Take notes and track your progress
+6. Use the online programming tool for coding practice
 
-## 故障排除
+## Database Schema
 
-### 编译服务连接失败
-- 确保编译服务正在运行：`npm start`
-- 检查Emscripten是否正确安装：`emcc --version`
-- 检查端口3000是否被占用
+### Users Table
+- id (INT, PRIMARY KEY)
+- username (VARCHAR(50), UNIQUE)
+- password (VARCHAR(255))
+- email (VARCHAR(100), UNIQUE)
+- created_at (DATETIME)
+- updated_at (DATETIME)
 
-### 编译错误
-- 检查C++代码语法是否正确
-- 确保包含了必要的头文件
-- 检查是否使用了Emscripten不支持的特性
+### Notes Table
+- id (INT, PRIMARY KEY)
+- user_id (INT, FOREIGN KEY)
+- title (VARCHAR(255))
+- content (TEXT)
+- type (VARCHAR(20))
+- images (JSON)
+- created_at (DATETIME)
+- updated_at (DATETIME)
 
-### 执行错误
-- 检查WebAssembly是否被浏览器支持
-- 检查代码是否有运行时错误
-- 检查内存使用是否超出限制
+## License
 
-## 未来计划
-
-1. **优化编译速度**：使用缓存和增量编译
-2. **扩展标准库支持**：增加对更多STL容器和算法的支持
-3. **添加调试功能**：支持断点和变量查看
-4. **实现多文件编译**：支持多个源文件的编译
-5. **添加项目管理**：支持保存和加载项目
-
-## 联系方式
-
-如有问题或建议，请联系项目维护者。
+This project is for educational purposes only.
