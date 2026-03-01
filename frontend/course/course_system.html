@@ -469,6 +469,9 @@
             return true;
         }
         
+        // 页面加载时检查登录状态
+        window.addEventListener('load', gesp_checkLoginAndRedirect);
+        
         // 初始化数据
         function gesp_initData() {
             if (!localStorage.getItem('students')) {

@@ -2368,15 +2368,15 @@ int main() {
         // 最大图片数量限制
         const MAX_IMAGES = 5;
         
-        // 检查登录并提示
-        function gesp_checkLoginAndPrompt() {
-            if (!gesp_checkLogin()) {
-                alert('请先登录后再使用此功能');
-                window.location.href = '../index.html';
-                return false;
-            }
-            return true;
-        }
+        // 检查登录并提示（重复定义，已注释）
+        // function gesp_checkLoginAndPrompt() {
+        //     if (!gesp_checkLogin()) {
+        //         alert('请先登录后再使用此功能');
+        //         window.location.href = '../index.html';
+        //         return false;
+        //     }
+        //     return true;
+        // }
         
         // 切换笔记类型
         function gesp_switchNoteType(type) {
@@ -2403,23 +2403,23 @@ int main() {
             modal.classList.toggle('active');
         }
         
-        // 预览图片
-        function previewImage() {
-            const fileInput = document.getElementById('imageUpload');
-            const preview = document.getElementById('imagePreview');
-            
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.add('active');
-                    currentImageData = e.target.result; // 存储图片数据
-                }
-                
-                reader.readAsDataURL(fileInput.files[0]);
-            }
-        }
+        // 预览图片（旧版本，已被新版本覆盖）
+        // function previewImage() {
+        //     const fileInput = document.getElementById('imageUpload');
+        //     const preview = document.getElementById('imagePreview');
+        //     
+        //     if (fileInput.files && fileInput.files[0]) {
+        //         const reader = new FileReader();
+        //         
+        //         reader.onload = function(e) {
+        //             preview.src = e.target.result;
+        //             preview.classList.add('active');
+        //             currentImageData = e.target.result; // 存储图片数据
+        //         }
+        //         
+        //         reader.readAsDataURL(fileInput.files[0]);
+        //     }
+        // }
         
         // 保存笔记
         async function saveNote() {

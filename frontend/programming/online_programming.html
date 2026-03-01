@@ -768,190 +768,191 @@ int main() {
             }
         }
 
+        // 以下函数未被使用，已注释
         // 加载和执行WebAssembly
-        async function executeWasm(wasmData, jsData) {
-            return new Promise((resolve, reject) => {
-                // 解码base64数据
-                const wasmBuffer = Uint8Array.from(atob(wasmData), c => c.charCodeAt(0));
-                const jsCode = atob(jsData);
-                
-                // 创建输出捕获
-                let output = '';
-                const originalConsoleLog = console.log;
-                console.log = function(...args) {
-                    output += args.join(' ') + '\n';
-                    originalConsoleLog.apply(console, args);
-                };
-                
-                // 执行JS包装器
-                try {
-                    // 创建模块作用域
-                    const moduleScope = {
-                        module: {},
-                        exports: {},
-                        console: console,
-                        WebAssembly: WebAssembly,
-                        atob: atob,
-                        Uint8Array: Uint8Array
-                    };
-                    
-                    // 执行JS代码
-                    const jsFunction = new Function('module', 'exports', 'console', 'WebAssembly', 'atob', 'Uint8Array', jsCode);
-                    jsFunction(moduleScope.module, moduleScope.exports, moduleScope.console, moduleScope.WebAssembly, moduleScope.atob, moduleScope.Uint8Array);
-                    
-                    // 加载WASM模块
-                    WebAssembly.instantiate(wasmBuffer, moduleScope.module).then(instance => {
-                        // 执行主函数
-                        instance.exports._main();
-                        
-                        // 恢复原始console.log
-                        console.log = originalConsoleLog;
-                        
-                        resolve(output);
-                    }).catch(error => {
-                        // 恢复原始console.log
-                        console.log = originalConsoleLog;
-                        reject(error);
-                    });
-                } catch (error) {
-                    // 恢复原始console.log
-                    console.log = originalConsoleLog;
-                    reject(error);
-                }
-            });
-        }
+        // async function executeWasm(wasmData, jsData) {
+        //     return new Promise((resolve, reject) => {
+        //         // 解码base64数据
+        //         const wasmBuffer = Uint8Array.from(atob(wasmData), c => c.charCodeAt(0));
+        //         const jsCode = atob(jsData);
+        //         
+        //         // 创建输出捕获
+        //         let output = '';
+        //         const originalConsoleLog = console.log;
+        //         console.log = function(...args) {
+        //             output += args.join(' ') + '\n';
+        //             originalConsoleLog.apply(console, args);
+        //         };
+        //         
+        //         // 执行JS包装器
+        //         try {
+        //             // 创建模块作用域
+        //             const moduleScope = {
+        //                 module: {},
+        //                 exports: {},
+        //                 console: console,
+        //                 WebAssembly: WebAssembly,
+        //                 atob: atob,
+        //                 Uint8Array: Uint8Array
+        //             };
+        //             
+        //             // 执行JS代码
+        //             const jsFunction = new Function('module', 'exports', 'console', 'WebAssembly', 'atob', 'Uint8Array', jsCode);
+        //             jsFunction(moduleScope.module, moduleScope.exports, moduleScope.console, moduleScope.WebAssembly, moduleScope.atob, moduleScope.Uint8Array);
+        //             
+        //             // 加载WASM模块
+        //             WebAssembly.instantiate(wasmBuffer, moduleScope.module).then(instance => {
+        //                 // 执行主函数
+        //                 instance.exports._main();
+        //                 
+        //                 // 恢复原始console.log
+        //                 console.log = originalConsoleLog;
+        //                 
+        //                 resolve(output);
+        //             }).catch(error => {
+        //                 // 恢复原始console.log
+        //                 console.log = originalConsoleLog;
+        //                 reject(error);
+        //             });
+        //         } catch (error) {
+        //             // 恢复原始console.log
+        //             console.log = originalConsoleLog;
+        //             reject(error);
+        //         }
+        //     });
+        // }
 
         // 模拟执行代码（当WebAssembly服务不可用时）
-        function simulateExecution(code) {
-            let output = '';
-            
-            // 简单的代码分析和执行模拟
-            const lines = code.split('\n');
-            const variables = {};
-            let currentInput = '';
-            
-            // 模拟输入处理
-            function getInput() {
-                // 对于示例，返回固定值用于测试
-                if (code.includes('cin >> n')) return '10';
-                if (code.includes('cin >> num')) return '12345';
-                if (code.includes('cin >> a >> b')) return '24 18';
-                if (code.includes('getline(cin, s)')) return 'Hello World';
-                return '';
-            }
-            
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                
-                // 处理变量声明和赋值
-                const varMatch = trimmedLine.match(/^\s*(int|double|string)\s+(\w+)\s*=\s*(.*);$/);
-                if (varMatch) {
-                    const [, type, name, value] = varMatch;
-                    variables[name] = value.replace(/"/g, '');
-                }
-                
-                // 处理cin输入
-                const cinMatch = trimmedLine.match(/cin\s*>>\s*(\w+)(\s*>>\s*(\w+))?/);
-                if (cinMatch) {
-                    const inputValues = getInput().split(' ');
-                    if (cinMatch[1]) variables[cinMatch[1]] = inputValues[0];
-                    if (cinMatch[3]) variables[cinMatch[3]] = inputValues[1];
-                }
-                
-                // 处理getline输入
-                if (trimmedLine.includes('getline(cin, ')) {
-                    const varName = trimmedLine.match(/getline\(cin,\s*(\w+)\)/)[1];
-                    variables[varName] = getInput();
-                }
-                
-                // 处理for循环
-                const forMatch = trimmedLine.match(/^\s*for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<=\s*(\w+)\s*;\s*\1\+\+\s*\)/);
-                if (forMatch) {
-                    const [, varName, start, endExpr] = forMatch;
-                    let end = endExpr;
-                    // 替换end中的变量
-                    for (const [key, value] of Object.entries(variables)) {
-                        end = end.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
-                    }
-                    
-                    // 模拟for循环逻辑
-                    const startNum = parseInt(start);
-                    const endNum = parseInt(end);
-                    if (!isNaN(startNum) && !isNaN(endNum)) {
-                        // 处理循环体中的逻辑
-                        // 这里简化处理，主要处理sum变量的累加
-                        if (code.includes('sum += i') && code.includes('if (i % 2 != 0)')) {
-                            let sum = 0;
-                            for (let i = startNum; i <= endNum; i++) {
-                                if (i % 2 !== 0) {
-                                    sum += i;
-                                }
-                            }
-                            variables['sum'] = sum.toString();
-                        }
-                    }
-                }
-                
-                // 处理while循环
-                if (trimmedLine.includes('while (b != 0)')) {
-                    // 模拟最大公约数计算
-                    let a = parseInt(variables['a'] || '24');
-                    let b = parseInt(variables['b'] || '18');
-                    while (b !== 0) {
-                        const temp = b;
-                        b = a % b;
-                        a = temp;
-                    }
-                    variables['a'] = a.toString();
-                }
-                
-                if (trimmedLine.includes('while (num > 0)')) {
-                    // 模拟数字反转
-                    let num = parseInt(variables['num'] || '12345');
-                    let reversed = 0;
-                    while (num > 0) {
-                        const digit = num % 10;
-                        reversed = reversed * 10 + digit;
-                        num = Math.floor(num / 10);
-                    }
-                    variables['reversed'] = reversed.toString();
-                }
-                
-                // 处理字符串遍历
-                if (trimmedLine.includes('for (char c : s)')) {
-                    // 模拟元音字母统计
-                    const s = variables['s'] || 'Hello World';
-                    let count = 0;
-                    for (const c of s) {
-                        if ('aeiouAEIOU'.includes(c)) {
-                            count++;
-                        }
-                    }
-                    variables['count'] = count.toString();
-                }
-                
-                // 处理cout输出
-                const coutMatch = trimmedLine.match(/cout\s*<<\s*(.*)\s*<<\s*endl;|cout\s*<<\s*(.*);/);
-                if (coutMatch) {
-                    let content = coutMatch[1] || coutMatch[2];
-                    
-                    // 替换变量
-                    for (const [varName, varValue] of Object.entries(variables)) {
-                        content = content.replace(new RegExp(`\\b${varName}\\b`, 'g'), varValue);
-                    }
-                    
-                    // 处理字符串
-                    content = content.replace(/"([^"]+)"/g, '$1');
-                    
-                    // 处理连接符
-                    content = content.replace(/\s*<<\s*/g, ' ');
-                    
-                    output += content.trim() + '\n';
-                }
-            }
-            
-            return output || '代码执行成功！';
-        }
+        // function simulateExecution(code) {
+        //     let output = '';
+        //     
+        //     // 简单的代码分析和执行模拟
+        //     const lines = code.split('\n');
+        //     const variables = {};
+        //     let currentInput = '';
+        //     
+        //     // 模拟输入处理
+        //     function getInput() {
+        //         // 对于示例，返回固定值用于测试
+        //         if (code.includes('cin >> n')) return '10';
+        //         if (code.includes('cin >> num')) return '12345';
+        //         if (code.includes('cin >> a >> b')) return '24 18';
+        //         if (code.includes('getline(cin, s)')) return 'Hello World';
+        //         return '';
+        //     }
+        //     
+        //     for (const line of lines) {
+        //         const trimmedLine = line.trim();
+        //         
+        //         // 处理变量声明和赋值
+        //         const varMatch = trimmedLine.match(/^\s*(int|double|string)\s+(\w+)\s*=\s*(.*);$/);
+        //         if (varMatch) {
+        //             const [, type, name, value] = varMatch;
+        //             variables[name] = value.replace(/"/g, '');
+        //         }
+        //         
+        //         // 处理cin输入
+        //         const cinMatch = trimmedLine.match(/cin\s*>>\s*(\w+)(\s*>>\s*(\w+))?/);
+        //         if (cinMatch) {
+        //             const inputValues = getInput().split(' ');
+        //             if (cinMatch[1]) variables[cinMatch[1]] = inputValues[0];
+        //             if (cinMatch[3]) variables[cinMatch[3]] = inputValues[1];
+        //         }
+        //         
+        //         // 处理getline输入
+        //         if (trimmedLine.includes('getline(cin, ')) {
+        //             const varName = trimmedLine.match(/getline\(cin,\s*(\w+)\)/)[1];
+        //             variables[varName] = getInput();
+        //         }
+        //         
+        //         // 处理for循环
+        //         const forMatch = trimmedLine.match(/^\s*for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<=\s*(\w+)\s*;\s*\1\+\+\s*\)/);
+        //         if (forMatch) {
+        //             const [, varName, start, endExpr] = forMatch;
+        //             let end = endExpr;
+        //             // 替换end中的变量
+        //             for (const [key, value] of Object.entries(variables)) {
+        //                 end = end.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
+        //             }
+        //             
+        //             // 模拟for循环逻辑
+        //             const startNum = parseInt(start);
+        //             const endNum = parseInt(end);
+        //             if (!isNaN(startNum) && !isNaN(endNum)) {
+        //                 // 处理循环体中的逻辑
+        //                 // 这里简化处理，主要处理sum变量的累加
+        //                 if (code.includes('sum += i') && code.includes('if (i % 2 != 0)')) {
+        //                     let sum = 0;
+        //                     for (let i = startNum; i <= endNum; i++) {
+        //                         if (i % 2 !== 0) {
+        //                             sum += i;
+        //                         }
+        //                     }
+        //                     variables['sum'] = sum.toString();
+        //                 }
+        //             }
+        //         }
+        //         
+        //         // 处理while循环
+        //         if (trimmedLine.includes('while (b != 0)')) {
+        //             // 模拟最大公约数计算
+        //             let a = parseInt(variables['a'] || '24');
+        //             let b = parseInt(variables['b'] || '18');
+        //             while (b !== 0) {
+        //                 const temp = b;
+        //                 b = a % b;
+        //                 a = temp;
+        //             }
+        //             variables['a'] = a.toString();
+        //         }
+        //         
+        //         if (trimmedLine.includes('while (num > 0)')) {
+        //             // 模拟数字反转
+        //             let num = parseInt(variables['num'] || '12345');
+        //             let reversed = 0;
+        //             while (num > 0) {
+        //                 const digit = num % 10;
+        //                 reversed = reversed * 10 + digit;
+        //                 num = Math.floor(num / 10);
+        //             }
+        //             variables['reversed'] = reversed.toString();
+        //         }
+        //         
+        //         // 处理字符串遍历
+        //         if (trimmedLine.includes('for (char c : s)')) {
+        //             // 模拟元音字母统计
+        //             const s = variables['s'] || 'Hello World';
+        //             let count = 0;
+        //             for (const c of s) {
+        //                 if ('aeiouAEIOU'.includes(c)) {
+        //                     count++;
+        //                 }
+        //             }
+        //             variables['count'] = count.toString();
+        //         }
+        //         
+        //         // 处理cout输出
+        //         const coutMatch = trimmedLine.match(/cout\s*<<\s*(.*)\s*<<\s*endl;|cout\s*<<\s*(.*);/);
+        //         if (coutMatch) {
+        //             let content = coutMatch[1] || coutMatch[2];
+        //             
+        //             // 替换变量
+        //             for (const [varName, varValue] of Object.entries(variables)) {
+        //                 content = content.replace(new RegExp(`\\b${varName}\\b`, 'g'), varValue);
+        //             }
+        //             
+        //             // 处理字符串
+        //             content = content.replace(/"([^"]+)"/g, '$1');
+        //             
+        //             // 处理连接符
+        //             content = content.replace(/\s*<<\s*/g, ' ');
+        //             
+        //             output += content.trim() + '\n';
+        //         }
+        //     }
+        //     
+        //     return output || '代码执行成功！';
+        // }
 
         // 运行代码
         async function runCode() {
@@ -1129,6 +1130,7 @@ int main() {
             if (fontSize < 24) {
                 fontSize += 2;
                 document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+                editor.setOption('fontSize', fontSize + 'px');
             }
         }
         
@@ -1136,6 +1138,7 @@ int main() {
             if (fontSize > 10) {
                 fontSize -= 2;
                 document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+                editor.setOption('fontSize', fontSize + 'px');
             }
         }
         
@@ -1167,14 +1170,23 @@ int main() {
             showOutput('代码已下载', 'success');
         }
         
+        // 显示输出信息
+        function showOutput(message, type = "success") {
+            // 简单的提示功能
+            alert(message);
+        }
+        
         // 页面加载完成后初始化
-        window.onload = function() {
+        window.addEventListener('load', function() {
             // 设置编辑器高度
             const editorBody = document.querySelector('.editor-body');
             editor.setSize('100%', '100%');
             // 设置初始字体大小
             editor.setOption('fontSize', fontSize + 'px');
-        };
+            
+            // 检查登录状态
+            gesp_checkLoginStatus();
+        });
         
         // 检查用户登录状态
         function gesp_checkLoginStatus() {
@@ -1216,9 +1228,6 @@ int main() {
             gesp_checkLoginStatus();
             window.location.href = '../index.html';
         }
-        
-        // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginStatus);
     </script>
 </body>
 </html>
