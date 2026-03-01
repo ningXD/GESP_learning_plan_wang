@@ -551,8 +551,8 @@
             const userStr = localStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (user.username !== 'demo') {
-                    // 非demo账号，隐藏管理员标签页
+                if (!user.admin) {
+                    // 非管理员账号，隐藏管理员标签页
                     const adminTab = document.getElementById('adminTab');
                     if (adminTab) {
                         adminTab.style.display = 'none';
