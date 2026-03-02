@@ -9,8 +9,8 @@ def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
-            # 验证JWT token
-            verify_jwt_in_request()
+            # 验证JWT token，明确指定从headers获取
+            verify_jwt_in_request(locations=['headers'])
             # 获取当前用户ID
             user_id = get_jwt_identity()
             # 查询用户
