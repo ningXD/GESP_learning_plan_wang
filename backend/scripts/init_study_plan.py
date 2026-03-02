@@ -22,7 +22,11 @@ def init_study_plan_template():
                 password=hashed_password,
                 nickname='王乐汐',
                 role='student',
-                admin=False
+                admin=False,
+                age=15,
+                gender='女',
+                grade='高一',
+                subject='编程竞赛'
             )
             db.session.add(student)
             db.session.commit()

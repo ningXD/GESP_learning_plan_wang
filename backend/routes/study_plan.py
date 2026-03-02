@@ -154,5 +154,9 @@ def get_students(user):
         'id': student.id,
         'username': student.username,
         'nickname': student.nickname,
-        'email': student.email
+        'email': student.email,
+        'age': student.age,
+        'gender': student.gender,
+        'grade': student.grade,
+        'subject': student.subject
     } for student in students])

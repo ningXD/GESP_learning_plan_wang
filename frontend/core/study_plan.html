@@ -1635,68 +1635,121 @@ for (int i = 0; i < n; i++) {
             const token = gesp_getToken();
             
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
+                // 加载学生列表
+                const studentsResponse = await fetch('http://localhost:5000/api/students', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 
-                if (response.ok) {
-                    const students = await response.json();
-                    displayStudentSelector(students);
+                if (studentsResponse.ok) {
+                    const students = await studentsResponse.json();
+                    
+                    // 加载所有学习计划
+                    const plansResponse = await fetch('http://localhost:5000/api/study-plans', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (plansResponse.ok) {
+                        const plans = await plansResponse.json();
+                        displayStudentTable(students, plans);
+                    }
                 }
             } catch (error) {
                 console.error('加载学生列表失败:', error);
             }
         }
         
-        // 显示学生选择器（教师端）
-        function displayStudentSelector(students) {
-            const controls = document.querySelector('.controls');
+        // 显示学生查询表格（教师端）
+        function displayStudentTable(students, plans) {
+            const container = document.querySelector('.container');
             
-            // 创建学生选择器
-            const studentSelector = document.createElement('div');
-            studentSelector.style.display = 'flex';
-            studentSelector.style.alignItems = 'center';
-            studentSelector.style.gap = '10px';
-            studentSelector.innerHTML = `
-                <label style="font-weight: bold; color: #2c3e50;">选择学生:</label>
-                <select id="studentSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">请选择学生</option>
-                    ${students.map(student => `<option value="${student.id}">${student.nickname} (${student.username})</option>`).join('')}
-                </select>
-                <button class="btn-small" onclick="loadStudentStudyPlan()">查看计划</button>
+            // 创建表格容器
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-container';
+            tableContainer.style.marginBottom = '30px';
+            
+            // 创建表格
+            tableContainer.innerHTML = `
+                <h3 style="padding: 20px; margin: 0; color: #2c3e50; border-bottom: 1px solid #eee;">学生学习计划管理</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(to right, #4a6fa5, #2c3e50); color: white;">
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员姓名</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员年龄</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员性别</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员年级</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">报选科目</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">是否有计划表</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- 学生数据将通过JavaScript动态生成 -->
+                    </tbody>
+                </table>
             `;
             
-            controls.appendChild(studentSelector);
+            // 插入到容器的最前面
+            container.insertBefore(tableContainer, container.firstChild);
+            
+            // 填充表格数据
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                // 检查学生是否有学习计划
+                const hasPlan = plans.some(plan => plan.student_id == student.id);
+                const plan = plans.find(p => p.student_id == student.id);
+                
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #eee';
+                tr.style.transition = 'all 0.2s';
+                tr.style.cursor = 'pointer';
+                tr.onmouseover = function() {
+                    this.style.background = '#f0f7ff';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+                };
+                tr.onmouseout = function() {
+                    this.style.background = '';
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                };
+                
+                tr.innerHTML = `
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.nickname}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.age || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.gender || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.grade || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || '编程竞赛'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">
+                        ${hasPlan ? 
+                            `<button class="btn-small" onclick="viewStudentPlan(${plan.id})">查看计划</button>` : 
+                            '暂无计划'
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
         }
         
-        // 加载指定学生的学习计划
-        async function loadStudentStudyPlan() {
-            const studentId = document.getElementById('studentSelect').value;
-            if (!studentId) {
-                alert('请选择学生');
-                return;
-            }
-            
+        // 查看学生学习计划
+        async function viewStudentPlan(planId) {
             const token = gesp_getToken();
             
             try {
-                const response = await fetch('http://localhost:5000/api/study-plans', {
+                const response = await fetch(`http://localhost:5000/api/study-plans/${planId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 
                 if (response.ok) {
-                    const plans = await response.json();
-                    const studentPlan = plans.find(plan => plan.student_id == studentId);
-                    
-                    if (studentPlan) {
-                        displayStudyPlan(studentPlan);
-                    } else {
-                        alert('该学生暂无学习计划');
-                    }
+                    const plan = await response.json();
+                    displayStudyPlan(plan);
                 }
             } catch (error) {
                 console.error('加载学生学习计划失败:', error);

@@ -11,6 +11,10 @@ class User(db.Model):
     nickname = db.Column(db.String(50), nullable=True)
     role = db.Column(db.String(20), nullable=False, default='student')  # student or teacher
     admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
+    age = db.Column(db.Integer, nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
+    grade = db.Column(db.String(20), nullable=True)
+    subject = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -27,6 +31,10 @@ class User(db.Model):
             'nickname': self.nickname,
             'role': self.role,
             'admin': self.admin,
+            'age': self.age,
+            'gender': self.gender,
+            'grade': self.grade,
+            'subject': self.subject,
             'created_at': self.created_at.isoformat()
         }
 
