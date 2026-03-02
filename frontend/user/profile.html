@@ -462,6 +462,11 @@
             document.getElementById('avatarInput').click();
         }
         
+        // 获取token
+        function gesp_getToken() {
+            return sessionStorage.getItem('access_token');
+        }
+        
         // 处理头像上传
         document.getElementById('avatarInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -480,34 +485,79 @@
         });
         
         // 更新个人资料
-        function updateProfile(event) {
+        async function updateProfile(event) {
             event.preventDefault();
             
-            const userStr = sessionStorage.getItem('user');
-            if (!userStr) return;
-            
-            const user = JSON.parse(userStr);
             const nickname = document.getElementById('nickname').value;
             const email = document.getElementById('email').value;
             
-            // 更新用户信息
-            user.nickname = nickname;
-            user.email = email;
-            
-            // 保存到sessionStorage
-            sessionStorage.setItem('user', JSON.stringify(user));
-            
-            // 显示成功消息
-            const successMessage = document.getElementById('successMessage');
-            successMessage.style.display = 'block';
-            
-            // 3秒后隐藏成功消息
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 3000);
-            
-            // 更新页面显示
-            gesp_checkLoginStatus();
+            try {
+                const response = await fetch('http://localhost:5000/api/users/me', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    },
+                    body: JSON.stringify({
+                        nickname,
+                        email
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.error) {
+                    alert('更新个人资料失败: ' + result.error);
+                    return;
+                }
+                
+                // 更新sessionStorage中的用户信息
+                const userStr = sessionStorage.getItem('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    user.nickname = nickname;
+                    user.email = email;
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                }
+                
+                // 显示成功消息
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                
+                // 3秒后隐藏成功消息
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+                
+                // 更新页面显示
+                gesp_checkLoginStatus();
+            } catch (error) {
+                alert('更新个人资料失败: ' + error.message);
+            }
+        }
+        
+        // 加载用户信息
+        async function gesp_loadUserInfo() {
+            try {
+                const response = await fetch('http://localhost:5000/api/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const user = await response.json();
+                if (user.error) {
+                    console.error('加载用户信息失败:', user.error);
+                    return;
+                }
+                
+                // 更新sessionStorage中的用户信息
+                sessionStorage.setItem('user', JSON.stringify(user));
+                
+                // 填充个人信息
+                populateUserInfo(user);
+            } catch (error) {
+                console.error('加载用户信息失败:', error);
+            }
         }
         
 
@@ -521,8 +571,11 @@
         }
         
         // 页面加载时检查登录状态
-        window.addEventListener('load', function() {
+        window.addEventListener('load', async function() {
             if (gesp_checkLoginAndRedirect()) {
+                // 加载用户信息
+                await gesp_loadUserInfo();
+                // 检查登录状态
                 gesp_checkLoginStatus();
             }
         });

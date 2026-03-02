@@ -29,6 +29,8 @@ def update_current_user():
     data = request.get_json()
     if 'email' in data:
         user.email = data['email']
+    if 'nickname' in data:
+        user.nickname = data['nickname']
     if 'password' in data:
         # 加密新密码
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
