@@ -24,40 +24,130 @@
             overflow: hidden;
         }
         
-        .header {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            padding: 15px 20px;
+        /* 导航栏样式 */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0 20px;
         }
         
-        .header h1 {
+        .logo {
             font-size: 1.5rem;
             font-weight: bold;
-        }
-        
-        .header .nav {
+            color: #3498db;
+            text-decoration: none;
             display: flex;
+            align-items: center;
             gap: 10px;
         }
         
-        .btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 15px;
             border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
             transition: all 0.3s ease;
         }
         
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
+        .nav-link:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        /* 登录按钮样式 */
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        /* 用户头像样式 */
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* 下拉菜单样式 */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 180px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.logout {
+            color: #e74c3c;
+            font-weight: 500;
         }
         
         .btn-small {
@@ -70,24 +160,12 @@
             display: flex;
             flex-direction: column;
             padding: 20px;
-            gap: 20px;
             height: calc(100vh - 120px);
             max-height: 800px;
             overflow: hidden;
         }
         
         .editor-container {
-            flex: 4;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        .output-container {
             flex: 1;
             background: white;
             border-radius: 8px;
@@ -95,6 +173,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         .editor-header {
@@ -175,11 +254,34 @@
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+            font-size: 14px;
+            line-height: 1.5;
         }
         
         .CodeMirror-scroll {
             height: 100% !important;
             overflow: auto !important;
+        }
+        
+        .CodeMirror-gutters {
+            background: #f8f9fa !important;
+            border-right: 1px solid #e9ecef !important;
+            min-width: 40px !important;
+        }
+        
+        .CodeMirror-linenumber {
+            color: #6c757d !important;
+            padding: 0 8px !important;
+            text-align: right !important;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .CodeMirror-line {
+            padding: 0 4px !important;
+            line-height: 1.5 !important;
         }
         
         .output-container {
@@ -190,6 +292,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         .output-header {
@@ -209,7 +312,12 @@
             line-height: 1.5;
             overflow-y: auto;
             white-space: pre-wrap;
-            overflow-x: hidden;
+            overflow-x: auto;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         .output-body.error {
@@ -229,19 +337,105 @@
             font-size: 14px;
         }
         
-        .CodeMirror {
-            height: 100% !important;
-            border: none !important;
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
         }
         
-        .CodeMirror-gutters {
-            background: #f8f9fa !important;
-            border-right: 1px solid #e9ecef !important;
+        .modal-content {
+            background-color: #1e1e1e;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 0;
+            border: 1px solid #333;
+            width: 60%;
+            max-width: 600px;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+            cursor: move;
         }
         
-        .CodeMirror-linenumber {
-            color: #6c757d !important;
-            padding: 0 8px !important;
+        .modal-header {
+            background-color: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        
+        .modal-title {
+            color: #cccccc;
+            font-weight: bold;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        .close-btn {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            cursor: default;
+        }
+        
+        .modal-body.error {
+            color: #f48771;
+        }
+        
+        .modal-body.success {
+            color: #6a9955;
+        }
+        
+        /* 命令提示符样式 */
+        .cmd-style {
+            background-color: #1e1e1e;
+            color: #cccccc;
+        }
+        
+        .cmd-style .prompt {
+            color: #6a9955;
+            font-weight: bold;
+        }
+        
+        .cmd-style .output {
+            color: #cccccc;
+        }
+        
+        .cmd-style .error {
+            color: #f48771;
         }
         
         @media (max-width: 768px) {
@@ -258,6 +452,11 @@
             .main-container {
                 padding: 10px;
             }
+            
+            .modal-content {
+                width: 95%;
+                min-height: 500px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
@@ -266,12 +465,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
 </head>
 <body>
-    <div class="header">
-        <h1>C++ 在线编程工具</h1>
-        <div class="nav">
-            <button class="btn btn-small" onclick="window.location.href='../index.html'">返回首页</button>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="logo">
+                <span>📚</span>
+                GESP C++ 学习计划
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../core/study_plan.html" class="nav-link">学习计划表</a>
+                <a href="online_programming.html" class="nav-link active">线上编程</a>
+                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
+                <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
+                <div id="authSection">
+                    <a href="../auth/login.html" class="login-btn">登录</a>
+                </div>
+                <div id="userSection" style="display: none;">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" id="userName">用户名</div>
+                            <a href="../user/profile.html" class="dropdown-item">个人空间</a>
+                            <a href="#" class="dropdown-item logout" onclick="gesp_logout()">退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </nav>
     
     <div class="main-container">
         <div class="editor-container">
@@ -279,11 +501,10 @@
                 <div class="editor-title">代码编辑器</div>
                 <div class="editor-actions">
                     <button class="action-btn" onclick="loadExample()">加载示例</button>
+                    <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn" onclick="decreaseFontSize()">-</button>
                     <button class="action-btn" onclick="increaseFontSize()">+</button>
-                    <button class="action-btn" onclick="clearCode()">清空代码</button>
                     <button class="action-btn run" onclick="if(gesp_checkLoginAndPrompt()) runCode()">运行</button>
-                    <button class="action-btn clear" onclick="clearOutput()">清空输出</button>
                     <button class="action-btn" onclick="downloadCode()">下载代码</button>
                 </div>
             </div>
@@ -297,11 +518,23 @@ int main() {
 }</textarea>
             </div>
         </div>
-        
-        <div class="output-container">
-            <div class="output-header">运行结果</div>
-            <div class="output-body" id="output">// 输出将显示在这里
-// 点击"运行"按钮执行代码</div>
+    </div>
+    
+    <!-- 运行结果弹窗 -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content cmd-style">
+            <div class="modal-header">
+                <span class="modal-title">命令提示符</span>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalOutput"></div>
+            <div id="inputSection" class="modal-footer" style="display: none; height: 80px; border-top: 1px solid #333;">
+                <div style="padding: 10px 20px; height: 100%; display: flex; align-items: center;">
+                    <span class="prompt" style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
+                    <textarea id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; resize: none; height: 60px; overflow-y: auto;"></textarea>
+                    <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -338,6 +571,51 @@ int main() {
         // 页面加载时检查登录状态
         window.addEventListener('load', gesp_checkLoginAndRedirect);
         
+
+        
+        // 字体大小控制
+        let codeFontSize = 14;
+        
+        function increaseFontSize() {
+            if (codeFontSize < 24) {
+                codeFontSize += 2;
+                // 直接修改CodeMirror编辑器的字体大小
+                if (editor) {
+                    editor.setOption('fontSize', codeFontSize + 'px');
+                }
+                // 同时修改DOM元素的样式，确保一致性
+                const codeMirrorElement = document.querySelector('.CodeMirror');
+                if (codeMirrorElement) {
+                    codeMirrorElement.style.fontSize = codeFontSize + 'px';
+                }
+                // 同时修改行号的字体大小
+                const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+                lineNumbers.forEach(lineNum => {
+                    lineNum.style.fontSize = codeFontSize + 'px';
+                });
+            }
+        }
+        
+        function decreaseFontSize() {
+            if (codeFontSize > 10) {
+                codeFontSize -= 2;
+                // 直接修改CodeMirror编辑器的字体大小
+                if (editor) {
+                    editor.setOption('fontSize', codeFontSize + 'px');
+                }
+                // 同时修改DOM元素的样式，确保一致性
+                const codeMirrorElement = document.querySelector('.CodeMirror');
+                if (codeMirrorElement) {
+                    codeMirrorElement.style.fontSize = codeFontSize + 'px';
+                }
+                // 同时修改行号的字体大小
+                const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+                lineNumbers.forEach(lineNum => {
+                    lineNum.style.fontSize = codeFontSize + 'px';
+                });
+            }
+        }
+
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',
@@ -504,23 +782,46 @@ int main() {
 }`
         };
         
+        // 示例代码讲解
+        const exampleExplanations = {
+            hello: "这是一个简单的C++程序，输出'Hello, GESP C++!'到控制台。它展示了C++的基本结构，包括头文件包含、命名空间使用和main函数。",
+            variables: "这个示例展示了C++中不同类型变量的声明和使用，包括整数(int)、浮点数(double)和字符串(string)。",
+            loop: "这个示例使用for循环打印1到10的数字，展示了C++中循环结构的基本用法。",
+            matrix: "这个示例打印一个X字矩阵，展示了嵌套循环的使用和条件判断。",
+            gesp1: "2023年12月真题：计算1到n的奇数和。使用for循环遍历1到n的所有数字，判断每个数字是否为奇数，如果是则累加到sum变量中。",
+            gesp2: "2024年6月真题：黄金格。根据输入的n，打印一个n×n的黄金格图案，边框和两条对角线上的位置打印'*'，其他位置打印空格。",
+            gesp3: "2024年12月真题：数字反转。使用while循环将输入的数字反转，通过取余和整除操作获取每一位数字并重新组合。",
+            gesp4: "2025年6月真题：统计元音字母。使用getline读取一行字符串，然后遍历字符串中的每个字符，统计元音字母的数量。",
+            gesp5: "2025年12月真题：最大公约数。使用辗转相除法计算两个数的最大公约数，通过while循环不断取余直到余数为0。"
+        };
+        
+        // 按难度排序的示例代码顺序
+        const exampleOrder = ['hello', 'variables', 'loop', 'matrix', 'gesp1', 'gesp3', 'gesp2', 'gesp5', 'gesp4'];
+        let currentExampleIndex = 0;
+        
         // 加载示例代码
         function loadExample() {
-            const exampleKeys = Object.keys(examples);
-            const randomKey = exampleKeys[Math.floor(Math.random() * exampleKeys.length)];
-            editor.setValue(examples[randomKey]);
-            showOutput("已加载示例代码: " + randomKey, "success");
+            // 获取当前示例的key
+            const currentKey = exampleOrder[currentExampleIndex];
+            editor.setValue(examples[currentKey]);
+            
+            // 显示详细的代码讲解
+            const explanation = exampleExplanations[currentKey] || "这是一个C++示例代码。";
+            alert("代码讲解:\n" + explanation);
+            
+            // 更新索引，循环遍历
+            currentExampleIndex = (currentExampleIndex + 1) % exampleOrder.length;
         }
         
         // 编译代码
-        async function compileCode(code) {
+        async function compileCode(code, input = '') {
             try {
-                const response = await fetch('http://localhost:3000/api/compile', {
+                const response = await fetch('http://localhost:5000/api/compile', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ code })
+                    body: JSON.stringify({ code, input })
                 });
                 return await response.json();
             } catch (error) {
@@ -532,266 +833,374 @@ int main() {
             }
         }
 
+        // 以下函数未被使用，已注释
         // 加载和执行WebAssembly
-        async function executeWasm(wasmData, jsData) {
-            return new Promise((resolve, reject) => {
-                // 解码base64数据
-                const wasmBuffer = Uint8Array.from(atob(wasmData), c => c.charCodeAt(0));
-                const jsCode = atob(jsData);
-                
-                // 创建输出捕获
-                let output = '';
-                const originalConsoleLog = console.log;
-                console.log = function(...args) {
-                    output += args.join(' ') + '\n';
-                    originalConsoleLog.apply(console, args);
-                };
-                
-                // 执行JS包装器
-                try {
-                    // 创建模块作用域
-                    const moduleScope = {
-                        module: {},
-                        exports: {},
-                        console: console,
-                        WebAssembly: WebAssembly,
-                        atob: atob,
-                        Uint8Array: Uint8Array
-                    };
-                    
-                    // 执行JS代码
-                    const jsFunction = new Function('module', 'exports', 'console', 'WebAssembly', 'atob', 'Uint8Array', jsCode);
-                    jsFunction(moduleScope.module, moduleScope.exports, moduleScope.console, moduleScope.WebAssembly, moduleScope.atob, moduleScope.Uint8Array);
-                    
-                    // 加载WASM模块
-                    WebAssembly.instantiate(wasmBuffer, moduleScope.module).then(instance => {
-                        // 执行主函数
-                        instance.exports._main();
-                        
-                        // 恢复原始console.log
-                        console.log = originalConsoleLog;
-                        
-                        resolve(output);
-                    }).catch(error => {
-                        // 恢复原始console.log
-                        console.log = originalConsoleLog;
-                        reject(error);
-                    });
-                } catch (error) {
-                    // 恢复原始console.log
-                    console.log = originalConsoleLog;
-                    reject(error);
-                }
-            });
-        }
+        // async function executeWasm(wasmData, jsData) {
+        //     return new Promise((resolve, reject) => {
+        //         // 解码base64数据
+        //         const wasmBuffer = Uint8Array.from(atob(wasmData), c => c.charCodeAt(0));
+        //         const jsCode = atob(jsData);
+        //         
+        //         // 创建输出捕获
+        //         let output = '';
+        //         const originalConsoleLog = console.log;
+        //         console.log = function(...args) {
+        //             output += args.join(' ') + '\n';
+        //             originalConsoleLog.apply(console, args);
+        //         };
+        //         
+        //         // 执行JS包装器
+        //         try {
+        //             // 创建模块作用域
+        //             const moduleScope = {
+        //                 module: {},
+        //                 exports: {},
+        //                 console: console,
+        //                 WebAssembly: WebAssembly,
+        //                 atob: atob,
+        //                 Uint8Array: Uint8Array
+        //             };
+        //             
+        //             // 执行JS代码
+        //             const jsFunction = new Function('module', 'exports', 'console', 'WebAssembly', 'atob', 'Uint8Array', jsCode);
+        //             jsFunction(moduleScope.module, moduleScope.exports, moduleScope.console, moduleScope.WebAssembly, moduleScope.atob, moduleScope.Uint8Array);
+        //             
+        //             // 加载WASM模块
+        //             WebAssembly.instantiate(wasmBuffer, moduleScope.module).then(instance => {
+        //                 // 执行主函数
+        //                 instance.exports._main();
+        //                 
+        //                 // 恢复原始console.log
+        //                 console.log = originalConsoleLog;
+        //                 
+        //                 resolve(output);
+        //             }).catch(error => {
+        //                 // 恢复原始console.log
+        //                 console.log = originalConsoleLog;
+        //                 reject(error);
+        //             });
+        //         } catch (error) {
+        //             // 恢复原始console.log
+        //             console.log = originalConsoleLog;
+        //             reject(error);
+        //         }
+        //     });
+        // }
 
         // 模拟执行代码（当WebAssembly服务不可用时）
-        function simulateExecution(code) {
-            let output = '';
-            
-            // 简单的代码分析和执行模拟
-            const lines = code.split('\n');
-            const variables = {};
-            let currentInput = '';
-            
-            // 模拟输入处理
-            function getInput() {
-                // 对于示例，返回固定值用于测试
-                if (code.includes('cin >> n')) return '10';
-                if (code.includes('cin >> num')) return '12345';
-                if (code.includes('cin >> a >> b')) return '24 18';
-                if (code.includes('getline(cin, s)')) return 'Hello World';
-                return '';
-            }
-            
-            for (const line of lines) {
-                const trimmedLine = line.trim();
-                
-                // 处理变量声明和赋值
-                const varMatch = trimmedLine.match(/^\s*(int|double|string)\s+(\w+)\s*=\s*(.*);$/);
-                if (varMatch) {
-                    const [, type, name, value] = varMatch;
-                    variables[name] = value.replace(/"/g, '');
-                }
-                
-                // 处理cin输入
-                const cinMatch = trimmedLine.match(/cin\s*>>\s*(\w+)(\s*>>\s*(\w+))?/);
-                if (cinMatch) {
-                    const inputValues = getInput().split(' ');
-                    if (cinMatch[1]) variables[cinMatch[1]] = inputValues[0];
-                    if (cinMatch[3]) variables[cinMatch[3]] = inputValues[1];
-                }
-                
-                // 处理getline输入
-                if (trimmedLine.includes('getline(cin, ')) {
-                    const varName = trimmedLine.match(/getline\(cin,\s*(\w+)\)/)[1];
-                    variables[varName] = getInput();
-                }
-                
-                // 处理for循环
-                const forMatch = trimmedLine.match(/^\s*for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<=\s*(\w+)\s*;\s*\1\+\+\s*\)/);
-                if (forMatch) {
-                    const [, varName, start, endExpr] = forMatch;
-                    let end = endExpr;
-                    // 替换end中的变量
-                    for (const [key, value] of Object.entries(variables)) {
-                        end = end.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
-                    }
-                    
-                    // 模拟for循环逻辑
-                    const startNum = parseInt(start);
-                    const endNum = parseInt(end);
-                    if (!isNaN(startNum) && !isNaN(endNum)) {
-                        // 处理循环体中的逻辑
-                        // 这里简化处理，主要处理sum变量的累加
-                        if (code.includes('sum += i') && code.includes('if (i % 2 != 0)')) {
-                            let sum = 0;
-                            for (let i = startNum; i <= endNum; i++) {
-                                if (i % 2 !== 0) {
-                                    sum += i;
-                                }
-                            }
-                            variables['sum'] = sum.toString();
-                        }
-                    }
-                }
-                
-                // 处理while循环
-                if (trimmedLine.includes('while (b != 0)')) {
-                    // 模拟最大公约数计算
-                    let a = parseInt(variables['a'] || '24');
-                    let b = parseInt(variables['b'] || '18');
-                    while (b !== 0) {
-                        const temp = b;
-                        b = a % b;
-                        a = temp;
-                    }
-                    variables['a'] = a.toString();
-                }
-                
-                if (trimmedLine.includes('while (num > 0)')) {
-                    // 模拟数字反转
-                    let num = parseInt(variables['num'] || '12345');
-                    let reversed = 0;
-                    while (num > 0) {
-                        const digit = num % 10;
-                        reversed = reversed * 10 + digit;
-                        num = Math.floor(num / 10);
-                    }
-                    variables['reversed'] = reversed.toString();
-                }
-                
-                // 处理字符串遍历
-                if (trimmedLine.includes('for (char c : s)')) {
-                    // 模拟元音字母统计
-                    const s = variables['s'] || 'Hello World';
-                    let count = 0;
-                    for (const c of s) {
-                        if ('aeiouAEIOU'.includes(c)) {
-                            count++;
-                        }
-                    }
-                    variables['count'] = count.toString();
-                }
-                
-                // 处理cout输出
-                const coutMatch = trimmedLine.match(/cout\s*<<\s*(.*)\s*<<\s*endl;|cout\s*<<\s*(.*);/);
-                if (coutMatch) {
-                    let content = coutMatch[1] || coutMatch[2];
-                    
-                    // 替换变量
-                    for (const [varName, varValue] of Object.entries(variables)) {
-                        content = content.replace(new RegExp(`\\b${varName}\\b`, 'g'), varValue);
-                    }
-                    
-                    // 处理字符串
-                    content = content.replace(/"([^"]+)"/g, '$1');
-                    
-                    // 处理连接符
-                    content = content.replace(/\s*<<\s*/g, ' ');
-                    
-                    output += content.trim() + '\n';
-                }
-            }
-            
-            return output || '代码执行成功！';
-        }
+        // function simulateExecution(code) {
+        //     let output = '';
+        //     
+        //     // 简单的代码分析和执行模拟
+        //     const lines = code.split('\n');
+        //     const variables = {};
+        //     let currentInput = '';
+        //     
+        //     // 模拟输入处理
+        //     function getInput() {
+        //         // 对于示例，返回固定值用于测试
+        //         if (code.includes('cin >> n')) return '10';
+        //         if (code.includes('cin >> num')) return '12345';
+        //         if (code.includes('cin >> a >> b')) return '24 18';
+        //         if (code.includes('getline(cin, s)')) return 'Hello World';
+        //         return '';
+        //     }
+        //     
+        //     for (const line of lines) {
+        //         const trimmedLine = line.trim();
+        //         
+        //         // 处理变量声明和赋值
+        //         const varMatch = trimmedLine.match(/^\s*(int|double|string)\s+(\w+)\s*=\s*(.*);$/);
+        //         if (varMatch) {
+        //             const [, type, name, value] = varMatch;
+        //             variables[name] = value.replace(/"/g, '');
+        //         }
+        //         
+        //         // 处理cin输入
+        //         const cinMatch = trimmedLine.match(/cin\s*>>\s*(\w+)(\s*>>\s*(\w+))?/);
+        //         if (cinMatch) {
+        //             const inputValues = getInput().split(' ');
+        //             if (cinMatch[1]) variables[cinMatch[1]] = inputValues[0];
+        //             if (cinMatch[3]) variables[cinMatch[3]] = inputValues[1];
+        //         }
+        //         
+        //         // 处理getline输入
+        //         if (trimmedLine.includes('getline(cin, ')) {
+        //             const varName = trimmedLine.match(/getline\(cin,\s*(\w+)\)/)[1];
+        //             variables[varName] = getInput();
+        //         }
+        //         
+        //         // 处理for循环
+        //         const forMatch = trimmedLine.match(/^\s*for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<=\s*(\w+)\s*;\s*\1\+\+\s*\)/);
+        //         if (forMatch) {
+        //             const [, varName, start, endExpr] = forMatch;
+        //             let end = endExpr;
+        //             // 替换end中的变量
+        //             for (const [key, value] of Object.entries(variables)) {
+        //                 end = end.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
+        //             }
+        //             
+        //             // 模拟for循环逻辑
+        //             const startNum = parseInt(start);
+        //             const endNum = parseInt(end);
+        //             if (!isNaN(startNum) && !isNaN(endNum)) {
+        //                 // 处理循环体中的逻辑
+        //                 // 这里简化处理，主要处理sum变量的累加
+        //                 if (code.includes('sum += i') && code.includes('if (i % 2 != 0)')) {
+        //                     let sum = 0;
+        //                     for (let i = startNum; i <= endNum; i++) {
+        //                         if (i % 2 !== 0) {
+        //                             sum += i;
+        //                         }
+        //                     }
+        //                     variables['sum'] = sum.toString();
+        //                 }
+        //             }
+        //         }
+        //         
+        //         // 处理while循环
+        //         if (trimmedLine.includes('while (b != 0)')) {
+        //             // 模拟最大公约数计算
+        //             let a = parseInt(variables['a'] || '24');
+        //             let b = parseInt(variables['b'] || '18');
+        //             while (b !== 0) {
+        //                 const temp = b;
+        //                 b = a % b;
+        //                 a = temp;
+        //             }
+        //             variables['a'] = a.toString();
+        //         }
+        //         
+        //         if (trimmedLine.includes('while (num > 0)')) {
+        //             // 模拟数字反转
+        //             let num = parseInt(variables['num'] || '12345');
+        //             let reversed = 0;
+        //             while (num > 0) {
+        //                 const digit = num % 10;
+        //                 reversed = reversed * 10 + digit;
+        //                 num = Math.floor(num / 10);
+        //             }
+        //             variables['reversed'] = reversed.toString();
+        //         }
+        //         
+        //         // 处理字符串遍历
+        //         if (trimmedLine.includes('for (char c : s)')) {
+        //             // 模拟元音字母统计
+        //             const s = variables['s'] || 'Hello World';
+        //             let count = 0;
+        //             for (const c of s) {
+        //                 if ('aeiouAEIOU'.includes(c)) {
+        //                     count++;
+        //                 }
+        //             }
+        //             variables['count'] = count.toString();
+        //         }
+        //         
+        //         // 处理cout输出
+        //         const coutMatch = trimmedLine.match(/cout\s*<<\s*(.*)\s*<<\s*endl;|cout\s*<<\s*(.*);/);
+        //         if (coutMatch) {
+        //             let content = coutMatch[1] || coutMatch[2];
+        //             
+        //             // 替换变量
+        //             for (const [varName, varValue] of Object.entries(variables)) {
+        //                 content = content.replace(new RegExp(`\\b${varName}\\b`, 'g'), varValue);
+        //             }
+        //             
+        //             // 处理字符串
+        //             content = content.replace(/"([^"]+)"/g, '$1');
+        //             
+        //             // 处理连接符
+        //             content = content.replace(/\s*<<\s*/g, ' ');
+        //             
+        //             output += content.trim() + '\n';
+        //         }
+        //     }
+        //     
+        //     return output || '代码执行成功！';
+        // }
 
         // 运行代码
         async function runCode() {
             const code = editor.getValue();
-            showOutput("正在编译...", "success");
+            
+            // 检查代码是否包含cin语句
+            const hasCin = code.includes('cin');
+            let userInput = '';
+            
+            // 先打开弹窗
+            if (hasCin) {
+                // 显示等待输入
+                showModal("等待输入...", "success");
+                // 显示输入部分
+                document.getElementById('inputSection').style.display = 'block';
+                
+                // 重置输入框和提交按钮
+                const inputField = document.getElementById('userInput');
+                const submitBtn = document.getElementById('submitInput');
+                inputField.disabled = false;
+                submitBtn.style.display = 'block';
+                
+                // 清空输入框
+                inputField.value = '';
+                
+                // 聚焦输入框
+                inputField.focus();
+                
+                // 等待用户输入
+                userInput = await new Promise((resolve) => {
+                    const submitBtn = document.getElementById('submitInput');
+                    const inputField = document.getElementById('userInput');
+                    
+                    // 移除之前的事件监听器
+                    submitBtn.onclick = null;
+                    inputField.onkeypress = null;
+                    
+                    // 添加提交按钮点击事件
+                    submitBtn.onclick = function() {
+                        const input = inputField.value;
+                        // 禁用输入框
+                        inputField.disabled = true;
+                        // 隐藏提交按钮
+                        submitBtn.style.display = 'none';
+                        resolve(input);
+                    };
+                    
+                    // 添加回车键事件
+                    inputField.onkeypress = function(e) {
+                        // 回车键现在用于换行，而不是提交
+                        // 只有点击提交按钮才会提交输入
+                    };
+                });
+                
+                // 不再隐藏输入部分，保持可见
+                // document.getElementById('inputSection').style.display = 'none';
+                
+                // 更新弹窗显示正在编译
+                updateModal("正在编译...", "success");
+                // 确保输入部分仍然可见
+                document.getElementById('inputSection').style.display = 'block';
+            } else {
+                // 显示正在编译
+                showModal("正在编译...", "success");
+            }
             
             const startTime = performance.now();
             
             try {
                 // 尝试编译代码
-                const compileResult = await compileCode(code);
-                
-                if (compileResult.success) {
-                    showOutput("正在执行...", "success");
-                    
-                    // 执行WebAssembly
-                    const output = await executeWasm(compileResult.data.wasm, compileResult.data.js);
-                    
-                    const endTime = performance.now();
-                    const executionTime = (endTime - startTime).toFixed(2);
-                    
-                    if (output) {
-                        showOutput(output + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
-                    } else {
-                        showOutput(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
-                    }
-                } else {
-                    // 编译服务不可用，使用模拟执行
-                    showOutput("编译服务不可用，使用模拟执行...", "success");
-                    const simulatedOutput = simulateExecution(code);
-                    
-                    const endTime = performance.now();
-                    const executionTime = (endTime - startTime).toFixed(2);
-                    
-                    showOutput(simulatedOutput + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
-                }
-            } catch (error) {
-                // 执行错误，使用模拟执行
-                showOutput("执行错误，使用模拟执行...", "success");
-                const simulatedOutput = simulateExecution(code);
+                const compileResult = await compileCode(code, userInput);
                 
                 const endTime = performance.now();
                 const executionTime = (endTime - startTime).toFixed(2);
                 
-                showOutput(simulatedOutput + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                if (compileResult.success) {
+                    // 编译成功
+                    let output = compileResult.data.output || '';
+                    if (compileResult.data.error) {
+                        output += `\n错误: ${compileResult.data.error}`;
+                    }
+                    
+                    if (output) {
+                        updateModal(output + `\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                    } else {
+                        updateModal(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
+                    }
+                    // 确保输入部分仍然可见
+                    if (hasCin) {
+                        document.getElementById('inputSection').style.display = 'block';
+                    }
+                } else {
+                    // 编译失败
+                    const errorMessage = compileResult.error.message || "编译失败";
+                    updateModal(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                    // 确保输入部分仍然可见
+                    if (hasCin) {
+                        document.getElementById('inputSection').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                // 执行错误
+                const endTime = performance.now();
+                const executionTime = (endTime - startTime).toFixed(2);
+                updateModal(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
+                // 确保输入部分仍然可见
+                if (hasCin) {
+                    document.getElementById('inputSection').style.display = 'block';
+                }
             }
         }
         
-        // 显示输出
-        function showOutput(text, type = "success") {
-            const output = document.getElementById('output');
-            output.textContent = text;
-            output.className = "output-body " + type;
+        // 显示弹窗
+        function showModal(text, type = "success") {
+            const modal = document.getElementById('resultModal');
+            const modalOutput = document.getElementById('modalOutput');
+            
+            modalOutput.textContent = text;
+            modalOutput.className = "modal-body " + type;
+            modal.style.display = "block";
         }
         
-        // 清空输出
-        function clearOutput() {
-            showOutput("// 输出将显示在这里\n// 点击\"运行\"按钮执行代码");
+        // 更新弹窗内容
+        function updateModal(text, type = "success") {
+            const modalOutput = document.getElementById('modalOutput');
+            modalOutput.textContent = text;
+            modalOutput.className = "modal-body " + type;
         }
         
-        // 字体大小控制
-        let fontSize = 14;
-        
-        function increaseFontSize() {
-            if (fontSize < 24) {
-                fontSize += 2;
-                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
-            }
+        // 关闭弹窗
+        function closeModal() {
+            const modal = document.getElementById('resultModal');
+            modal.style.display = "none";
         }
         
-        function decreaseFontSize() {
-            if (fontSize > 10) {
-                fontSize -= 2;
-                document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
-            }
-        }
+        // 点击弹窗外部不再关闭
+        // window.addEventListener('click', function(event) {
+        //     const modal = document.getElementById('resultModal');
+        //     if (event.target === modal) {
+        //         modal.style.display = "none";
+        //     }
+        // });
+        
+        // 弹窗拖拽功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.querySelector('.modal-content');
+            const modalHeader = document.querySelector('.modal-header');
+            
+            let isDragging = false;
+            let offsetX, offsetY;
+            
+            modalHeader.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                offsetX = e.clientX - modalContent.getBoundingClientRect().left;
+                offsetY = e.clientY - modalContent.getBoundingClientRect().top;
+                modalContent.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    const x = e.clientX - offsetX;
+                    const y = e.clientY - offsetY;
+                    
+                    // 限制弹窗在视窗内
+                    const maxX = window.innerWidth - modalContent.offsetWidth;
+                    const maxY = window.innerHeight - modalContent.offsetHeight;
+                    
+                    const constrainedX = Math.max(0, Math.min(x, maxX));
+                    const constrainedY = Math.max(0, Math.min(y, maxY));
+                    
+                    modalContent.style.left = constrainedX + 'px';
+                    modalContent.style.top = constrainedY + 'px';
+                    modalContent.style.transform = 'none';
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                modalContent.style.cursor = 'move';
+            });
+        });
         
         // 清空代码
         function clearCode() {
@@ -821,14 +1230,75 @@ int main() {
             showOutput('代码已下载', 'success');
         }
         
+        // 显示输出信息
+        function showOutput(message, type = "success") {
+            // 简单的提示功能
+            alert(message);
+        }
+        
         // 页面加载完成后初始化
-        window.onload = function() {
+        window.addEventListener('load', function() {
             // 设置编辑器高度
             const editorBody = document.querySelector('.editor-body');
             editor.setSize('100%', '100%');
             // 设置初始字体大小
-            editor.setOption('fontSize', fontSize + 'px');
-        };
+            codeFontSize = 14;
+            editor.setOption('fontSize', codeFontSize + 'px');
+            // 同时设置DOM元素的样式
+            const codeMirrorElement = document.querySelector('.CodeMirror');
+            if (codeMirrorElement) {
+                codeMirrorElement.style.fontSize = codeFontSize + 'px';
+            }
+            // 同时设置行号的字体大小
+            const lineNumbers = document.querySelectorAll('.CodeMirror-linenumber');
+            lineNumbers.forEach(lineNum => {
+                lineNum.style.fontSize = codeFontSize + 'px';
+            });
+            
+            // 检查登录状态
+            gesp_checkLoginStatus();
+        });
+        
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                
+                // 检查用户角色，控制消课系统的显示
+                if (user.role !== 'teacher') {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                }
+                
+                // 只显示Wiki链接给管理员用户
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
+            }
+        }
+        
+        // 退出登录
+        function gesp_logout() {
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('user');
+            gesp_checkLoginStatus();
+            window.location.href = '../index.html';
+        }
     </script>
 </body>
 </html>

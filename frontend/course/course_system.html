@@ -18,6 +18,132 @@
             background-color: #f4f4f4;
         }
         
+        /* 导航栏样式 */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        .nav-link.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        /* 登录按钮样式 */
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        /* 用户头像样式 */
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* 下拉菜单样式 */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 180px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 20px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item.logout {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -158,6 +284,36 @@
     </style>
 </head>
 <body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="../index.html" class="logo">
+                <span>📚</span>
+                GESP C++ 学习计划
+            </a>
+            <div class="nav-links">
+                <a href="../index.html" class="nav-link">首页</a>
+                <a href="../core/study_plan.html" class="nav-link">学习计划表</a>
+                <a href="../programming/online_programming.html" class="nav-link">线上编程</a>
+                <a href="course_system.html" class="nav-link active">消课系统</a>
+                <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
+                <div id="authSection">
+                    <a href="../auth/login.html" class="login-btn">登录</a>
+                </div>
+                <div id="userSection" style="display: none;">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item" id="userName">用户名</div>
+                            <a href="../user/profile.html" class="dropdown-item">个人空间</a>
+                            <a href="#" class="dropdown-item logout" onclick="gesp_logout()">退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
     <div class="container">
         <h1>消课系统</h1>
         
@@ -279,12 +435,7 @@
             <h2>管理员设置</h2>
             <p>此功能仅对demo账号开放，用于设置教师端账户的权限。</p>
             
-            <div style="margin-bottom: 20px;">
-                <button class="action-btn add-class-btn" onclick="window.location.href='../core/wiki.html'">
-                    <span class="icon">📚</span> 项目功能 Wiki
-                </button>
-                <p style="margin-top: 10px; color: #7f8c8d; font-size: 14px;">查看项目的详细功能介绍和使用指南</p>
-            </div>
+
             
             <h3>教师账户管理</h3>
             <table id="adminUserTable">
@@ -318,46 +469,24 @@
             return true;
         }
         
-        // 初始化数据
-        function gesp_initData() {
-            if (!localStorage.getItem('students')) {
-                localStorage.setItem('students', JSON.stringify([]));
-            }
-            if (!localStorage.getItem('classRecords')) {
-                localStorage.setItem('classRecords', JSON.stringify([]));
-            }
-        }
-        
         // 页面加载时检查登录状态
         window.addEventListener('load', gesp_checkLoginAndRedirect);
         
-        // 打开标签页
-        function gesp_openTab(evt, tabName) {
-            var i, tabContent, tabLinks;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].classList.remove("active");
-            }
-            tabLinks = document.getElementsByClassName("tab");
-            for (i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-            
-            // 切换到对应标签时刷新数据
-            if (tabName === 'student') {
-                gesp_loadStudents();
-            } else if (tabName === 'class') {
-                gesp_loadStudentSelect();
-                gesp_loadClassRecords();
-            } else if (tabName === 'record') {
-                gesp_loadAllRecords();
-            }
+        // 获取token
+        function gesp_getToken() {
+            return sessionStorage.getItem('access_token');
+        }
+        
+        // 初始化数据
+        function gesp_initData() {
+            // 直接从API加载数据
+            gesp_loadStudents();
+            gesp_loadClassRecords();
+            gesp_loadAllRecords();
         }
         
         // 添加学员
-        function gesp_addStudent() {
+        async function gesp_addStudent() {
             const name = document.getElementById('name').value;
             const gender = document.getElementById('gender').value;
             const age = document.getElementById('age').value;
@@ -369,59 +498,88 @@
                 return;
             }
             
-            const students = JSON.parse(localStorage.getItem('students'));
-            const newStudent = {
-                id: Date.now(),
-                name,
-                gender,
-                age,
-                grade,
-                project
-            };
-            
-            students.push(newStudent);
-            localStorage.setItem('students', JSON.stringify(students));
-            
-            // 显示成功消息
-            const message = document.getElementById('studentMessage');
-            message.textContent = '学员添加成功！';
-            message.style.display = 'block';
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
-            
-            // 清空表单
-            document.getElementById('name').value = '';
-            document.getElementById('gender').value = '';
-            document.getElementById('age').value = '';
-            document.getElementById('grade').value = '';
-            document.getElementById('project').value = '';
-            
-            // 刷新学员列表
-            gesp_loadStudents();
+            try {
+                const response = await fetch('http://localhost:5000/api/students', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    },
+                    body: JSON.stringify({
+                        name,
+                        gender,
+                        age: parseInt(age),
+                        grade,
+                        project
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 显示成功消息
+                    const message = document.getElementById('studentMessage');
+                    message.textContent = '学员添加成功！';
+                    message.style.display = 'block';
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 3000);
+                    
+                    // 清空表单
+                    document.getElementById('name').value = '';
+                    document.getElementById('gender').value = '';
+                    document.getElementById('age').value = '';
+                    document.getElementById('grade').value = '';
+                    document.getElementById('project').value = '';
+                    
+                    // 刷新学员列表
+                    gesp_loadStudents();
+                } else {
+                    alert('添加学员失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('添加学员失败: ' + error.message);
+            }
         }
         
         // 加载学员列表
-        function gesp_loadStudents() {
-            const students = JSON.parse(localStorage.getItem('students'));
-            const tableBody = document.querySelector('#studentTable tbody');
-            tableBody.innerHTML = '';
-            
-            students.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.name}</td>
-                    <td>${student.gender}</td>
-                    <td>${student.age}</td>
-                    <td>${student.grade}</td>
-                    <td>${student.project}</td>
-                    <td>
-                        <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
-                        <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+        async function gesp_loadStudents() {
+            try {
+                const response = await fetch('http://localhost:5000/api/students', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const students = result.data;
+                    const tableBody = document.querySelector('#studentTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    students.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${student.name}</td>
+                            <td>${student.gender}</td>
+                            <td>${student.age}</td>
+                            <td>${student.grade}</td>
+                            <td>${student.project}</td>
+                            <td>
+                                <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
+                                <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // 同时更新学员选择下拉框
+                    gesp_loadStudentSelect();
+                } else {
+                    console.error('加载学员列表失败:', result.message);
+                }
+            } catch (error) {
+                console.error('加载学员列表失败:', error);
+            }
         }
         
         // 跳转到添加课程页面并选择学员
@@ -433,37 +591,58 @@
         }
         
         // 删除学员
-        function gesp_deleteStudent(studentId) {
+        async function gesp_deleteStudent(studentId) {
             if (confirm('确定要删除该学员吗？')) {
-                let students = JSON.parse(localStorage.getItem('students'));
-                students = students.filter(student => student.id !== studentId);
-                localStorage.setItem('students', JSON.stringify(students));
-                
-                // 同时删除该学员的所有上课记录
-                let classRecords = JSON.parse(localStorage.getItem('classRecords'));
-                classRecords = classRecords.filter(record => record.studentId !== studentId);
-                localStorage.setItem('classRecords', JSON.stringify(classRecords));
-                
-                gesp_loadStudents();
+                try {
+                    const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${gesp_getToken()}`
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        // 刷新学员列表
+                        gesp_loadStudents();
+                    } else {
+                        alert('删除学员失败: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('删除学员失败: ' + error.message);
+                }
             }
         }
         
         // 加载学员选择下拉框
-        function gesp_loadStudentSelect() {
-            const students = JSON.parse(localStorage.getItem('students'));
-            const select = document.getElementById('studentSelect');
-            select.innerHTML = '<option value="">请选择学员</option>';
-            
-            students.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = student.name;
-                select.appendChild(option);
-            });
+        async function gesp_loadStudentSelect() {
+            try {
+                const response = await fetch('http://localhost:5000/api/students', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const students = result.data;
+                    const select = document.getElementById('studentSelect');
+                    select.innerHTML = '<option value="">请选择学员</option>';
+                    
+                    students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.id;
+                        option.textContent = student.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载学员选择下拉框失败:', error);
+            }
         }
         
         // 添加上课记录
-        function gesp_addClassRecord() {
+        async function gesp_addClassRecord() {
             const studentId = document.getElementById('studentSelect').value;
             const classDate = document.getElementById('classDate').value;
             const classContent = document.getElementById('classContent').value;
@@ -473,90 +652,142 @@
                 return;
             }
             
-            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
-            const newRecord = {
-                id: Date.now(),
-                studentId: parseInt(studentId),
-                classDate,
-                classContent
-            };
-            
-            classRecords.push(newRecord);
-            localStorage.setItem('classRecords', JSON.stringify(classRecords));
-            
-            // 显示成功消息
-            const message = document.getElementById('classMessage');
-            message.textContent = '上课记录添加成功！';
-            message.style.display = 'block';
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
-            
-            // 清空表单
-            document.getElementById('classDate').value = '';
-            document.getElementById('classContent').value = '';
-            
-            // 刷新上课记录列表
-            gesp_loadClassRecords();
+            try {
+                const response = await fetch('http://localhost:5000/api/class-records', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    },
+                    body: JSON.stringify({
+                        student_id: parseInt(studentId),
+                        date: classDate.split('T')[0],
+                        start_time: classDate.split('T')[1] || '00:00',
+                        end_time: classDate.split('T')[1] || '01:00',
+                        topic: '课程',
+                        content: classContent
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 显示成功消息
+                    const message = document.getElementById('classMessage');
+                    message.textContent = '上课记录添加成功！';
+                    message.style.display = 'block';
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 3000);
+                    
+                    // 清空表单
+                    document.getElementById('classDate').value = '';
+                    document.getElementById('classContent').value = '';
+                    
+                    // 刷新上课记录列表
+                    gesp_loadClassRecords();
+                    gesp_loadAllRecords();
+                } else {
+                    alert('添加上课记录失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('添加上课记录失败: ' + error.message);
+            }
         }
         
         // 加载上课记录列表
-        function gesp_loadClassRecords() {
-            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
-            const students = JSON.parse(localStorage.getItem('students'));
-            const tableBody = document.querySelector('#classTable tbody');
-            tableBody.innerHTML = '';
-            
-            classRecords.forEach(record => {
-                const student = students.find(s => s.id === record.studentId);
-                if (student) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${student.name}</td>
-                        <td>${gesp_formatDateTime(record.classDate)}</td>
-                        <td>${record.classContent}</td>
-                        <td>
-                            <button class="action-btn delete-btn" onclick="gesp_deleteClassRecord(${record.id})">删除</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
+        async function gesp_loadClassRecords() {
+            try {
+                const response = await fetch('http://localhost:5000/api/class-records', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const classRecords = result.data;
+                    const tableBody = document.querySelector('#classTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    classRecords.forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.student ? record.student.name : '未知学员'}</td>
+                            <td>${record.date} ${record.start_time}</td>
+                            <td>${record.content}</td>
+                            <td>
+                                <button class="action-btn delete-btn" onclick="gesp_deleteClassRecord(${record.id})">删除</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('加载上课记录失败:', result.message);
                 }
-            });
+            } catch (error) {
+                console.error('加载上课记录失败:', error);
+            }
         }
         
         // 删除上课记录
-        function gesp_deleteClassRecord(recordId) {
+        async function gesp_deleteClassRecord(recordId) {
             if (confirm('确定要删除该上课记录吗？')) {
-                let classRecords = JSON.parse(localStorage.getItem('classRecords'));
-                classRecords = classRecords.filter(record => record.id !== recordId);
-                localStorage.setItem('classRecords', JSON.stringify(classRecords));
-                gesp_loadClassRecords();
+                try {
+                    const response = await fetch(`http://localhost:5000/api/class-records/${recordId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${gesp_getToken()}`
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        // 刷新上课记录列表
+                        gesp_loadClassRecords();
+                        gesp_loadAllRecords();
+                    } else {
+                        alert('删除上课记录失败: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('删除上课记录失败: ' + error.message);
+                }
             }
         }
         
         // 加载所有消课记录
-        function gesp_loadAllRecords() {
-            const classRecords = JSON.parse(localStorage.getItem('classRecords'));
-            const students = JSON.parse(localStorage.getItem('students'));
-            const tableBody = document.querySelector('#recordTable tbody');
-            tableBody.innerHTML = '';
-            
-            classRecords.forEach(record => {
-                const student = students.find(s => s.id === record.studentId);
-                if (student) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${student.name}</td>
-                        <td>${student.gender}</td>
-                        <td>${student.age}</td>
-                        <td>${student.grade}</td>
-                        <td>${student.project}</td>
-                        <td>${gesp_formatDateTime(record.classDate)}</td>
-                        <td>${record.classContent}</td>
-                    `;
-                    tableBody.appendChild(row);
+        async function gesp_loadAllRecords() {
+            try {
+                const response = await fetch('http://localhost:5000/api/course-records', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const courseRecords = result.data;
+                    const tableBody = document.querySelector('#recordTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    courseRecords.forEach(record => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.student ? record.student.name : '未知学员'}</td>
+                            <td>${record.student ? record.student.gender : ''}</td>
+                            <td>${record.student ? record.student.age : ''}</td>
+                            <td>${record.student ? record.student.grade : ''}</td>
+                            <td>${record.student ? record.student.project : ''}</td>
+                            <td>${record.class_record ? `${record.class_record.date} ${record.class_record.start_time}` : ''}</td>
+                            <td>${record.class_record ? record.class_record.content : ''}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('加载消课记录失败:', result.message);
                 }
-            });
+            } catch (error) {
+                console.error('加载消课记录失败:', error);
+            }
         }
         
         // 格式化日期时间
@@ -641,9 +872,18 @@
         
         // 初始化
         window.onload = function() {
+            // 检查登录状态
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // 初始化数据
             gesp_initData();
             gesp_loadStudents();
             gesp_checkAdminPermission();
+            gesp_checkLoginStatus();
         };
         
         // 打开标签页
@@ -672,6 +912,44 @@
                 gesp_loadAdminUsers();
             }
         }
+        
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                
+                // 检查用户角色，控制消课系统的显示
+                // 消课系统页面本身不需要控制消课系统链接的显示
+                
+                // 只显示Wiki链接给管理员用户
+                if (user.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
+            }
+        }
+        
+        // 退出登录
+        function gesp_logout() {
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('user');
+            gesp_checkLoginStatus();
+            window.location.href = '../index.html';
+        }
+        
+
     </script>
 </body>
 </html>

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from extensions import db, jwt, cors
 
 # 加载环境变量
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
 
 app = Flask(__name__)
 
@@ -38,9 +38,13 @@ def internal_error(error):
 from routes.auth import bp as auth_bp
 from routes.notes import bp as notes_bp
 from routes.users import bp as users_bp
+from routes.compile import bp as compile_bp
+from routes.course import course_bp as course_bp
 app.register_blueprint(auth_bp)
 app.register_blueprint(notes_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(compile_bp)
+app.register_blueprint(course_bp)
 
 if __name__ == '__main__':
     try:
