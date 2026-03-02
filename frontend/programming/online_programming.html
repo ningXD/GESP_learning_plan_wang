@@ -185,6 +185,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-selector label {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .language-selector select {
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
         }
         
         .editor-title {
@@ -362,7 +384,8 @@
             border: 1px solid #333;
             width: 60%;
             max-width: 600px;
-            height: 400px;
+            min-height: 400px;
+            max-height: 80vh;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             overflow: hidden;
@@ -404,7 +427,8 @@
         
         .modal-body {
             padding: 20px;
-            height: 250px;
+            min-height: 250px;
+            max-height: 300px;
             overflow-y: auto;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 14px;
@@ -463,6 +487,7 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
 </head>
@@ -500,7 +525,16 @@
     <div class="main-container">
         <div class="editor-container">
             <div class="editor-header">
-                <div class="editor-title">代码编辑器</div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="editor-title">代码编辑器</div>
+                    <div class="language-selector">
+                        <label for="languageSelect">编程语言:</label>
+                        <select id="languageSelect" onchange="gesp_changeLanguage(this.value)">
+                            <option value="cpp">C++</option>
+                            <option value="python">Python</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="editor-actions">
                     <button class="action-btn" onclick="loadExample()">加载示例</button>
                     <button class="action-btn" onclick="clearCode()">清空代码</button>
@@ -613,6 +647,9 @@ int main() {
             }
         }
 
+        // 当前选择的语言
+        let currentLanguage = 'cpp';
+        
         // 初始化代码编辑器
         let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
             mode: 'text/x-c++src',
@@ -630,6 +667,24 @@ int main() {
                 }
             }
         });
+        
+        // 切换编程语言
+        function gesp_changeLanguage(language) {
+            currentLanguage = language;
+            // 重置示例索引
+            currentExampleIndex = 0;
+            
+            // 更新编辑器模式
+            if (language === 'cpp') {
+                editor.setOption('mode', 'text/x-c++src');
+                // 切换到C++示例
+                editor.setValue(examples.hello);
+            } else if (language === 'python') {
+                editor.setOption('mode', 'python');
+                // 切换到Python示例
+                editor.setValue(pythonExamples.hello);
+            }
+        }
         
         // 示例代码
         const examples = {
@@ -779,6 +834,82 @@ int main() {
 }`
         };
         
+        // Python示例代码
+        const pythonExamples = {
+            hello: `print("Hello, GESP Python!")`,
+            variables: `# 变量示例
+a = 10
+b = 3.14
+name = "GESP"
+
+print("整数:", a)
+print("小数:", b)
+print("字符串:", name)`,
+            loop: `# 循环示例
+print("1到10的数字:")
+for i in range(1, 11):
+    print(i, end=" ")
+print()`,
+            matrix: `# X字矩阵示例
+n = 5
+print("X字矩阵:")
+for i in range(n):
+    for j in range(n):
+        if i == j or i + j == n - 1:
+            print("*", end="")
+        else:
+            print(" ", end="")
+    print()`,
+            gesp1: `# 2023年12月真题：计算1到n的奇数和
+n = int(input())
+sum = 0
+
+for i in range(1, n + 1):
+    if i % 2 != 0:
+        sum += i
+
+print("奇数和:", sum)`,
+            gesp2: `# 2024年6月真题：黄金格
+n = int(input())
+
+for i in range(n):
+    for j in range(n):
+        if i == 0 or i == n-1 or j == 0 or j == n-1 or i == j or i + j == n-1:
+            print("*", end="")
+        else:
+            print(" ", end="")
+    print()`,
+            gesp3: `# 2024年12月真题：数字反转
+num = int(input())
+reversed_num = 0
+
+while num > 0:
+    digit = num % 10
+    reversed_num = reversed_num * 10 + digit
+    num //= 10
+
+print("反转后:", reversed_num)`,
+            gesp4: `# 2025年6月真题：统计元音字母
+s = input()
+count = 0
+
+vowels = 'aeiouAEIOU'
+for c in s:
+    if c in vowels:
+        count += 1
+
+print("元音字母数量:", count)`,
+            gesp5: `# 2025年12月真题：最大公约数
+a, b = map(int, input().split())
+
+while b != 0:
+    temp = b
+    b = a % b
+    a = temp
+
+print("最大公约数:", a)`
+        };
+        
         // 示例代码讲解
         const exampleExplanations = {
             hello: "这是一个简单的C++程序，输出'Hello, GESP C++!'到控制台。它展示了C++的基本结构，包括头文件包含、命名空间使用和main函数。",
@@ -792,22 +923,47 @@ int main() {
             gesp5: "2025年12月真题：最大公约数。使用辗转相除法计算两个数的最大公约数，通过while循环不断取余直到余数为0。"
         };
         
+        // Python示例代码讲解
+        const pythonExampleExplanations = {
+            hello: "这是一个简单的Python程序，输出'Hello, GESP Python!'到控制台。它展示了Python的基本结构，直接使用print函数输出内容。",
+            variables: "这个示例展示了Python中不同类型变量的声明和使用，包括整数、浮点数和字符串。Python不需要显式声明变量类型。",
+            loop: "这个示例使用for循环和range函数打印1到10的数字，展示了Python中循环结构的基本用法。",
+            matrix: "这个示例打印一个X字矩阵，展示了Python中嵌套循环的使用和条件判断。",
+            gesp1: "2023年12月真题：计算1到n的奇数和。使用for循环和range函数遍历1到n的所有数字，判断每个数字是否为奇数，如果是则累加到sum变量中。",
+            gesp2: "2024年6月真题：黄金格。根据输入的n，打印一个n×n的黄金格图案，边框和两条对角线上的位置打印'*'，其他位置打印空格。",
+            gesp3: "2024年12月真题：数字反转。使用while循环将输入的数字反转，通过取余和整除操作获取每一位数字并重新组合。",
+            gesp4: "2025年6月真题：统计元音字母。使用input函数读取字符串，然后遍历字符串中的每个字符，统计元音字母的数量。",
+            gesp5: "2025年12月真题：最大公约数。使用辗转相除法计算两个数的最大公约数，通过while循环不断取余直到余数为0。" 
+        };
+        
         // 按难度排序的示例代码顺序
         const exampleOrder = ['hello', 'variables', 'loop', 'matrix', 'gesp1', 'gesp3', 'gesp2', 'gesp5', 'gesp4'];
         let currentExampleIndex = 0;
         
         // 加载示例代码
         function loadExample() {
-            // 获取当前示例的key
-            const currentKey = exampleOrder[currentExampleIndex];
-            editor.setValue(examples[currentKey]);
-            
-            // 显示详细的代码讲解
-            const explanation = exampleExplanations[currentKey] || "这是一个C++示例代码。";
-            alert("代码讲解:\n" + explanation);
+            if (currentLanguage === 'python') {
+                // Python示例顺序
+                const pythonExampleOrder = ['hello', 'variables', 'loop', 'matrix', 'gesp1', 'gesp3', 'gesp2', 'gesp5', 'gesp4'];
+                // 获取当前Python示例的key
+                const currentKey = pythonExampleOrder[currentExampleIndex];
+                editor.setValue(pythonExamples[currentKey]);
+                
+                // 显示详细的代码讲解
+                const explanation = pythonExampleExplanations[currentKey] || "这是一个Python示例代码。";
+                alert("代码讲解:\n" + explanation);
+            } else {
+                // C++示例
+                const currentKey = exampleOrder[currentExampleIndex];
+                editor.setValue(examples[currentKey]);
+                
+                // 显示详细的代码讲解
+                const explanation = exampleExplanations[currentKey] || "这是一个C++示例代码。";
+                alert("代码讲解:\n" + explanation);
+            }
             
             // 更新索引，循环遍历
-            currentExampleIndex = (currentExampleIndex + 1) % exampleOrder.length;
+            currentExampleIndex = (currentExampleIndex + 1) % 9; // 9个示例
         }
         
         // 编译代码
@@ -818,7 +974,7 @@ int main() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ code, input })
+                    body: JSON.stringify({ code, input, language: currentLanguage })
                 });
                 return await response.json();
             } catch (error) {
@@ -1020,12 +1176,23 @@ int main() {
         async function runCode() {
             const code = editor.getValue();
             
-            // 检查代码是否包含cin语句
-            const hasCin = code.includes('cin');
+            // 检查代码是否需要输入
+            let hasInput = false;
+            if (currentLanguage === 'cpp') {
+                hasInput = code.includes('cin');
+            } else if (currentLanguage === 'python') {
+                hasInput = code.includes('input');
+            }
+            
+            // 调试信息
+            console.log('Current language:', currentLanguage);
+            console.log('Code:', code);
+            console.log('Has input:', hasInput);
+            console.log('Python input check:', code.includes('input'));
             let userInput = '';
             
             // 先打开弹窗
-            if (hasCin) {
+            if (hasInput) {
                 // 显示等待输入
                 showModal("等待输入...", "success");
                 // 显示输入部分
@@ -1103,7 +1270,7 @@ int main() {
                         updateModal(`代码执行成功！\n\n[运行用时: ${executionTime} 毫秒]`, "success");
                     }
                     // 确保输入部分仍然可见
-                    if (hasCin) {
+                    if (hasInput) {
                         document.getElementById('inputSection').style.display = 'block';
                     }
                 } else {
@@ -1111,7 +1278,7 @@ int main() {
                     const errorMessage = compileResult.error.message || "编译失败";
                     updateModal(`编译错误: \n${errorMessage}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
                     // 确保输入部分仍然可见
-                    if (hasCin) {
+                    if (hasInput) {
                         document.getElementById('inputSection').style.display = 'block';
                     }
                 }
@@ -1121,7 +1288,7 @@ int main() {
                 const executionTime = (endTime - startTime).toFixed(2);
                 updateModal(`执行错误: \n${error.message || "未知错误"}\n\n[运行用时: ${executionTime} 毫秒]`, "error");
                 // 确保输入部分仍然可见
-                if (hasCin) {
+                if (hasInput) {
                     document.getElementById('inputSection').style.display = 'block';
                 }
             }
@@ -1219,7 +1386,7 @@ int main() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'code.cpp';
+            a.download = currentLanguage === 'python' ? 'code.py' : 'code.cpp';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

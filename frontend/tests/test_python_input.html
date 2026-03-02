@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试Python输入</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .CodeMirror { height: 300px; border: 1px solid #ccc; }
+        button { margin-top: 10px; padding: 10px 20px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+</head>
+<body>
+    <h1>测试Python输入功能</h1>
+    <textarea id="codeEditor">name = input("请输入你的名字：")
+print("你好，" + name + "！")</textarea>
+    <button onclick="runCode()">运行代码</button>
+    
+    <!-- 运行结果弹窗 -->
+    <div id="resultModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #1e1e1e; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; max-width: 600px; height: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); overflow: hidden; cursor: move;">
+            <div style="background-color: #252526; padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: move;">
+                <span style="color: #cccccc; font-weight: bold; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">命令提示符</span>
+                <button onclick="closeModal()" style="color: #999; float: right; font-size: 24px; font-weight: bold; background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+            <div id="modalOutput" style="padding: 20px; height: 250px; overflow-y: auto; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 14px; line-height: 1.5; white-space: pre-wrap; cursor: default; color: #cccccc;"></div>
+            <div id="inputSection" style="display: none; height: 80px; border-top: 1px solid #333;">
+                <div style="padding: 10px 20px; height: 100%; display: flex; align-items: center;">
+                    <span style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
+                    <textarea id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; resize: none; height: 60px; overflow-y: auto;"></textarea>
+                    <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentLanguage = 'python';
+        
+        // 初始化代码编辑器
+        let editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+            mode: 'python',
+            theme: 'monokai',
+            lineNumbers: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+            indentUnit: 4,
+            indentWithTabs: false
+        });
+        
+        async function runCode() {
+            const code = editor.getValue();
+            
+            // 检查代码是否需要输入
+            let hasInput = code.includes('input(');
+            let userInput = '';
+            
+            console.log('Current language:', currentLanguage);
+            console.log('Code:', code);
+            console.log('Has input:', hasInput);
+            
+            // 先打开弹窗
+            if (hasInput) {
+                // 显示等待输入
+                showModal("等待输入...");
+                // 显示输入部分
+                document.getElementById('inputSection').style.display = 'block';
+                
+                // 重置输入框和提交按钮
+                const inputField = document.getElementById('userInput');
+                const submitBtn = document.getElementById('submitInput');
+                inputField.disabled = false;
+                submitBtn.style.display = 'block';
+                
+                // 清空输入框
+                inputField.value = '';
+                
+                // 聚焦输入框
+                inputField.focus();
+                
+                // 等待用户输入
+                userInput = await new Promise((resolve) => {
+                    const submitBtn = document.getElementById('submitInput');
+                    const inputField = document.getElementById('userInput');
+                    
+                    // 移除之前的事件监听器
+                    submitBtn.onclick = null;
+                    inputField.onkeypress = null;
+                    
+                    // 添加提交按钮点击事件
+                    submitBtn.onclick = function() {
+                        const input = inputField.value;
+                        // 禁用输入框
+                        inputField.disabled = true;
+                        // 隐藏提交按钮
+                        submitBtn.style.display = 'none';
+                        resolve(input);
+                    };
+                });
+                
+                // 更新弹窗显示正在编译
+                updateModal("正在编译...");
+                // 确保输入部分仍然可见
+                document.getElementById('inputSection').style.display = 'block';
+            } else {
+                // 显示正在编译
+                showModal("正在编译...");
+            }
+            
+            // 模拟编译过程
+            setTimeout(() => {
+                updateModal(`你好，${userInput}！\n\n[运行用时: 100 毫秒]`);
+                if (hasInput) {
+                    document.getElementById('inputSection').style.display = 'block';
+                }
+            }, 1000);
+        }
+        
+        function showModal(text) {
+            const modal = document.getElementById('resultModal');
+            const modalOutput = document.getElementById('modalOutput');
+            
+            modalOutput.textContent = text;
+            modal.style.display = "block";
+        }
+        
+        function updateModal(text) {
+            const modalOutput = document.getElementById('modalOutput');
+            modalOutput.textContent = text;
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('resultModal');
+            modal.style.display = "none";
+        }
+    </script>
+</body>
+</html>
