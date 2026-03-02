@@ -795,15 +795,22 @@ int main() {
             gesp5: "2025年12月真题：最大公约数。使用辗转相除法计算两个数的最大公约数，通过while循环不断取余直到余数为0。"
         };
         
+        // 按难度排序的示例代码顺序
+        const exampleOrder = ['hello', 'variables', 'loop', 'matrix', 'gesp1', 'gesp3', 'gesp2', 'gesp5', 'gesp4'];
+        let currentExampleIndex = 0;
+        
         // 加载示例代码
         function loadExample() {
-            const exampleKeys = Object.keys(examples);
-            const randomKey = exampleKeys[Math.floor(Math.random() * exampleKeys.length)];
-            editor.setValue(examples[randomKey]);
+            // 获取当前示例的key
+            const currentKey = exampleOrder[currentExampleIndex];
+            editor.setValue(examples[currentKey]);
             
             // 显示详细的代码讲解
-            const explanation = exampleExplanations[randomKey] || "这是一个C++示例代码。";
+            const explanation = exampleExplanations[currentKey] || "这是一个C++示例代码。";
             alert("代码讲解:\n" + explanation);
+            
+            // 更新索引，循环遍历
+            currentExampleIndex = (currentExampleIndex + 1) % exampleOrder.length;
         }
         
         // 编译代码
