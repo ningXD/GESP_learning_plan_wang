@@ -1,7 +1,8 @@
 from functools import wraps
 from flask import request, jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity, JWTManager
 from models.models import User
+import traceback
 
 
 def token_required(f):
@@ -9,10 +10,13 @@ def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
-            # 验证JWT token，明确指定从headers获取
-            verify_jwt_in_request(locations=['headers'])
-            # 获取当前用户ID
-            user_id = get_jwt_identity()
+            # 打印请求头，检查Authorization头
+            print(f"Request headers: {dict(request.headers)}")
+            # 验证JWT token
+            verify_jwt_in_request()
+            # 获取当前用户ID并转换为整数
+            user_id = int(get_jwt_identity())
+            print(f"User ID from JWT: {user_id}")
             # 查询用户
             user = User.query.get(user_id)
             if not user:
@@ -20,6 +24,8 @@ def token_required(f):
             # 将用户对象传递给视图函数
             return f(user, *args, **kwargs)
         except Exception as e:
+            print(f"认证错误: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
             return jsonify({'success': False, 'message': '认证失败'}), 401
 
     return decorated_function

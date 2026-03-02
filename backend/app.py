@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 import os
 from dotenv import load_dotenv
 from extensions import db, jwt, cors
@@ -23,6 +23,13 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 db.init_app(app)
 jwt.init_app(app)
 cors.init_app(app, origins=['*'])
+
+# JWT配置
+@app.route('/api/test-token')
+def test_token():
+    from flask_jwt_extended import create_access_token
+    token = create_access_token(identity=1)
+    return jsonify({'token': token})
 
 # 错误处理
 @app.errorhandler(404)

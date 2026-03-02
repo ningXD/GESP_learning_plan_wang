@@ -1,31 +1,40 @@
 import requests
-import json
 
-# 测试C++编译API
-code = '''#include <iostream>
-using namespace std;
-
-int main() {
-    cout << "1到10的数字: " << endl;
-    for (int i = 1; i <= 10; i++) {
-        cout << i << " ";
+# 测试登录获取token
+def test_login():
+    url = 'http://localhost:5000/api/auth/login'
+    data = {
+        'username': 'demo',
+        'password': '123456'
     }
-    cout << endl;
-    return 0;
-}'''
+    response = requests.post(url, json=data)
+    print('Login response:', response.status_code)
+    print('Login data:', response.json())
+    return response.json().get('access_token')
 
-url = 'http://localhost:5000/api/compile'
-headers = {'Content-Type': 'application/json'}
-data = {'code': code}
+# 测试获取学习计划
+def test_get_study_plans(token):
+    url = 'http://localhost:5000/api/study-plans'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    response = requests.get(url, headers=headers)
+    print('Study plans response:', response.status_code)
+    print('Study plans data:', response.json())
 
-response = requests.post(url, headers=headers, data=json.dumps(data))
+# 测试获取学生列表
+def test_get_students(token):
+    url = 'http://localhost:5000/api/students'
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    response = requests.get(url, headers=headers)
+    print('Students response:', response.status_code)
+    print('Students data:', response.json())
 
-print('Status Code:', response.status_code)
-print('Response:', response.json())
-
-# 检查输出是否完整
-if response.status_code == 200:
-    result = response.json()
-    if result['success']:
-        print('\nOutput:', repr(result['data']['output']))
-        print('Error:', repr(result['data']['error']))
+if __name__ == '__main__':
+    print('Testing API...')
+    token = test_login()
+    if token:
+        test_get_study_plans(token)
+        test_get_students(token)
