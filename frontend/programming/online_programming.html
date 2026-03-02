@@ -115,6 +115,8 @@
         }
         
         /* 下拉菜单样式 */
+        /* 注意：margin-top设置为2px，不要随意修改
+           间隙过小会导致下拉菜单与头像重叠，间隙过大会导致鼠标移动过程中下拉列表容易消失 */
         .dropdown-menu {
             position: absolute;
             top: 100%;
@@ -124,7 +126,7 @@
             border-radius: 8px;
             padding: 10px 0;
             min-width: 180px;
-            margin-top: 5px;
+            margin-top: 2px;
             display: none;
             z-index: 1001;
         }
