@@ -1246,6 +1246,8 @@ print("最大公约数:", a)`
             } else {
                 // 显示正在编译
                 showModal("正在编译...", "success");
+                // 隐藏输入部分
+                document.getElementById('inputSection').style.display = 'none';
             }
             
             const startTime = performance.now();
@@ -1315,6 +1317,15 @@ print("最大公约数:", a)`
         function closeModal() {
             const modal = document.getElementById('resultModal');
             modal.style.display = "none";
+            
+            // 重置输入框状态
+            const inputField = document.getElementById('userInput');
+            const submitBtn = document.getElementById('submitInput');
+            inputField.value = '';
+            inputField.disabled = true;
+            submitBtn.style.display = 'none';
+            // 隐藏输入部分
+            document.getElementById('inputSection').style.display = 'none';
         }
         
         // 点击弹窗外部不再关闭
