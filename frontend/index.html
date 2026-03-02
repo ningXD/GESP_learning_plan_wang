@@ -422,6 +422,8 @@
         // 检查用户登录状态
         function gesp_checkLoginStatus() {
             const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
             if (userStr) {
                 const user = JSON.parse(userStr);
                 // 显示用户信息
@@ -443,6 +445,12 @@
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';
                 }
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';
