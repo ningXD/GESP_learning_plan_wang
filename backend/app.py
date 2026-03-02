@@ -6,7 +6,7 @@ from extensions import db, jwt, cors
 # 加载环境变量
 load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
 # 配置应用
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
