@@ -1772,10 +1772,10 @@ for (int i = 0; i < n; i++) {
                 }
                 
                 // 检查用户角色，控制消课系统的显示
-                if (userInfo.role !== 'teacher' && !userInfo.admin) {
-                    document.getElementById('courseSystemLink').style.display = 'none';
-                } else {
+                if (userInfo.role === 'teacher' || userInfo.admin || userInfo.role === 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'block';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'none';
                 }
                 
                 // 加载学习计划

@@ -11,7 +11,7 @@ course_bp = Blueprint('course', __name__)
 @token_required
 def get_students(current_user):
     # 只返回当前教师的学员
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     students = Student.query.filter_by(teacher_id=current_user.id).all()
@@ -20,7 +20,7 @@ def get_students(current_user):
 @course_bp.route('/api/students', methods=['POST'])
 @token_required
 def add_student(current_user):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     data = request.get_json()
@@ -46,7 +46,7 @@ def add_student(current_user):
 @course_bp.route('/api/students/<int:student_id>', methods=['PUT'])
 @token_required
 def update_student(current_user, student_id):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     student = Student.query.filter_by(id=student_id, teacher_id=current_user.id).first()
@@ -78,7 +78,7 @@ def update_student(current_user, student_id):
 @course_bp.route('/api/students/<int:student_id>', methods=['DELETE'])
 @token_required
 def delete_student(current_user, student_id):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     student = Student.query.filter_by(id=student_id, teacher_id=current_user.id).first()
@@ -97,7 +97,7 @@ def delete_student(current_user, student_id):
 @course_bp.route('/api/class-records', methods=['GET'])
 @token_required
 def get_class_records(current_user):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     class_records = ClassRecord.query.filter_by(teacher_id=current_user.id).all()
@@ -106,7 +106,7 @@ def get_class_records(current_user):
 @course_bp.route('/api/class-records', methods=['POST'])
 @token_required
 def add_class_record(current_user):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     data = request.get_json()
@@ -148,7 +148,7 @@ def add_class_record(current_user):
 @course_bp.route('/api/class-records/<int:class_id>', methods=['PUT'])
 @token_required
 def update_class_record(current_user, class_id):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     class_record = ClassRecord.query.filter_by(id=class_id, teacher_id=current_user.id).first()
@@ -180,7 +180,7 @@ def update_class_record(current_user, class_id):
 @course_bp.route('/api/class-records/<int:class_id>', methods=['DELETE'])
 @token_required
 def delete_class_record(current_user, class_id):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     class_record = ClassRecord.query.filter_by(id=class_id, teacher_id=current_user.id).first()
@@ -204,7 +204,7 @@ def delete_class_record(current_user, class_id):
 @course_bp.route('/api/course-records', methods=['GET'])
 @token_required
 def get_course_records(current_user):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     # 获取当前教师的所有消课记录
@@ -219,7 +219,7 @@ def get_course_records(current_user):
 @course_bp.route('/api/course-records/<int:record_id>', methods=['PUT'])
 @token_required
 def update_course_record(current_user, record_id):
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     course_record = CourseRecord.query.get(record_id)

@@ -64,8 +64,7 @@ if __name__ == '__main__':
                 username='demo',
                 password=hashed_password,
                 role='admin',
-                admin=True,
-                type='admin'
+                admin=True
             )
             db.session.add(demo_user)
             
@@ -76,8 +75,7 @@ if __name__ == '__main__':
                 password=teacher_hashed_password,
                 nickname='测试教师',
                 role='teacher',
-                admin=False,
-                type='teacher'
+                admin=False
             )
             db.session.add(teacher_user)
             
@@ -93,7 +91,6 @@ if __name__ == '__main__':
                 nickname='测试学生',
                 role='student',
                 admin=False,
-                type='student',
                 age=16,
                 gender='男',
                 grade='高二',

@@ -4,9 +4,9 @@ from extensions import db
 from datetime import datetime
 from decorators import token_required
 
-study_plan_bp = Blueprint('study_plan', __name__)
+study_plan_bp = Blueprint('study_plan', __name__, url_prefix='/api')
 
-@study_plan_bp.route('/api/study-plans', methods=['GET'])
+@study_plan_bp.route('/study-plans', methods=['GET'])
 @token_required
 def get_study_plans(user):
     
@@ -21,7 +21,7 @@ def get_study_plans(user):
     
     return jsonify([plan.to_dict() for plan in plans])
 
-@study_plan_bp.route('/api/study-plans/<int:plan_id>', methods=['GET'])
+@study_plan_bp.route('/study-plans/<int:plan_id>', methods=['GET'])
 @token_required
 def get_study_plan(user, plan_id):
     plan = StudyPlan.query.get(plan_id)
@@ -35,7 +35,7 @@ def get_study_plan(user, plan_id):
     
     return jsonify(plan.to_dict())
 
-@study_plan_bp.route('/api/study-plans', methods=['POST'])
+@study_plan_bp.route('/study-plans', methods=['POST'])
 @token_required
 def create_study_plan(user):
     
@@ -79,7 +79,7 @@ def create_study_plan(user):
     
     return jsonify(new_plan.to_dict()), 201
 
-@study_plan_bp.route('/api/study-plans/<int:plan_id>', methods=['PUT'])
+@study_plan_bp.route('/study-plans/<int:plan_id>', methods=['PUT'])
 @token_required
 def update_study_plan(user, plan_id):
     plan = StudyPlan.query.get(plan_id)
@@ -124,7 +124,7 @@ def update_study_plan(user, plan_id):
     
     return jsonify(plan.to_dict())
 
-@study_plan_bp.route('/api/study-plans/<int:plan_id>', methods=['DELETE'])
+@study_plan_bp.route('/study-plans/<int:plan_id>', methods=['DELETE'])
 @token_required
 def delete_study_plan(user, plan_id):
     plan = StudyPlan.query.get(plan_id)
@@ -141,7 +141,7 @@ def delete_study_plan(user, plan_id):
     
     return jsonify({'message': 'Study plan deleted successfully'})
 
-@study_plan_bp.route('/api/students', methods=['GET'])
+@study_plan_bp.route('/students', methods=['GET'])
 @token_required
 def get_students(user):
     
