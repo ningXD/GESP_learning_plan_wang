@@ -402,8 +402,7 @@
         
         .modal-body {
             padding: 20px;
-            min-height: 200px;
-            max-height: 300px;
+            height: 250px;
             overflow-y: auto;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 14px;
@@ -529,13 +528,11 @@ int main() {
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalOutput"></div>
-            <div id="inputSection" class="modal-footer" style="display: none;">
-                <div style="padding: 10px 20px; border-top: 1px solid #333;">
-                    <div style="display: flex; align-items: center;">
-                        <span class="prompt" style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
-                        <textarea id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; resize: none; min-height: 80px;"></textarea>
-                        <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
-                    </div>
+            <div id="inputSection" class="modal-footer" style="display: none; height: 80px; border-top: 1px solid #333;">
+                <div style="padding: 10px 20px; height: 100%; display: flex; align-items: center;">
+                    <span class="prompt" style="color: #6a9955; font-weight: bold; margin-right: 8px;">输入:</span>
+                    <textarea id="userInput" style="flex: 1; background: transparent; border: none; color: #cccccc; padding: 8px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; resize: none; height: 60px; overflow-y: auto;"></textarea>
+                    <button id="submitInput" style="margin-left: 10px; background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">提交</button>
                 </div>
             </div>
         </div>
