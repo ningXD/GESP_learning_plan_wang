@@ -11,6 +11,7 @@ class User(db.Model):
     nickname = db.Column(db.String(50), nullable=True)
     role = db.Column(db.String(20), nullable=False, default='student')  # student or teacher
     admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
+    type = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(10), nullable=True)
     grade = db.Column(db.String(20), nullable=True)
@@ -31,6 +32,7 @@ class User(db.Model):
             'nickname': self.nickname,
             'role': self.role,
             'admin': self.admin,
+            'type': self.type,
             'age': self.age,
             'gender': self.gender,
             'grade': self.grade,

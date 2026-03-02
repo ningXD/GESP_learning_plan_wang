@@ -1771,6 +1771,13 @@ for (int i = 0; i < n; i++) {
                     document.getElementById('wikiLink').style.display = 'block';
                 }
                 
+                // 检查用户角色，控制消课系统的显示
+                if (userInfo.role !== 'teacher' && !userInfo.admin) {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                }
+                
                 // 加载学习计划
                 loadStudyPlan();
                 
@@ -1781,6 +1788,7 @@ for (int i = 0; i < n; i++) {
             } else {
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
             }
         };
         

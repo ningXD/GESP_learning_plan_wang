@@ -58,21 +58,53 @@ if __name__ == '__main__':
             db.create_all()
             # 初始化demo账号
             import bcrypt
-            # 创建demo账号
+            # 创建demo账号（管理员）
             hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             demo_user = User(
                 username='demo',
                 password=hashed_password,
-                role='teacher',
-                admin=True
+                role='admin',
+                admin=True,
+                type='admin'
             )
             db.session.add(demo_user)
-            db.session.commit()
-            print("Demo account created successfully")
+            
+            # 创建教师测试账号
+            teacher_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            teacher_user = User(
+                username='teacher_test',
+                password=teacher_hashed_password,
+                nickname='测试教师',
+                role='teacher',
+                admin=False,
+                type='teacher'
+            )
+            db.session.add(teacher_user)
             
             # 初始化学生账号和学习计划
             from scripts.init_study_plan import init_study_plan_template
             init_study_plan_template()
+            
+            # 创建学生测试账号
+            student_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            student_user = User(
+                username='student_test',
+                password=student_hashed_password,
+                nickname='测试学生',
+                role='student',
+                admin=False,
+                type='student',
+                age=16,
+                gender='男',
+                grade='高二',
+                subject='编程竞赛'
+            )
+            db.session.add(student_user)
+            
+            db.session.commit()
+            print("Demo account created successfully")
+            print("Teacher test account created successfully")
+            print("Student test account created successfully")
         app.run(debug=True)
     except Exception as e:
         print(f"Error starting server: {e}")

@@ -23,6 +23,7 @@ def init_study_plan_template():
                 nickname='王乐汐',
                 role='student',
                 admin=False,
+                type='student',
                 age=15,
                 gender='女',
                 grade='高一',
