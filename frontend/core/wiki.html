@@ -497,6 +497,7 @@
                             <li><a href="#section3-4">3.4 认证功能</a></li>
                             <li><a href="#section3-5">3.5 笔记功能</a></li>
                             <li><a href="#section3-6">3.6 用户管理</a></li>
+                            <li><a href="#section3-7">3.7 个人空间</a></li>
                         </ul>
                     </li>
                     <li>
@@ -545,11 +546,14 @@
             <ul>
                 <li><strong>auth/login.html</strong> - 登录和注册页面，支持用户登录和注册功能，包含角色选择（学生/教师）</li>
                 <li><strong>core/study_plan.html</strong> - 学习计划表页面，展示8周冲刺学习计划，包含学习周期表、代码模板、笔记功能等</li>
-                <li><strong>course/course_system.html</strong> - 消课系统页面，包含学员管理、上课记录、消课记录和管理员设置功能</li>
-                <li><strong>programming/online_programming.html</strong> - 线上编程页面，提供编程练习环境</li>
+                <li><strong>core/wiki.html</strong> - 项目Wiki页面，提供系统功能介绍和使用指南</li>
+                <li><strong>course/course_system.html</strong> - 消课系统页面，包含学员管理、上课记录、消课记录功能</li>
+                <li><strong>programming/online_programming.html</strong> - 线上编程页面，提供C++代码编译和执行环境</li>
+                <li><strong>user/profile.html</strong> - 个人空间页面，支持用户资料编辑和头像上传</li>
                 <li><strong>materials/real_test_question_materials/</strong> - 存放历年真题材料，包含2023年9月至2025年9月的真题PDF文件</li>
                 <li><strong>tests/test_features.html</strong> - 功能测试页面，用于测试系统功能</li>
                 <li><strong>tests/test_all_features.html</strong> - 全功能测试页面，用于测试系统的所有功能</li>
+                <li><strong>tests/code_examples.html</strong> - 代码示例页面，提供C++代码示例</li>
             </ul>
             
             <h3 id="section2-2">2.2 后端</h3>
@@ -557,20 +561,34 @@
             <ul>
                 <li><strong>app.py</strong> - 应用主文件，配置应用、初始化扩展、注册路由</li>
                 <li><strong>extensions.py</strong> - 扩展初始化文件，初始化数据库、JWT和CORS</li>
-                <li><strong>models.py</strong> - 数据模型文件，定义用户和笔记模型</li>
-                <li><strong>.env</strong> - 环境配置文件，包含数据库连接信息和其他配置</li>
+                <li><strong>decorators.py</strong> - 装饰器文件，包含JWT认证装饰器</li>
+                <li><strong>config/.env</strong> - 环境配置文件，包含数据库连接信息和其他配置</li>
                 <li><strong>requirements.txt</strong> - 依赖包文件，列出项目所需的Python包</li>
                 <li><strong>start_server.py</strong> - 服务器启动脚本</li>
-                <li><strong>init_db.py</strong> - 数据库初始化脚本</li>
                 <li><strong>setup_mysql.py</strong> - MySQL数据库设置脚本</li>
                 <li><strong>test_flask.py</strong> - Flask测试脚本</li>
                 <li><strong>test_minimal.py</strong> - 最小化测试脚本</li>
-                <li><strong>routes/</strong> - 路由目录，包含认证、笔记和用户管理路由</li>
+                <li><strong>test_api.py</strong> - API测试脚本</li>
+                <li><strong>test_compile.py</strong> - 编译功能测试脚本</li>
+                <li><strong>test_output.py</strong> - 输出功能测试脚本</li>
+                <li><strong>models/</strong> - 数据模型目录</li>
+                <ul>
+                    <li><strong>__init__.py</strong> - 模型包初始化文件</li>
+                    <li><strong>models.py</strong> - 数据模型文件，定义用户、笔记、学生、课程记录等模型</li>
+                </ul>
+                <li><strong>routes/</strong> - 路由目录，包含认证、笔记、用户管理、编译和课程系统路由</li>
                 <ul>
                     <li><strong>__init__.py</strong> - 路由包初始化文件</li>
                     <li><strong>auth.py</strong> - 认证路由，处理用户登录和注册</li>
                     <li><strong>notes.py</strong> - 笔记路由，处理笔记的增删改查</li>
                     <li><strong>users.py</strong> - 用户路由，处理用户管理</li>
+                    <li><strong>compile.py</strong> - 编译路由，处理C++代码编译和执行</li>
+                    <li><strong>course.py</strong> - 课程系统路由，处理学员管理、上课记录和消课记录</li>
+                </ul>
+                <li><strong>scripts/</strong> - 脚本目录</li>
+                <ul>
+                    <li><strong>create_test_accounts.py</strong> - 创建测试账号脚本</li>
+                    <li><strong>init_db.py</strong> - 数据库初始化脚本</li>
                 </ul>
                 <li><strong>instance/gesp_study_plan.db</strong> - SQLite数据库文件</li>
             </ul>
@@ -584,6 +602,7 @@
                     <li><strong>username</strong> - 用户名（唯一）</li>
                     <li><strong>password</strong> - 密码（加密存储）</li>
                     <li><strong>email</strong> - 邮箱（可选，唯一）</li>
+                    <li><strong>nickname</strong> - 昵称（可选）</li>
                     <li><strong>role</strong> - 角色（student/teacher）</li>
                     <li><strong>admin</strong> - 是否为管理员（布尔值）</li>
                     <li><strong>created_at</strong> - 创建时间</li>
@@ -597,6 +616,41 @@
                     <li><strong>content</strong> - 笔记内容</li>
                     <li><strong>type</strong> - 笔记类型（text/image/mindmap）</li>
                     <li><strong>images</strong> - 图片路径数组（JSON格式）</li>
+                    <li><strong>created_at</strong> - 创建时间</li>
+                    <li><strong>updated_at</strong> - 更新时间</li>
+                </ul>
+                <li><strong>students</strong> - 学生表，存储学生信息</li>
+                <ul>
+                    <li><strong>id</strong> - 学生ID（主键）</li>
+                    <li><strong>teacher_id</strong> - 教师ID（外键，关联User表）</li>
+                    <li><strong>name</strong> - 学生姓名</li>
+                    <li><strong>gender</strong> - 性别</li>
+                    <li><strong>age</strong> - 年龄</li>
+                    <li><strong>grade</strong> - 年级</li>
+                    <li><strong>project</strong> - 项目</li>
+                    <li><strong>created_at</strong> - 创建时间</li>
+                    <li><strong>updated_at</strong> - 更新时间</li>
+                </ul>
+                <li><strong>class_records</strong> - 课程记录表，存储上课记录</li>
+                <ul>
+                    <li><strong>id</strong> - 记录ID（主键）</li>
+                    <li><strong>student_id</strong> - 学生ID（外键，关联Student表）</li>
+                    <li><strong>teacher_id</strong> - 教师ID（外键，关联User表）</li>
+                    <li><strong>date</strong> - 日期</li>
+                    <li><strong>start_time</strong> - 开始时间</li>
+                    <li><strong>end_time</strong> - 结束时间</li>
+                    <li><strong>topic</strong> - 主题</li>
+                    <li><strong>content</strong> - 内容</li>
+                    <li><strong>created_at</strong> - 创建时间</li>
+                    <li><strong>updated_at</strong> - 更新时间</li>
+                </ul>
+                <li><strong>course_records</strong> - 消课记录表，存储消课记录</li>
+                <ul>
+                    <li><strong>id</strong> - 记录ID（主键）</li>
+                    <li><strong>class_id</strong> - 课程记录ID（外键，关联ClassRecord表）</li>
+                    <li><strong>student_id</strong> - 学生ID（外键，关联Student表）</li>
+                    <li><strong>status</strong> - 状态（completed/cancelled/missed）</li>
+                    <li><strong>notes</strong> - 备注</li>
                     <li><strong>created_at</strong> - 创建时间</li>
                     <li><strong>updated_at</strong> - 更新时间</li>
                 </ul>
@@ -632,11 +686,14 @@
             </ul>
             
             <h3 id="section3-3">3.3 线上编程</h3>
-            <p>线上编程功能提供编程练习环境，支持：</p>
+            <p>线上编程功能提供真实的C++代码编译和执行环境，支持：</p>
             <ul>
-                <li>代码编写：在线编写C++代码</li>
-                <li>代码运行：运行代码并查看结果</li>
-                <li>练习题目：提供编程练习题目</li>
+                <li>代码编写：在线编写C++代码，支持语法高亮</li>
+                <li>代码编译：使用g++编译器真实编译C++代码</li>
+                <li>代码执行：运行编译后的程序并查看结果</li>
+                <li>用户输入：支持程序运行时的用户输入</li>
+                <li>错误处理：显示编译错误和运行时错误</li>
+                <li>代码示例：提供C++代码示例供学习参考</li>
             </ul>
             
             <h3 id="section3-4">3.4 认证功能</h3>
@@ -664,6 +721,14 @@
                 <li>用户详情：获取单个用户信息</li>
                 <li>更新用户：修改用户信息和权限</li>
                 <li>删除用户：删除用户账号</li>
+            </ul>
+            
+            <h3 id="section3-7">3.7 个人空间</h3>
+            <p>个人空间功能提供用户资料管理，包含：</p>
+            <ul>
+                <li>资料编辑：修改用户昵称、邮箱等信息</li>
+                <li>头像上传：上传和更新用户头像</li>
+                <li>个人信息展示：显示用户基本信息</li>
             </ul>
         </div>
         
