@@ -478,7 +478,7 @@
                 <a href="../index.html" class="nav-link">首页</a>
                 <a href="../core/study_plan.html" class="nav-link">学习计划表</a>
                 <a href="online_programming.html" class="nav-link active">线上编程</a>
-                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
+                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink" style="display: none;">消课系统</a>
                 <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
                 <div id="authSection">
                     <a href="../auth/login.html" class="login-btn">登录</a>
@@ -569,11 +569,6 @@ int main() {
             }
             return true;
         }
-        
-        // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginAndRedirect);
-        
-
         
         // 字体大小控制
         let codeFontSize = 14;
@@ -1240,6 +1235,11 @@ int main() {
         
         // 页面加载完成后初始化
         window.addEventListener('load', function() {
+            // 首先检查登录状态
+            if (!gesp_checkLoginAndRedirect()) {
+                return; // 如果未登录，会被重定向，不需要继续执行
+            }
+            
             // 设置编辑器高度
             const editorBody = document.querySelector('.editor-body');
             editor.setSize('100%', '100%');
@@ -1257,7 +1257,7 @@ int main() {
                 lineNum.style.fontSize = codeFontSize + 'px';
             });
             
-            // 检查登录状态
+            // 检查登录状态并更新导航栏
             gesp_checkLoginStatus();
         });
         
