@@ -132,3 +132,57 @@ class CourseRecord(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+
+class StudyPlan(db.Model):
+    __tablename__ = 'study_plans'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 关系
+    plan_weeks = db.relationship('StudyPlanWeek', backref='study_plan', lazy=True, cascade='all, delete-orphan')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'student_id': self.student_id,
+            'name': self.name,
+            'start_date': self.start_date.isoformat() if self.start_date else None,
+            'end_date': self.end_date.isoformat() if self.end_date else None,
+            'description': self.description,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'plan_weeks': [week.to_dict() for week in self.plan_weeks]
+        }
+
+class StudyPlanWeek(db.Model):
+    __tablename__ = 'study_plan_weeks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, db.ForeignKey('study_plans.id'), nullable=False)
+    week_number = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    topic = db.Column(db.String(255), nullable=False)
+    core_knowledge = db.Column(db.Text, nullable=True)
+    practice = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'plan_id': self.plan_id,
+            'week_number': self.week_number,
+            'date': self.date.isoformat() if self.date else None,
+            'topic': self.topic,
+            'core_knowledge': self.core_knowledge,
+            'practice': self.practice,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }

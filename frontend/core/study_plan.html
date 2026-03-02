@@ -1563,15 +1563,173 @@ for (int i = 0; i < n; i++) {
             return true;
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', function() {
+        // 获取用户信息
+        function gesp_getUserInfo() {
+            return JSON.parse(sessionStorage.getItem('user_info'));
+        }
+        
+        // 加载学习计划
+        async function loadStudyPlan() {
             if (!gesp_checkLogin()) {
-                alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
-                return false;
+                return;
             }
-            return true;
-        });
+            
+            const userInfo = gesp_getUserInfo();
+            const token = gesp_getToken();
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/study-plans', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const plans = await response.json();
+                    if (plans.length > 0) {
+                        const plan = plans[0];
+                        displayStudyPlan(plan);
+                    }
+                }
+            } catch (error) {
+                console.error('加载学习计划失败:', error);
+            }
+        }
+        
+        // 显示学习计划
+        function displayStudyPlan(plan) {
+            // 更新页面标题和信息
+            document.querySelector('.header h1').textContent = plan.name;
+            document.querySelector('.header p').textContent = `${plan.start_date} - ${plan.end_date} | 每周五19:00-21:00学习`;
+            
+            // 更新进度
+            const weeks = plan.plan_weeks.length;
+            document.getElementById('progress').textContent = `0/${weeks}`;
+            
+            // 清空表格
+            const tbody = document.querySelector('#studyPlanTable tbody');
+            tbody.innerHTML = '';
+            
+            // 填充表格数据
+            plan.plan_weeks.forEach(week => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-week', week.week_number);
+                tr.innerHTML = `
+                    <td class="week-num">第${week.week_number}周</td>
+                    <td class="date">${week.date}</td>
+                    <td class="topic">${week.topic}</td>
+                    <td>${week.core_knowledge}</td>
+                    <td>${week.practice}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 教师端：加载学生列表
+        async function loadStudents() {
+            const userInfo = gesp_getUserInfo();
+            if (userInfo.role !== 'teacher' && !userInfo.admin) {
+                return;
+            }
+            
+            const token = gesp_getToken();
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/students', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const students = await response.json();
+                    displayStudentSelector(students);
+                }
+            } catch (error) {
+                console.error('加载学生列表失败:', error);
+            }
+        }
+        
+        // 显示学生选择器（教师端）
+        function displayStudentSelector(students) {
+            const controls = document.querySelector('.controls');
+            
+            // 创建学生选择器
+            const studentSelector = document.createElement('div');
+            studentSelector.style.display = 'flex';
+            studentSelector.style.alignItems = 'center';
+            studentSelector.style.gap = '10px';
+            studentSelector.innerHTML = `
+                <label style="font-weight: bold; color: #2c3e50;">选择学生:</label>
+                <select id="studentSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">请选择学生</option>
+                    ${students.map(student => `<option value="${student.id}">${student.nickname} (${student.username})</option>`).join('')}
+                </select>
+                <button class="btn-small" onclick="loadStudentStudyPlan()">查看计划</button>
+            `;
+            
+            controls.appendChild(studentSelector);
+        }
+        
+        // 加载指定学生的学习计划
+        async function loadStudentStudyPlan() {
+            const studentId = document.getElementById('studentSelect').value;
+            if (!studentId) {
+                alert('请选择学生');
+                return;
+            }
+            
+            const token = gesp_getToken();
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/study-plans', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const plans = await response.json();
+                    const studentPlan = plans.find(plan => plan.student_id == studentId);
+                    
+                    if (studentPlan) {
+                        displayStudyPlan(studentPlan);
+                    } else {
+                        alert('该学生暂无学习计划');
+                    }
+                }
+            } catch (error) {
+                console.error('加载学生学习计划失败:', error);
+            }
+        }
+        
+        // 页面加载完成后执行
+        window.onload = function() {
+            // 检查登录状态并更新导航栏
+            const userInfo = gesp_getUserInfo();
+            if (userInfo) {
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userAvatar').textContent = userInfo.nickname.charAt(0);
+                document.getElementById('userName').textContent = userInfo.nickname;
+                
+                // 只对管理员显示Wiki按钮
+                if (userInfo.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                }
+                
+                // 加载学习计划
+                loadStudyPlan();
+                
+                // 教师和管理员加载学生列表
+                if (userInfo.role === 'teacher' || userInfo.admin) {
+                    loadStudents();
+                }
+            } else {
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+            }
+        };
         
         // 实例数据
         const examplesData = {

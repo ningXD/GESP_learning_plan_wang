@@ -40,11 +40,13 @@ from routes.notes import bp as notes_bp
 from routes.users import bp as users_bp
 from routes.compile import bp as compile_bp
 from routes.course import course_bp as course_bp
+from routes.study_plan import study_plan_bp
 app.register_blueprint(auth_bp)
 app.register_blueprint(notes_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(compile_bp)
 app.register_blueprint(course_bp)
+app.register_blueprint(study_plan_bp)
 
 if __name__ == '__main__':
     try:
