@@ -430,7 +430,7 @@
         <h1>消课系统</h1>
         
         <div class="tab-container">
-            <button class="tab active" onclick="gesp_openTab(event, 'student')">学员管理</button>
+            <button class="tab active" onclick="gesp_openTab(event, 'student')">用户管理</button>
             <button class="tab" onclick="gesp_openTab(event, 'class')">上课记录</button>
             <button class="tab" onclick="gesp_openTab(event, 'record')">消课记录</button>
             <button class="tab" id="adminTab" onclick="gesp_openTab(event, 'admin')">管理员设置</button>
@@ -439,12 +439,16 @@
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>学员管理</h2>
-                <button class="btn btn-primary" onclick="gesp_openAddStudentModal()">添加学员</button>
+                <div>
+                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                        <option value="student">学生管理</option>
+                        <option value="teacher">教师管理</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
-            <h3>学员列表</h3>
             <table id="studentTable">
                 <thead>
                     <tr>
@@ -769,13 +773,26 @@
         // 初始化数据
         function gesp_initData() {
             // 直接从API加载数据
-            gesp_loadStudents();
+            gesp_loadUsers();
             gesp_loadClassRecords();
             gesp_loadAllRecords();
         }
         
-        // 打开添加学员弹窗
-        function gesp_openAddStudentModal() {
+        // 存储当前选中的用户类型
+        let currentUserType = 'student';
+        
+        // 切换用户类型
+        function gesp_switchUserType(type) {
+            currentUserType = type;
+            // 更新按钮文本
+            const addBtn = document.getElementById('addUserBtn');
+            addBtn.textContent = type === 'student' ? '添加学生' : '添加教师';
+            // 重新加载用户列表
+            gesp_loadUsers();
+        }
+        
+        // 打开添加用户弹窗
+        function gesp_openAddUserModal() {
             // 清空表单
             document.getElementById('modal-name').value = '';
             document.getElementById('modal-gender').value = '';
@@ -797,8 +814,10 @@
             if (userStr) {
                 const user = JSON.parse(userStr);
                 if (user.admin) {
-                    document.getElementById('teacherSelectGroup').style.display = 'block';
-                    gesp_loadTeachers();
+                    document.getElementById('teacherSelectGroup').style.display = currentUserType === 'student' ? 'block' : 'none';
+                    if (currentUserType === 'student') {
+                        gesp_loadTeachers();
+                    }
                 } else {
                     document.getElementById('teacherSelectGroup').style.display = 'none';
                 }
@@ -806,6 +825,70 @@
             
             // 显示弹窗
             document.getElementById('addStudentModal').style.display = 'block';
+        }
+        
+        // 加载用户列表（学生或教师）
+        async function gesp_loadUsers() {
+            try {
+                let url = 'http://127.0.0.1:5000/api/students';
+                if (currentUserType === 'teacher') {
+                    url = 'http://127.0.0.1:5000/api/users/teachers';
+                }
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const users = result.data;
+                    const tableBody = document.querySelector('#studentTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    // 检查用户权限
+                    const userStr = sessionStorage.getItem('user');
+                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        // 处理User对象和Student对象的不同字段
+                        const userName = user.name || user.nickname || user.username;
+                        const userGender = user.gender || '';
+                        const userAge = user.age || '';
+                        const userGrade = user.grade || '';
+                        const userProject = user.project || user.subject || '';
+                        const teacherName = user.teacher ? user.teacher.username : '未分配';
+                        
+                        let actionButtons = `
+                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${user.id})">编辑</button>
+                        `;
+                        
+                        row.innerHTML = `
+                            <td>${userName}</td>
+                            <td>${userGender}</td>
+                            <td>${userAge}</td>
+                            <td>${userGrade}</td>
+                            <td>${userProject}</td>
+                            <td>${teacherName}</td>
+                            <td>
+                                ${actionButtons}
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // 同时更新学员选择下拉框
+                    if (currentUserType === 'student') {
+                        gesp_loadStudentSelect();
+                    }
+                } else {
+                    console.error('加载用户列表失败:', result.message);
+                }
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+            }
         }
         
         // 关闭添加学员弹窗
@@ -912,7 +995,7 @@
                         gesp_closeEditStudentModal();
                         
                         // 刷新学员列表
-                        gesp_loadStudents();
+                        gesp_loadUsers();
                     } else {
                         alert('删除学员失败: ' + deleteResult.message);
                     }
@@ -1114,7 +1197,7 @@
                     gesp_closeEditTeacherModal();
                     
                     // 刷新学员列表
-                    gesp_loadStudents();
+                    gesp_loadUsers();
                 } else {
                     alert('修改学员归属失败: ' + result.message);
                 }
@@ -1223,7 +1306,7 @@
             }
         }
         
-        // 添加学员
+        // 添加用户（学生或教师）
         async function gesp_addStudent() {
             const name = document.getElementById('modal-name').value;
             const gender = document.getElementById('modal-gender').value;
@@ -1234,34 +1317,53 @@
             const teacherInput = document.getElementById('modal-teacher');
             const teacherId = teacherInput.dataset.id;
             
-            if (!name || !age || !phone) {
-                alert('姓名、年龄和手机号是必填项');
+            if (!name || !phone) {
+                alert('姓名和手机号是必填项');
                 return;
             }
             
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/students', {
+                let url = 'http://127.0.0.1:5000/api/students';
+                let data = {
+                    name,
+                    gender,
+                    age: parseInt(age),
+                    grade,
+                    project,
+                    phone,
+                    teacher_id: teacherId ? parseInt(teacherId) : null
+                };
+                
+                if (currentUserType === 'teacher') {
+                    url = 'http://127.0.0.1:5000/api/auth/register';
+                    // 为教师生成用户名（使用手机号）
+                    const username = phone;
+                    // 默认密码
+                    const password = '123456';
+                    data = {
+                        username,
+                        password,
+                        nickname: name,
+                        phone,
+                        email: '',
+                        role: 'teacher'
+                    };
+                }
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${gesp_getToken()}`
                     },
-                    body: JSON.stringify({
-                        name,
-                        gender,
-                        age: parseInt(age),
-                        grade,
-                        project,
-                        phone,
-                        teacher_id: teacherId ? parseInt(teacherId) : null
-                    })
+                    body: JSON.stringify(data)
                 });
                 
                 const result = await response.json();
-                if (result.success) {
+                if (result.success || (result.access_token && result.user)) {
                     // 显示成功消息
                     const message = document.getElementById('studentMessage');
-                    message.textContent = '学员添加成功！';
+                    message.textContent = currentUserType === 'student' ? '学员添加成功！' : '教师添加成功！';
                     message.style.display = 'block';
                     setTimeout(() => {
                         message.style.display = 'none';
@@ -1270,72 +1372,17 @@
                     // 关闭弹窗
                     gesp_closeAddStudentModal();
                     
-                    // 刷新学员列表
-                    gesp_loadStudents();
+                    // 刷新用户列表
+                    gesp_loadUsers();
                 } else {
-                    alert('添加学员失败: ' + result.message);
+                    alert('添加失败: ' + (result.message || result.error));
                 }
             } catch (error) {
-                alert('添加学员失败: ' + error.message);
+                alert('添加失败: ' + error.message);
             }
         }
         
-        // 加载学员列表
-        async function gesp_loadStudents() {
-            try {
-                const response = await fetch('http://127.0.0.1:5000/api/students', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    const students = result.data;
-                    const tableBody = document.querySelector('#studentTable tbody');
-                    tableBody.innerHTML = '';
-                    
-                    // 检查用户权限
-                    const userStr = sessionStorage.getItem('user');
-                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
-                    
-                    students.forEach(student => {
-                        const row = document.createElement('tr');
-                        // 处理User对象和Student对象的不同字段
-                        const studentName = student.name || student.nickname || student.username;
-                        const studentGender = student.gender || '';
-                        const studentAge = student.age || '';
-                        const studentGrade = student.grade || '';
-                        const studentProject = student.project || student.subject || '';
-                        const teacherName = student.teacher ? student.teacher.username : '未分配';
-                        
-                        let actionButtons = `
-                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${student.id})">编辑</button>
-                        `;
-                        
-                        row.innerHTML = `
-                            <td>${studentName}</td>
-                            <td>${studentGender}</td>
-                            <td>${studentAge}</td>
-                            <td>${studentGrade}</td>
-                            <td>${studentProject}</td>
-                            <td>${teacherName}</td>
-                            <td>
-                                ${actionButtons}
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                    
-                    // 同时更新学员选择下拉框
-                    gesp_loadStudentSelect();
-                } else {
-                    console.error('加载学员列表失败:', result.message);
-                }
-            } catch (error) {
-                console.error('加载学员列表失败:', error);
-            }
-        }
+
         
         // 跳转到添加课程页面并选择学员
         function gesp_goToAddClass(studentId) {
@@ -1359,7 +1406,7 @@
                     const result = await response.json();
                     if (result.success) {
                         // 刷新学员列表
-                        gesp_loadStudents();
+                        gesp_loadUsers();
                     } else {
                         alert('删除学员失败: ' + result.message);
                     }
@@ -1638,7 +1685,7 @@
             
             // 初始化数据
             gesp_initData();
-            gesp_loadStudents();
+            gesp_loadUsers();
             gesp_checkAdminPermission();
         };
         
@@ -1658,7 +1705,7 @@
             
             // 切换到对应标签时刷新数据
             if (tabName === 'student') {
-                gesp_loadStudents();
+                gesp_loadUsers();
             } else if (tabName === 'class') {
                 gesp_loadStudentSelect();
                 gesp_loadClassRecords();
