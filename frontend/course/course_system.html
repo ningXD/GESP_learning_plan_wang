@@ -283,6 +283,116 @@
             margin-top: 10px;
             display: none;
         }
+        
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ddd;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .close-btn {
+            color: #999;
+            font-size: 24px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 10px 0;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e6ea;
+        }
+        
+        /* 教师选择下拉框 */
+        .teacher-select {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -328,33 +438,9 @@
         
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
-            <h2>添加学员信息</h2>
-            <div class="form-group">
-                <label for="name">姓名:</label>
-                <input type="text" id="name" required>
-            </div>
-            <div class="form-group">
-                <label for="gender">性别:</label>
-                <select id="gender" required>
-                    <option value="">请选择</option>
-                    <option value="男">男</option>
-                    <option value="女">女</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="age">年龄:</label>
-                <input type="number" id="age" min="1" required>
-            </div>
-            <div class="form-group">
-                <label for="grade">年级:</label>
-                <input type="text" id="grade" required>
-            </div>
-            <div class="form-group">
-                <label for="project">学习项目:</label>
-                <input type="text" id="project" required>
-            </div>
-            <div class="form-group">
-                <button onclick="gesp_addStudent()">添加学员</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>学员管理</h2>
+                <button class="btn btn-primary" onclick="gesp_openAddStudentModal()">添加学员</button>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
@@ -367,12 +453,85 @@
                         <th>年龄</th>
                         <th>年级</th>
                         <th>学习项目</th>
+                        <th>所属教师</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
+        </div>
+        
+        <!-- 添加学员弹窗 -->
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">添加学员信息</h2>
+                    <button class="close-btn" onclick="gesp_closeAddStudentModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modal-name">姓名:</label>
+                        <input type="text" id="modal-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-gender">性别:</label>
+                        <select id="modal-gender" required>
+                            <option value="">请选择</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-age">年龄:</label>
+                        <input type="number" id="modal-age" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-grade">年级:</label>
+                        <input type="text" id="modal-grade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-project">学习项目:</label>
+                        <input type="text" id="modal-project" required>
+                    </div>
+                    <div class="form-group" id="teacherSelectGroup" style="display: none;">
+                        <label for="modal-teacher">所属教师:</label>
+                        <select id="modal-teacher" class="teacher-select">
+                            <option value="">请选择教师</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="gesp_closeAddStudentModal()">取消</button>
+                    <button class="btn btn-primary" onclick="gesp_addStudent()">添加学员</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 修改学员归属弹窗 -->
+        <div id="editTeacherModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">修改学员归属</h2>
+                    <button class="close-btn" onclick="gesp_closeEditTeacherModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-student-name">学员姓名:</label>
+                        <input type="text" id="edit-student-name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-teacher">所属教师:</label>
+                        <select id="edit-teacher" class="teacher-select">
+                            <option value="">请选择教师</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="gesp_closeEditTeacherModal()">取消</button>
+                    <button class="btn btn-primary" onclick="gesp_updateStudentTeacher()">保存修改</button>
+                </div>
+            </div>
         </div>
         
         <!-- 上课记录 -->
@@ -487,13 +646,182 @@
             gesp_loadAllRecords();
         }
         
+        // 打开添加学员弹窗
+        function gesp_openAddStudentModal() {
+            // 清空表单
+            document.getElementById('modal-name').value = '';
+            document.getElementById('modal-gender').value = '';
+            document.getElementById('modal-age').value = '';
+            document.getElementById('modal-grade').value = '';
+            document.getElementById('modal-project').value = '';
+            document.getElementById('modal-teacher').value = '';
+            
+            // 检查用户权限，管理员显示教师选择
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.admin) {
+                    document.getElementById('teacherSelectGroup').style.display = 'block';
+                    gesp_loadTeachers();
+                } else {
+                    document.getElementById('teacherSelectGroup').style.display = 'none';
+                }
+            }
+            
+            // 显示弹窗
+            document.getElementById('addStudentModal').style.display = 'block';
+        }
+        
+        // 关闭添加学员弹窗
+        function gesp_closeAddStudentModal() {
+            document.getElementById('addStudentModal').style.display = 'none';
+        }
+        
+        // 打开修改学员归属弹窗
+        async function gesp_editStudentTeacher(studentId) {
+            try {
+                // 获取学员信息
+                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const student = result.data;
+                    document.getElementById('edit-student-name').value = student.name;
+                    
+                    // 加载教师列表
+                    await gesp_loadTeachersForEdit();
+                    
+                    // 设置当前教师
+                    if (student.teacher) {
+                        document.getElementById('edit-teacher').value = student.teacher.id;
+                    } else {
+                        document.getElementById('edit-teacher').value = '';
+                    }
+                    
+                    // 存储学员ID
+                    document.getElementById('editTeacherModal').dataset.studentId = studentId;
+                    
+                    // 显示弹窗
+                    document.getElementById('editTeacherModal').style.display = 'block';
+                } else {
+                    alert('获取学员信息失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('获取学员信息失败: ' + error.message);
+            }
+        }
+        
+        // 关闭修改学员归属弹窗
+        function gesp_closeEditTeacherModal() {
+            document.getElementById('editTeacherModal').style.display = 'none';
+        }
+        
+        // 加载教师列表（修改归属用）
+        async function gesp_loadTeachersForEdit() {
+            try {
+                const response = await fetch('http://localhost:5000/api/users/teachers', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const teachers = result.data;
+                    const select = document.getElementById('edit-teacher');
+                    select.innerHTML = '<option value="">请选择教师</option>';
+                    
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = teacher.username;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载教师列表失败:', error);
+            }
+        }
+        
+        // 更新学员归属
+        async function gesp_updateStudentTeacher() {
+            const studentId = document.getElementById('editTeacherModal').dataset.studentId;
+            const teacherId = document.getElementById('edit-teacher').value;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/students/${studentId}/teacher`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    },
+                    body: JSON.stringify({
+                        teacher_id: teacherId ? parseInt(teacherId) : null
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 显示成功消息
+                    const message = document.getElementById('studentMessage');
+                    message.textContent = '学员归属修改成功！';
+                    message.style.display = 'block';
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 3000);
+                    
+                    // 关闭弹窗
+                    gesp_closeEditTeacherModal();
+                    
+                    // 刷新学员列表
+                    gesp_loadStudents();
+                } else {
+                    alert('修改学员归属失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('修改学员归属失败: ' + error.message);
+            }
+        }
+        
+        // 加载教师列表
+        async function gesp_loadTeachers() {
+            try {
+                const response = await fetch('http://localhost:5000/api/users/teachers', {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const teachers = result.data;
+                    const select = document.getElementById('modal-teacher');
+                    select.innerHTML = '<option value="">请选择教师</option>';
+                    
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.id;
+                        option.textContent = teacher.username;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载教师列表失败:', error);
+            }
+        }
+        
         // 添加学员
         async function gesp_addStudent() {
-            const name = document.getElementById('name').value;
-            const gender = document.getElementById('gender').value;
-            const age = document.getElementById('age').value;
-            const grade = document.getElementById('grade').value;
-            const project = document.getElementById('project').value;
+            const name = document.getElementById('modal-name').value;
+            const gender = document.getElementById('modal-gender').value;
+            const age = document.getElementById('modal-age').value;
+            const grade = document.getElementById('modal-grade').value;
+            const project = document.getElementById('modal-project').value;
+            const teacherId = document.getElementById('modal-teacher').value;
             
             if (!name || !gender || !age || !grade || !project) {
                 alert('请填写所有必填项');
@@ -512,7 +840,8 @@
                         gender,
                         age: parseInt(age),
                         grade,
-                        project
+                        project,
+                        teacher_id: teacherId ? parseInt(teacherId) : null
                     })
                 });
                 
@@ -526,12 +855,8 @@
                         message.style.display = 'none';
                     }, 3000);
                     
-                    // 清空表单
-                    document.getElementById('name').value = '';
-                    document.getElementById('gender').value = '';
-                    document.getElementById('age').value = '';
-                    document.getElementById('grade').value = '';
-                    document.getElementById('project').value = '';
+                    // 关闭弹窗
+                    gesp_closeAddStudentModal();
                     
                     // 刷新学员列表
                     gesp_loadStudents();
@@ -558,17 +883,35 @@
                     const tableBody = document.querySelector('#studentTable tbody');
                     tableBody.innerHTML = '';
                     
+                    // 检查用户权限
+                    const userStr = sessionStorage.getItem('user');
+                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    
                     students.forEach(student => {
                         const row = document.createElement('tr');
+                        const teacherName = student.teacher ? student.teacher.username : '未分配';
+                        
+                        let actionButtons = `
+                            <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
+                            <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
+                        `;
+                        
+                        // 管理员可以修改学员归属
+                        if (isAdmin) {
+                            actionButtons += `
+                                <button class="action-btn add-class-btn" onclick="gesp_editStudentTeacher(${student.id})">修改归属</button>
+                            `;
+                        }
+                        
                         row.innerHTML = `
                             <td>${student.name}</td>
                             <td>${student.gender}</td>
                             <td>${student.age}</td>
                             <td>${student.grade}</td>
                             <td>${student.project}</td>
+                            <td>${teacherName}</td>
                             <td>
-                                <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
-                                <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
+                                ${actionButtons}
                             </td>
                         `;
                         tableBody.appendChild(row);
