@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - GESP C++二级</title>
+    <title>个人空间 - 编程特攻队</title>
     <style>
         * {
             margin: 0;
@@ -330,8 +330,8 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="../index.html" class="logo">
-                <span>📚</span>
-                GESP C++ 学习计划
+                <span>💻</span>
+                编程特攻队 - 竞赛考试必胜系统
             </a>
             <div class="nav-links">
                 <a href="../index.html" class="nav-link">首页</a>
@@ -392,7 +392,7 @@
     </div>
     
     <div class="footer">
-        <p>GESP C++二级 学习计划 | 个人空间</p>
+        <p>编程特攻队 - 竞赛考试必胜系统 | 个人空间</p>
     </div>
     
     <script>
@@ -414,6 +414,8 @@
         // 检查用户登录状态
         function gesp_checkLoginStatus() {
             const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
             if (userStr) {
                 const user = JSON.parse(userStr);
                 // 显示用户信息
@@ -423,7 +425,7 @@
                 document.getElementById('userAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher') {
+                if (user.role !== 'teacher' && !user.admin) {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';
@@ -438,6 +440,12 @@
                 
                 // 填充个人信息
                 populateUserInfo(user);
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';

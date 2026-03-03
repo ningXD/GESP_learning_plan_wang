@@ -9,8 +9,12 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=True)
     nickname = db.Column(db.String(50), nullable=True)
-    role = db.Column(db.String(20), nullable=False, default='student')  # student or teacher
+    role = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
     admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
+    age = db.Column(db.Integer, nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
+    grade = db.Column(db.String(20), nullable=True)
+    subject = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -27,6 +31,10 @@ class User(db.Model):
             'nickname': self.nickname,
             'role': self.role,
             'admin': self.admin,
+            'age': self.age,
+            'gender': self.gender,
+            'grade': self.grade,
+            'subject': self.subject,
             'created_at': self.created_at.isoformat()
         }
 
@@ -129,6 +137,60 @@ class CourseRecord(db.Model):
             'student_id': self.student_id,
             'status': self.status,
             'notes': self.notes,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
+class StudyPlan(db.Model):
+    __tablename__ = 'study_plans'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 关系
+    plan_weeks = db.relationship('StudyPlanWeek', backref='study_plan', lazy=True, cascade='all, delete-orphan')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'student_id': self.student_id,
+            'name': self.name,
+            'start_date': self.start_date.isoformat() if self.start_date else None,
+            'end_date': self.end_date.isoformat() if self.end_date else None,
+            'description': self.description,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'plan_weeks': [week.to_dict() for week in self.plan_weeks]
+        }
+
+class StudyPlanWeek(db.Model):
+    __tablename__ = 'study_plan_weeks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, db.ForeignKey('study_plans.id'), nullable=False)
+    week_number = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    topic = db.Column(db.String(255), nullable=False)
+    core_knowledge = db.Column(db.Text, nullable=True)
+    practice = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'plan_id': self.plan_id,
+            'week_number': self.week_number,
+            'date': self.date.isoformat() if self.date else None,
+            'topic': self.topic,
+            'core_knowledge': self.core_knowledge,
+            'practice': self.practice,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

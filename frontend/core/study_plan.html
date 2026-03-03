@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GESP C++二级 8周冲刺计划表</title>
+    <title>编程特攻队 - 竞赛考试必胜系统</title>
     <style>
         * {
             margin: 0;
@@ -109,6 +109,8 @@
         }
         
         /* 下拉菜单样式 */
+        /* 注意：margin-top设置为2px，不要随意修改
+           间隙过小会导致下拉菜单与头像重叠，间隙过大会导致鼠标移动过程中下拉列表容易消失 */
         .dropdown-menu {
             position: absolute;
             top: 100%;
@@ -118,7 +120,7 @@
             border-radius: 8px;
             padding: 10px 0;
             min-width: 180px;
-            margin-top: 5px;
+            margin-top: 2px;
             display: none;
             z-index: 1001;
         }
@@ -1201,14 +1203,14 @@
     <nav class="navbar">
         <div class="navbar-container">
             <a href="../index.html" class="logo">
-                <span>📚</span>
-                GESP C++ 学习计划
+                <span>💻</span>
+                编程特攻队 - 竞赛考试必胜系统
             </a>
             <div class="nav-links">
                 <a href="../index.html" class="nav-link">首页</a>
                 <a href="study_plan.html" class="nav-link active">学习计划表</a>
                 <a href="../programming/online_programming.html" class="nav-link">线上编程</a>
-                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
+                <a href="../course/course_system.html" class="nav-link" id="courseSystemLink" style="display: none;">消课系统</a>
                 <a href="wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
                 <div id="authSection">
                     <a href="../auth/login.html" class="login-btn">登录</a>
@@ -1229,7 +1231,7 @@
     
     <div class="container">
         <div class="header">
-            <h1>GESP C++二级 8周冲刺计划表</h1>
+            <h1>编程竞赛 8周冲刺计划表</h1>
             <p>2026年1月16日 - 3月13日 | 每周五19:00-21:00学习</p>
         </div>
         
@@ -1267,9 +1269,10 @@
             </div>
             <div class="info-item">
                 <h4>学习目标</h4>
-                <p>• 掌握GESP C++二级所有考点</p>
-                <p>• 熟练完成选择题和判断题</p>
-                <p>• 独立解决编程题（特别是矩阵绘制题）</p>
+                <p>• 掌握编程竞赛核心考点</p>
+                <p>• 熟练完成各类编程题目</p>
+                <p>• 独立解决算法题和编程题</p>
+                <p>• 为多种编程语言竞赛做准备</p>
             </div>
         </div>
     </div>
@@ -1526,7 +1529,7 @@ for (int i = 0; i < n; i++) {
     </div>
     
     <div class="footer">
-        <p>GESP C++二级 8周冲刺计划表 | 生成时间: 2026年1月17日</p>
+        <p>编程特攻队 - 竞赛考试必胜系统 | 生成时间: 2026年1月17日</p>
         <p>坚持每周学习，考试必过！加油！💪</p>
     </div>
     
@@ -1560,15 +1563,238 @@ for (int i = 0; i < n; i++) {
             return true;
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', function() {
+        // 获取用户信息
+        function gesp_getUserInfo() {
+            return JSON.parse(sessionStorage.getItem('user'));
+        }
+        
+        // 加载学习计划
+        async function loadStudyPlan() {
             if (!gesp_checkLogin()) {
-                alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
-                return false;
+                return;
             }
-            return true;
-        });
+            
+            const userInfo = gesp_getUserInfo();
+            const token = gesp_getToken();
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/study-plans', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const plans = await response.json();
+                    if (plans.length > 0) {
+                        const plan = plans[0];
+                        displayStudyPlan(plan);
+                    }
+                }
+            } catch (error) {
+                console.error('加载学习计划失败:', error);
+            }
+        }
+        
+        // 显示学习计划
+        function displayStudyPlan(plan) {
+            // 更新页面标题和信息
+            document.querySelector('.header h1').textContent = plan.name;
+            document.querySelector('.header p').textContent = `${plan.start_date} - ${plan.end_date} | 每周五19:00-21:00学习`;
+            
+            // 更新进度
+            const weeks = plan.plan_weeks.length;
+            document.getElementById('progress').textContent = `0/${weeks}`;
+            
+            // 清空表格
+            const tbody = document.querySelector('#studyPlanTable tbody');
+            tbody.innerHTML = '';
+            
+            // 填充表格数据
+            plan.plan_weeks.forEach(week => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-week', week.week_number);
+                tr.innerHTML = `
+                    <td class="week-num">第${week.week_number}周</td>
+                    <td class="date">${week.date}</td>
+                    <td class="topic">${week.topic}</td>
+                    <td>${week.core_knowledge}</td>
+                    <td>${week.practice}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 教师端：加载学生列表
+        async function loadStudents() {
+            const userInfo = gesp_getUserInfo();
+            if (userInfo.role !== 'teacher' && !userInfo.admin) {
+                return;
+            }
+            
+            const token = gesp_getToken();
+            
+            try {
+                // 加载学生列表
+                const studentsResponse = await fetch('http://localhost:5000/api/students', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (studentsResponse.ok) {
+                    let students = await studentsResponse.json();
+                    // 处理不同的返回格式
+                    if (students.success !== undefined) {
+                        students = students.data;
+                    }
+                    
+                    // 加载所有学习计划
+                    const plansResponse = await fetch('http://localhost:5000/api/study-plans', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (plansResponse.ok) {
+                        const plans = await plansResponse.json();
+                        displayStudentTable(students, plans);
+                    }
+                }
+            } catch (error) {
+                console.error('加载学生列表失败:', error);
+            }
+        }
+        
+        // 显示学生查询表格（教师端）
+        function displayStudentTable(students, plans) {
+            const container = document.querySelector('.container');
+            
+            // 创建表格容器
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'table-container';
+            tableContainer.style.marginBottom = '30px';
+            
+            // 创建表格
+            tableContainer.innerHTML = `
+                <h3 style="padding: 20px; margin: 0; color: #2c3e50; border-bottom: 1px solid #eee;">学生学习计划管理</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(to right, #4a6fa5, #2c3e50); color: white;">
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员姓名</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员年龄</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员性别</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">学员年级</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">报选科目</th>
+                            <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 16px;">是否有计划表</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- 学生数据将通过JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            `;
+            
+            // 插入到容器的最前面
+            container.insertBefore(tableContainer, container.firstChild);
+            
+            // 填充表格数据
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                // 检查学生是否有学习计划
+                const hasPlan = plans.some(plan => plan.student_id == student.id);
+                const plan = plans.find(p => p.student_id == student.id);
+                
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #eee';
+                tr.style.transition = 'all 0.2s';
+                tr.style.cursor = 'pointer';
+                tr.onmouseover = function() {
+                    this.style.background = '#f0f7ff';
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+                };
+                tr.onmouseout = function() {
+                    this.style.background = '';
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                };
+                
+                tr.innerHTML = `
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.nickname}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.age || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.gender || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.grade || '未知'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || '编程竞赛'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">
+                        ${hasPlan ? 
+                            `<button class="btn-small" onclick="viewStudentPlan(${plan.id})">查看计划</button>` : 
+                            '暂无计划'
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // 查看学生学习计划
+        async function viewStudentPlan(planId) {
+            const token = gesp_getToken();
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/study-plans/${planId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const plan = await response.json();
+                    displayStudyPlan(plan);
+                }
+            } catch (error) {
+                console.error('加载学生学习计划失败:', error);
+            }
+        }
+        
+        // 页面加载完成后执行
+        window.onload = function() {
+            // 检查登录状态并更新导航栏
+            const userInfo = gesp_getUserInfo();
+            if (userInfo) {
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userAvatar').textContent = userInfo.username.charAt(0);
+                document.getElementById('userName').textContent = userInfo.username;
+                
+                // 只对管理员显示Wiki按钮
+                if (userInfo.admin) {
+                    document.getElementById('wikiLink').style.display = 'block';
+                }
+                
+                // 检查用户角色，控制消课系统的显示
+                if (userInfo.role === 'teacher' || userInfo.admin) {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                }
+                
+                // 加载学习计划
+                loadStudyPlan();
+                
+                // 教师和管理员加载学生列表
+                if (userInfo.role === 'teacher' || userInfo.admin) {
+                    loadStudents();
+                }
+            } else {
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
+            }
+        };
         
         // 实例数据
         const examplesData = {
@@ -3376,6 +3602,8 @@ int main() {
         // 检查用户登录状态
         function gesp_checkLoginStatus() {
             const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
             if (userStr) {
                 const user = JSON.parse(userStr);
                 // 显示用户信息
@@ -3385,10 +3613,10 @@ int main() {
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher') {
-                    document.getElementById('courseSystemLink').style.display = 'none';
-                } else {
+                if (user.role === 'teacher' || user.admin) {
                     document.getElementById('courseSystemLink').style.display = 'block';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'none';
                 }
                 
                 // 只显示Wiki链接给管理员用户
@@ -3397,6 +3625,12 @@ int main() {
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';
                 }
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
             } else {
                 // 未登录状态
                 document.getElementById('authSection').style.display = 'block';

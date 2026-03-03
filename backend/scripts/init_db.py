@@ -1,3 +1,9 @@
+import sys
+import os
+
+# 添加父目录到Python路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app import app, db
 from models.models import User
 import bcrypt
@@ -9,12 +15,14 @@ with app.app_context():
     
     # 检查是否已有用户
     if User.query.count() == 0:
-        # 创建默认用户
+        # 创建默认用户（管理员）
         hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         demo_user = User(
             username='demo',
             password=hashed_password,
-            email='demo@example.com'
+            email='demo@example.com',
+            admin=True,
+            role='teacher'
         )
         db.session.add(demo_user)
         
