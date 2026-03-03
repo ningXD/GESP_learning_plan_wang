@@ -508,6 +508,60 @@
             </div>
         </div>
         
+        <!-- 编辑学员弹窗 -->
+        <div id="editStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">编辑学员</h2>
+                    <button class="close-btn" onclick="gesp_closeEditStudentModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-student-name">学员姓名:</label>
+                        <input type="text" id="edit-student-name" readonly>
+                    </div>
+                    <div class="form-group" id="editTeacherGroup" style="display: none;">
+                        <label for="edit-teacher">所属教师:</label>
+                        <select id="edit-teacher" class="teacher-select">
+                            <option value="">请选择教师</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>操作:</label>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn btn-primary" onclick="gesp_goToAddClassFromModal()">添加课程</button>
+                            <button class="btn btn-danger" onclick="gesp_openDeleteConfirmModal()">删除学员</button>
+                            <button class="btn btn-secondary" id="editTeacherBtn" onclick="gesp_showTeacherSelect()" style="display: none;">修改归属</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="gesp_closeEditStudentModal()">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 删除确认弹窗 -->
+        <div id="deleteConfirmModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">删除确认</h2>
+                    <button class="close-btn" onclick="gesp_closeDeleteConfirmModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>确定要删除该学员吗？</p>
+                    <div class="form-group">
+                        <label for="admin-password">请输入管理账号密码:</label>
+                        <input type="password" id="admin-password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="gesp_closeDeleteConfirmModal()">取消</button>
+                    <button class="btn btn-danger" onclick="gesp_confirmDelete()">删除</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 修改学员归属弹窗 -->
         <div id="editTeacherModal" class="modal">
             <div class="modal-content">
@@ -620,13 +674,47 @@
             return sessionStorage.getItem('access_token') !== null;
         }
         
+        // 验证token是否有效
+        async function gesp_verifyToken() {
+            const token = sessionStorage.getItem('access_token');
+            if (!token) {
+                return false;
+            }
+            
+            try {
+                // 发送一个简单的请求来验证token
+                const response = await fetch('http://localhost:5000/api/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Token verification failed:', error);
+                return false;
+            }
+        }
+        
         // 检查登录并重定向
-        function gesp_checkLoginAndRedirect() {
+        async function gesp_checkLoginAndRedirect() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
                 window.location.href = '../index.html';
                 return false;
             }
+            
+            // 验证token是否有效
+            const isValid = await gesp_verifyToken();
+            if (!isValid) {
+                // token无效，清除sessionStorage并跳转到登录页面
+                sessionStorage.removeItem('access_token');
+                sessionStorage.removeItem('user');
+                alert('登录已过期，请重新登录');
+                window.location.href = '../index.html';
+                return false;
+            }
+            
             return true;
         }
         
@@ -677,6 +765,131 @@
             document.getElementById('addStudentModal').style.display = 'none';
         }
         
+        // 打开编辑学员弹窗
+        async function gesp_openEditStudentModal(studentId) {
+            try {
+                // 获取学员信息
+                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    }
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const student = result.data;
+                    const studentName = student.name || student.nickname || student.username;
+                    document.getElementById('edit-student-name').value = studentName;
+                    
+                    // 检查用户权限，管理员显示修改归属按钮
+                    const userStr = sessionStorage.getItem('user');
+                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    if (isAdmin) {
+                        document.getElementById('editTeacherBtn').style.display = 'block';
+                    } else {
+                        document.getElementById('editTeacherBtn').style.display = 'none';
+                    }
+                    
+                    // 存储学员ID
+                    document.getElementById('editStudentModal').dataset.studentId = studentId;
+                    
+                    // 显示弹窗
+                    document.getElementById('editStudentModal').style.display = 'block';
+                } else {
+                    alert('获取学员信息失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('获取学员信息失败: ' + error.message);
+            }
+        }
+        
+        // 关闭编辑学员弹窗
+        function gesp_closeEditStudentModal() {
+            document.getElementById('editStudentModal').style.display = 'none';
+        }
+        
+        // 从弹窗中跳转到添加课程
+        function gesp_goToAddClassFromModal() {
+            const studentId = document.getElementById('editStudentModal').dataset.studentId;
+            gesp_closeEditStudentModal();
+            gesp_goToAddClass(studentId);
+        }
+        
+        // 打开删除确认弹窗
+        function gesp_openDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'block';
+        }
+        
+        // 关闭删除确认弹窗
+        function gesp_closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+        }
+        
+        // 确认删除学员
+        async function gesp_confirmDelete() {
+            const studentId = document.getElementById('editStudentModal').dataset.studentId;
+            const password = document.getElementById('admin-password').value;
+            
+            if (!password) {
+                alert('请输入管理账号密码');
+                return;
+            }
+            
+            try {
+                // 验证密码
+                const response = await fetch('http://localhost:5000/api/auth/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${gesp_getToken()}`
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                const verifyResult = await response.json();
+                if (verifyResult.success) {
+                    // 密码验证成功，删除学员
+                    const deleteResponse = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${gesp_getToken()}`
+                        }
+                    });
+                    
+                    const deleteResult = await deleteResponse.json();
+                    if (deleteResult.success) {
+                        // 关闭弹窗
+                        gesp_closeDeleteConfirmModal();
+                        gesp_closeEditStudentModal();
+                        
+                        // 刷新学员列表
+                        gesp_loadStudents();
+                    } else {
+                        alert('删除学员失败: ' + deleteResult.message);
+                    }
+                } else {
+                    alert('密码错误，请重新输入');
+                }
+            } catch (error) {
+                alert('删除学员失败: ' + error.message);
+            }
+        }
+        
+        // 显示教师选择下拉框
+        async function gesp_showTeacherSelect() {
+            const studentId = document.getElementById('editStudentModal').dataset.studentId;
+            
+            // 加载教师列表
+            await gesp_loadTeachersForEdit();
+            
+            // 存储学员ID
+            document.getElementById('editTeacherModal').dataset.studentId = studentId;
+            
+            // 显示修改归属弹窗
+            document.getElementById('editTeacherModal').style.display = 'block';
+        }
+        
         // 打开修改学员归属弹窗
         async function gesp_editStudentTeacher(studentId) {
             try {
@@ -690,7 +903,8 @@
                 const result = await response.json();
                 if (result.success) {
                     const student = result.data;
-                    document.getElementById('edit-student-name').value = student.name;
+                    const studentName = student.name || student.nickname || student.username;
+                    document.getElementById('edit-student-name').value = studentName;
                     
                     // 加载教师列表
                     await gesp_loadTeachersForEdit();
@@ -898,16 +1112,8 @@
                         const teacherName = student.teacher ? student.teacher.username : '未分配';
                         
                         let actionButtons = `
-                            <button class="action-btn add-class-btn" onclick="gesp_goToAddClass(${student.id})">添加课程</button>
-                            <button class="action-btn delete-btn" onclick="gesp_deleteStudent(${student.id})">删除</button>
+                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${student.id})">编辑</button>
                         `;
-                        
-                        // 管理员可以修改学员归属
-                        if (isAdmin) {
-                            actionButtons += `
-                                <button class="action-btn add-class-btn" onclick="gesp_editStudentTeacher(${student.id})">修改归属</button>
-                            `;
-                        }
                         
                         row.innerHTML = `
                             <td>${studentName}</td>
@@ -1223,11 +1429,10 @@
         }
         
         // 初始化
-        window.onload = function() {
+        window.onload = async function() {
             // 检查登录状态
-            if (!gesp_checkLogin()) {
-                alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
+            const isLoggedIn = await gesp_checkLoginAndRedirect();
+            if (!isLoggedIn) {
                 return;
             }
             

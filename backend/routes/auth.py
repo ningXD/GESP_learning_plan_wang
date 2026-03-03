@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token
 from models.models import User
 from extensions import db
 import bcrypt
+from decorators import token_required
 
 # 创建蓝图
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -61,3 +62,17 @@ def register():
         'access_token': access_token,
         'user': user.to_dict()
     }), 201
+
+@bp.route('/verify-password', methods=['POST'])
+@token_required
+def verify_password(current_user):
+    """验证密码"""
+    data = request.get_json()
+    if not data or 'password' not in data:
+        return jsonify({'success': False, 'message': '请提供密码'}), 400
+    
+    # 验证密码
+    if not bcrypt.checkpw(data['password'].encode('utf-8'), current_user.password.encode('utf-8')):
+        return jsonify({'success': False, 'message': '密码错误'}), 401
+    
+    return jsonify({'success': True, 'message': '密码验证成功'}), 200

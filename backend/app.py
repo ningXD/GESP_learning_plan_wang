@@ -59,56 +59,61 @@ if __name__ == '__main__':
     try:
         # 创建数据库表
         with app.app_context():
-            # 先删除所有表，确保新的字段被正确添加
             from models.models import User, Note, Student, ClassRecord, CourseRecord, StudyPlan, StudyPlanWeek
-            db.drop_all()
-            db.create_all()
-            # 初始化demo账号
-            import bcrypt
-            # 创建demo账号（管理员）
-            hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            demo_user = User(
-                username='demo',
-                password=hashed_password,
-                role='admin',
-                admin=True
-            )
-            db.session.add(demo_user)
             
-            # 创建教师测试账号
-            teacher_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            teacher_user = User(
-                username='teacher_test',
-                password=teacher_hashed_password,
-                nickname='测试教师',
-                role='teacher',
-                admin=False
-            )
-            db.session.add(teacher_user)
-            
-            # 初始化学生账号和学习计划
-            from scripts.init_study_plan import init_study_plan_template
-            init_study_plan_template()
-            
-            # 创建学生测试账号
-            student_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            student_user = User(
-                username='student_test',
-                password=student_hashed_password,
-                nickname='测试学生',
-                role='student',
-                admin=False,
-                age=16,
-                gender='男',
-                grade='高二',
-                subject='编程竞赛'
-            )
-            db.session.add(student_user)
-            
-            db.session.commit()
-            print("Demo account created successfully")
-            print("Teacher test account created successfully")
-            print("Student test account created successfully")
+            # 检查是否已存在demo账号
+            demo_user = User.query.filter_by(username='demo').first()
+            if not demo_user:
+                # 创建表
+                db.create_all()
+                # 初始化demo账号
+                import bcrypt
+                # 创建demo账号（管理员）
+                hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                demo_user = User(
+                    username='demo',
+                    password=hashed_password,
+                    role='admin',
+                    admin=True
+                )
+                db.session.add(demo_user)
+                
+                # 创建教师测试账号
+                teacher_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                teacher_user = User(
+                    username='teacher_test',
+                    password=teacher_hashed_password,
+                    nickname='测试教师',
+                    role='teacher',
+                    admin=False
+                )
+                db.session.add(teacher_user)
+                
+                # 初始化学生账号和学习计划
+                from scripts.init_study_plan import init_study_plan_template
+                init_study_plan_template()
+                
+                # 创建学生测试账号
+                student_hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                student_user = User(
+                    username='student_test',
+                    password=student_hashed_password,
+                    nickname='测试学生',
+                    role='student',
+                    admin=False,
+                    age=16,
+                    gender='男',
+                    grade='高二',
+                    subject='编程竞赛'
+                )
+                db.session.add(student_user)
+                
+                db.session.commit()
+                print("Demo account created successfully")
+                print("Teacher test account created successfully")
+                print("Student test account created successfully")
+            else:
+                print("Database already initialized")
         app.run(debug=True)
     except Exception as e:
         print(f"Error starting server: {e}")

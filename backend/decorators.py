@@ -14,9 +14,15 @@ def token_required(f):
             print(f"Request headers: {dict(request.headers)}")
             # 验证JWT token
             verify_jwt_in_request()
-            # 获取当前用户ID并转换为整数
-            user_id = int(get_jwt_identity())
+            # 获取当前用户ID
+            user_id = get_jwt_identity()
             print(f"User ID from JWT: {user_id}")
+            # 转换为整数
+            try:
+                user_id = int(user_id)
+            except ValueError:
+                print(f"Invalid user ID: {user_id}")
+                return jsonify({'success': False, 'message': '认证失败'}), 401
             # 查询用户
             user = User.query.get(user_id)
             if not user:

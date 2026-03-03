@@ -23,6 +23,31 @@ def get_students(current_user):
     
     return jsonify({'success': True, 'data': [student.to_dict() for student in students]}), 200
 
+@course_bp.route('/api/students/<int:student_id>', methods=['GET'])
+@token_required
+def get_student(current_user, student_id):
+    # 获取单个学员信息
+    if current_user.role != 'teacher' and not current_user.admin:
+        return jsonify({'success': False, 'message': '权限不足'}), 403
+    
+    if current_user.admin:
+        # 管理员可以查看所有学生
+        # 先检查是否是Student表中的学生
+        student = Student.query.get(student_id)
+        if not student:
+            # 检查是否是User表中的学生
+            user = User.query.filter_by(id=student_id, role='student').first()
+            if not user:
+                return jsonify({'success': False, 'message': '学员不存在'}), 404
+            return jsonify({'success': True, 'data': user.to_dict()}), 200
+    else:
+        # 普通教师只能查看自己的学生
+        student = Student.query.filter_by(id=student_id, teacher_id=current_user.id).first()
+        if not student:
+            return jsonify({'success': False, 'message': '学员不存在或不属于您'}), 404
+    
+    return jsonify({'success': True, 'data': student.to_dict()}), 200
+
 @course_bp.route('/api/students', methods=['POST'])
 @token_required
 def add_student(current_user):
