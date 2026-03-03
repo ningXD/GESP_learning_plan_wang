@@ -167,19 +167,28 @@
         
         .tab {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #ecf0f1;
-            border: none;
+            padding: 12px 24px;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
             cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            margin-right: 8px;
             transition: all 0.3s ease;
+            color: #333;
+        }
+        
+        .tab:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
         }
         
         .tab.active {
             background-color: #3498db;
             color: white;
+            border-color: #3498db;
         }
         
         .tab-content {
@@ -206,24 +215,37 @@
         
         .form-group input,
         .form-group select {
-            padding: 8px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             width: 200px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
         .form-group button {
             padding: 10px 20px;
-            background-color: #27ae60;
+            background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         
         .form-group button:hover {
-            background-color: #219a52;
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
         
         table {
@@ -233,28 +255,43 @@
         }
         
         th, td {
-            padding: 12px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         th {
             background-color: #3498db;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr {
+            transition: all 0.3s ease;
         }
         
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
         }
         
         .action-btn {
-            padding: 5px 10px;
+            padding: 8px 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
         
         .add-class-btn {
@@ -262,9 +299,17 @@
             color: white;
         }
         
+        .add-class-btn:hover {
+            background-color: #2980b9;
+        }
+        
         .delete-btn {
             background-color: #e74c3c;
             color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
         }
         
         .class-record-form {
@@ -294,7 +339,8 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
         }
         
         .modal-content {
@@ -303,28 +349,40 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ddd;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
             width: 90%;
             max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             overflow: hidden;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
         }
         
         .close-btn {
@@ -336,11 +394,13 @@
             cursor: pointer;
             padding: 0;
             line-height: 1;
+            transition: all 0.3s ease;
         }
         
         .close-btn:hover,
         .close-btn:focus {
             color: #333;
+            transform: rotate(90deg);
             text-decoration: none;
             cursor: pointer;
         }
@@ -352,19 +412,25 @@
         .modal-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
         }
         
         .btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         
         .btn-primary {
@@ -386,12 +452,30 @@
             background-color: #e2e6ea;
         }
         
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
         /* 教师选择下拉框 */
         .teacher-select {
             width: 200px;
-            padding: 8px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .teacher-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
     </style>
 </head>
@@ -440,7 +524,25 @@
         <div id="student" class="tab-content active">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div>
-                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-right: 10px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                        <style>
+                            #userTypeSelect option {
+                                padding: 8px;
+                            }
+                            #userTypeSelect:focus {
+                                border-color: #3498db;
+                                box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+                            }
+                            #userTypeSelect:active,
+                            #userTypeSelect:hover {
+                                border-color: #3498db;
+                            }
+                            /* 移除选择后的高亮效果 */
+                            #userTypeSelect option:checked {
+                                background-color: #f0f7ff;
+                                color: #3498db;
+                            }
+                        </style>
                         <option value="student">学生管理</option>
                         <option value="teacher">教师管理</option>
                     </select>
