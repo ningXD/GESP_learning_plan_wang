@@ -889,6 +889,12 @@
                     
                     students.forEach(student => {
                         const row = document.createElement('tr');
+                        // 处理User对象和Student对象的不同字段
+                        const studentName = student.name || student.nickname || student.username;
+                        const studentGender = student.gender || '';
+                        const studentAge = student.age || '';
+                        const studentGrade = student.grade || '';
+                        const studentProject = student.project || student.subject || '';
                         const teacherName = student.teacher ? student.teacher.username : '未分配';
                         
                         let actionButtons = `
@@ -904,11 +910,11 @@
                         }
                         
                         row.innerHTML = `
-                            <td>${student.name}</td>
-                            <td>${student.gender}</td>
-                            <td>${student.age}</td>
-                            <td>${student.grade}</td>
-                            <td>${student.project}</td>
+                            <td>${studentName}</td>
+                            <td>${studentGender}</td>
+                            <td>${studentAge}</td>
+                            <td>${studentGrade}</td>
+                            <td>${studentProject}</td>
                             <td>${teacherName}</td>
                             <td>
                                 ${actionButtons}
@@ -971,15 +977,16 @@
                 const result = await response.json();
                 if (result.success) {
                     const students = result.data;
-                    const select = document.getElementById('studentSelect');
-                    select.innerHTML = '<option value="">请选择学员</option>';
-                    
-                    students.forEach(student => {
-                        const option = document.createElement('option');
-                        option.value = student.id;
-                        option.textContent = student.name;
-                        select.appendChild(option);
-                    });
+                const select = document.getElementById('studentSelect');
+                select.innerHTML = '<option value="">请选择学员</option>';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    const studentName = student.name || student.nickname || student.username;
+                    option.textContent = studentName;
+                    select.appendChild(option);
+                });
                 }
             } catch (error) {
                 console.error('加载学员选择下拉框失败:', error);
