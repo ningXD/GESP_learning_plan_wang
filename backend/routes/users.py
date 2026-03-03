@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.models import User
+from models.models import User, Teacher
 from extensions import db
 import bcrypt
 
@@ -52,6 +52,78 @@ def get_user(user_id):
 @jwt_required()
 def get_teachers():
     """获取所有教师用户"""
+    # 获取分页参数
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
     # 只返回role为teacher的用户，不包括admin用户
-    teachers = User.query.filter(User.role == 'teacher').all()
-    return jsonify({'success': True, 'data': [teacher.to_dict() for teacher in teachers]}), 200
+    pagination = User.query.filter(User.role == 'teacher').paginate(page=page, per_page=per_page, error_out=False)
+    teachers = pagination.items
+    total = pagination.total
+    
+    return jsonify({
+        'success': True, 
+        'data': [teacher.to_dict() for teacher in teachers],
+        'total': total,
+        'page': page,
+        'per_page': per_page,
+        'pages': pagination.pages
+    }), 200
+
+@bp.route('/teachers', methods=['POST'])
+@jwt_required()
+def add_teacher():
+    """添加教师用户"""
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+    
+    # 只有管理员可以添加教师
+    if not current_user.admin:
+        return jsonify({'error': '权限不足'}), 403
+    
+    data = request.get_json()
+    if not data or 'phone' not in data or 'name' not in data:
+        return jsonify({'error': '请提供教师信息'}), 400
+    
+    try:
+        phone = data.get('phone')
+        name = data.get('name')
+        
+        # 检查phone是否已存在
+        existing_user = User.query.filter_by(phone=phone).first()
+        if existing_user:
+            return jsonify({'error': '手机号已存在'}), 400
+        
+        # 创建用户记录（密码默认为123456）
+        hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        new_user = User(
+            username=None,  # 不再自动生成账号
+            password=hashed_password,
+            phone=phone,
+            nickname=name,
+            role='teacher',
+            gender=data.get('gender') or '',
+            age=data.get('age'),
+            subject=data.get('teaching_subject') or ''
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # 创建教师记录
+        new_teacher = Teacher(
+            user_id=new_user.id,
+            gender=data.get('gender') or '',
+            age=data.get('age'),
+            phone=phone,
+            teaching_subject=data.get('teaching_subject') or ''
+        )
+        db.session.add(new_teacher)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'data': new_teacher.to_dict()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

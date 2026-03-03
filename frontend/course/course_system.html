@@ -522,9 +522,9 @@
         
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div>
-                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-right: 10px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
                         <style>
                             #userTypeSelect option {
                                 padding: 8px;
@@ -546,18 +546,34 @@
                         <option value="student">学生管理</option>
                         <option value="teacher">教师管理</option>
                     </select>
+                    <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
                 </div>
-                <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <select id="perPageSelect" onchange="gesp_changePerPage(this.value)" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                        <option value="100">100条/页</option>
+                    </select>
+                    <div style="font-size: 14px; color: #666;">
+                        共 <span id="totalCount">0</span> 条记录
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="font-size: 14px;">第</span>
+                        <input type="number" id="pageInput" min="1" max="1" value="1" style="width: 50px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px;">
+                        <span style="font-size: 14px;">页，共 <span id="totalPagesDisplay">1</span> 页</span>
+                        <button id="goToPage" onclick="gesp_goToPage()" class="btn" style="padding: 5px 10px; font-size: 12px;">跳转</button>
+                    </div>
+                </div>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
             <table id="studentTable">
-                <thead>
+                <thead id="tableHeader">
                     <tr>
                         <th>姓名</th>
+                        <th>电话</th>
                         <th>性别</th>
-                        <th>年龄</th>
-                        <th>年级</th>
                         <th>学习项目</th>
                         <th>所属教师</th>
                         <th>操作</th>
@@ -862,6 +878,48 @@
             return token;
         }
         
+        // 处理API请求
+        async function gesp_fetch(url, options = {}) {
+            const token = gesp_getToken();
+            
+            // 设置默认选项
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            // 合并选项
+            const fetchOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+            
+            try {
+                const response = await fetch(url, fetchOptions);
+                
+                // 处理401错误
+                if (response.status === 401) {
+                    alert('登录已过期，请重新登录');
+                    sessionStorage.removeItem('access_token');
+                    sessionStorage.removeItem('user');
+                    window.location.href = '../auth/login.html';
+                    return null;
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                alert('网络错误，请稍后重试');
+                return null;
+            }
+        }
+        
         // 测试token
         function testToken() {
             console.log('Session storage:', sessionStorage);
@@ -883,13 +941,69 @@
         // 存储当前选中的用户类型
         let currentUserType = 'student';
         
+        // 分页相关变量
+        let currentPage = 1;
+        let perPage = 10;
+        let totalCount = 0;
+        let totalPages = 1;
+        
         // 切换用户类型
         function gesp_switchUserType(type) {
             currentUserType = type;
             // 更新按钮文本
             const addBtn = document.getElementById('addUserBtn');
             addBtn.textContent = type === 'student' ? '添加学生' : '添加教师';
+            // 更新表头
+            const tableHeader = document.getElementById('tableHeader');
+            if (type === 'teacher') {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>性别</th>
+                        <th>教学科目</th>
+                        <th>操作</th>
+                    </tr>
+                `;
+            } else {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>性别</th>
+                        <th>学习项目</th>
+                        <th>所属教师</th>
+                        <th>操作</th>
+                    </tr>
+                `;
+            }
+            // 重置分页参数
+            currentPage = 1;
+            perPage = 10;
+            document.getElementById('perPageSelect').value = '10';
             // 重新加载用户列表
+            gesp_loadUsers();
+        }
+        
+
+        
+        // 跳转到指定页码
+        function gesp_goToPage() {
+            const pageInput = document.getElementById('pageInput');
+            const page = parseInt(pageInput.value);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                gesp_loadUsers();
+            } else {
+                alert('请输入有效的页码');
+                pageInput.value = currentPage;
+            }
+        }
+        
+        // 更改每页显示数量
+        function gesp_changePerPage(value) {
+            perPage = parseInt(value);
+            currentPage = 1;
             gesp_loadUsers();
         }
         
@@ -932,16 +1046,13 @@
         // 加载用户列表（学生或教师）
         async function gesp_loadUsers() {
             try {
-                let url = 'http://127.0.0.1:5000/api/students';
+                let url = `http://127.0.0.1:5000/api/students?page=${currentPage}&per_page=${perPage}`;
                 if (currentUserType === 'teacher') {
-                    url = 'http://127.0.0.1:5000/api/users/teachers';
+                    url = `http://127.0.0.1:5000/api/users/teachers?page=${currentPage}&per_page=${perPage}`;
                 }
                 
-                const response = await fetch(url, {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch(url);
+                if (!response) return;
                 
                 const result = await response.json();
                 if (result.success) {
@@ -957,29 +1068,57 @@
                         const row = document.createElement('tr');
                         // 处理User对象和Student对象的不同字段
                         const userName = user.name || user.nickname || user.username;
+                        const userPhone = user.phone || '';
                         const userGender = user.gender || '';
-                        const userAge = user.age || '';
-                        const userGrade = user.grade || '';
-                        const userProject = user.project || user.subject || '';
-                        const teacherName = user.teacher ? user.teacher.username : '未分配';
+                        const userSubject = currentUserType === 'teacher' ? (user.teaching_subject || user.subject || '') : (user.project || user.subject || '');
                         
                         let actionButtons = `
                             <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${user.id})">编辑</button>
                         `;
                         
-                        row.innerHTML = `
-                            <td>${userName}</td>
-                            <td>${userGender}</td>
-                            <td>${userAge}</td>
-                            <td>${userGrade}</td>
-                            <td>${userProject}</td>
-                            <td>${teacherName}</td>
-                            <td>
-                                ${actionButtons}
-                            </td>
-                        `;
+                        if (currentUserType === 'teacher') {
+                            row.innerHTML = `
+                                <td>${userName}</td>
+                                <td>${userPhone}</td>
+                                <td>${userGender}</td>
+                                <td>${userSubject}</td>
+                                <td>
+                                    ${actionButtons}
+                                </td>
+                            `;
+                        } else {
+                            const userAge = user.age || '';
+                            const userGrade = user.grade || '';
+                            const teacherName = user.teacher ? user.teacher.username : '未分配';
+                            row.innerHTML = `
+                                <td>${userName}</td>
+                                <td>${userPhone}</td>
+                                <td>${userGender}</td>
+                                <td>${userSubject}</td>
+                                <td>${teacherName}</td>
+                                <td>
+                                    ${actionButtons}
+                                </td>
+                            `;
+                        }
                         tableBody.appendChild(row);
                     });
+                    
+                    // 更新分页信息
+                    totalCount = result.total || 0;
+                    totalPages = result.pages || 1;
+                    currentPage = result.page || 1;
+                    
+                    // 更新分页控件
+                    document.getElementById('totalCount').textContent = totalCount;
+                    document.getElementById('totalPagesDisplay').textContent = totalPages;
+                    
+                    // 更新页码输入框
+                    const pageInput = document.getElementById('pageInput');
+                    pageInput.value = currentPage;
+                    pageInput.max = totalPages;
+                    
+
                     
                     // 同时更新学员选择下拉框
                     if (currentUserType === 'student') {
@@ -987,9 +1126,11 @@
                     }
                 } else {
                     console.error('加载用户列表失败:', result.message);
+                    alert('加载用户列表失败: ' + result.message);
                 }
             } catch (error) {
                 console.error('加载用户列表失败:', error);
+                alert('加载用户列表失败: ' + error.message);
             }
         }
         
@@ -1314,17 +1455,16 @@
         // 加载教师列表
         async function gesp_loadTeachers() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/users/teachers', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
+                if (!response) return;
                 
                 const result = await response.json();
                 if (result.success) {
                     teachersList = result.data;
                     // 初始化搜索框事件
                     initTeacherSearch();
+                } else {
+                    console.error('加载教师列表失败:', result.message);
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
@@ -1437,29 +1577,21 @@
                 };
                 
                 if (currentUserType === 'teacher') {
-                    url = 'http://127.0.0.1:5000/api/auth/register';
-                    // 为教师生成用户名（使用手机号）
-                    const username = phone;
-                    // 默认密码
-                    const password = '123456';
+                    url = 'http://127.0.0.1:5000/api/users/teachers';
                     data = {
-                        username,
-                        password,
-                        nickname: name,
+                        name,
+                        gender,
+                        age: parseInt(age),
                         phone,
-                        email: '',
-                        role: 'teacher'
+                        teaching_subject: project
                     };
                 }
                 
-                const response = await fetch(url, {
+                const response = await gesp_fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify(data)
                 });
+                if (!response) return;
                 
                 const result = await response.json();
                 if (result.success || (result.access_token && result.user)) {

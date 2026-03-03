@@ -84,7 +84,26 @@ def generate_test_data():
             teacher_index = (i - 1) % teacher_count
             teacher_id = teachers[teacher_index].id
             
-            # 创建学生
+            # 生成密码
+            hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            
+            # 先在users表中创建用户
+            user = User(
+                username=f'student{i}',
+                password=hashed_password,
+                nickname=f'测试学生{i}',
+                phone=str(base_phone + 100 + i - 1),
+                role='student',
+                admin=False,
+                age=10 + (i % 10),
+                gender='男' if i % 2 == 0 else '女',
+                grade=f'{(i % 6) + 1}年级',
+                subject='编程竞赛'
+            )
+            db.session.add(user)
+            db.session.flush()  # 获取user.id
+            
+            # 然后在students表中创建学生记录
             student = Student(
                 teacher_id=teacher_id,
                 name=f'测试学生{i}',

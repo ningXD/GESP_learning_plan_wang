@@ -95,6 +95,33 @@ class Student(db.Model):
             'updated_at': self.updated_at.isoformat()
         }
 
+class Teacher(db.Model):
+    __tablename__ = 'teachers'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
+    gender = db.Column(db.String(10), nullable=True)
+    age = db.Column(db.Integer, nullable=True)
+    phone = db.Column(db.String(20), unique=True, nullable=False)
+    teaching_subject = db.Column(db.String(50), nullable=True)  # 教学项目
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 关系
+    user = db.relationship('User', backref='teacher_profile', uselist=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'gender': self.gender,
+            'age': self.age,
+            'phone': self.phone,
+            'teaching_subject': self.teaching_subject,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
 class ClassRecord(db.Model):
     __tablename__ = 'class_records'
     
