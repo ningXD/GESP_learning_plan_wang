@@ -472,11 +472,11 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="modal-name">姓名: <span style="color: red;">*</span></label>
-                        <input type="text" id="modal-name" required>
+                        <input type="text" id="modal-name" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="modal-gender">性别:</label>
-                        <select id="modal-gender">
+                        <select id="modal-gender" autocomplete="off">
                             <option value="">请选择</option>
                             <option value="男">男</option>
                             <option value="女">女</option>
@@ -484,25 +484,46 @@
                     </div>
                     <div class="form-group">
                         <label for="modal-age">年龄: <span style="color: red;">*</span></label>
-                        <input type="number" id="modal-age" min="1" required>
+                        <input type="number" id="modal-age" min="1" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="modal-grade">年级:</label>
-                        <input type="text" id="modal-grade">
+                        <select id="modal-grade" autocomplete="off">
+                            <option value="">请选择</option>
+                            <option value="一年级">一年级</option>
+                            <option value="二年级">二年级</option>
+                            <option value="三年级">三年级</option>
+                            <option value="四年级">四年级</option>
+                            <option value="五年级">五年级</option>
+                            <option value="六年级">六年级</option>
+                            <option value="初一">初一</option>
+                            <option value="初二">初二</option>
+                            <option value="初三">初三</option>
+                            <option value="高一">高一</option>
+                            <option value="高二">高二</option>
+                            <option value="高三">高三</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="modal-project">学习项目:</label>
-                        <input type="text" id="modal-project">
+                        <input type="text" id="modal-project" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="modal-phone">手机号: <span style="color: red;">*</span></label>
-                        <input type="tel" id="modal-phone" required>
+                        <input type="tel" id="modal-phone" required autocomplete="off">
                     </div>
                     <div class="form-group" id="teacherSelectGroup" style="display: none;">
                         <label for="modal-teacher">所属教师:</label>
-                        <select id="modal-teacher" class="teacher-select">
-                            <option value="">请选择教师</option>
-                        </select>
+                        <div style="position: relative; display: inline-block;">
+                            <input type="text" id="modal-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
+                            <div id="teacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; z-index: 1000; display: none; margin-bottom: 4px;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">
+                                    <input type="text" id="teacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                </div>
+                                <div id="teacherList" style="padding: 4px 0;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -580,9 +601,16 @@
                     </div>
                     <div class="form-group">
                         <label for="edit-teacher">所属教师:</label>
-                        <select id="edit-teacher" class="teacher-select">
-                            <option value="">请选择教师</option>
-                        </select>
+                        <div style="position: relative; display: inline-block;">
+                            <input type="text" id="edit-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
+                            <div id="editTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; z-index: 1000; display: none; margin-bottom: 4px;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">
+                                    <input type="text" id="editTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                </div>
+                                <div id="editTeacherList" style="padding: 4px 0;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -728,6 +756,16 @@
             return token;
         }
         
+        // 测试token
+        function testToken() {
+            console.log('Session storage:', sessionStorage);
+            console.log('Access token:', sessionStorage.getItem('access_token'));
+            console.log('User:', sessionStorage.getItem('user'));
+        }
+        
+        // 页面加载时测试token
+        window.addEventListener('load', testToken);
+        
         // 初始化数据
         function gesp_initData() {
             // 直接从API加载数据
@@ -745,7 +783,14 @@
             document.getElementById('modal-grade').value = '';
             document.getElementById('modal-project').value = '';
             document.getElementById('modal-phone').value = '';
-            document.getElementById('modal-teacher').value = '';
+            const teacherInput = document.getElementById('modal-teacher');
+            teacherInput.value = '';
+            teacherInput.dataset.id = '';
+            document.getElementById('teacherDropdown').style.display = 'none';
+            const teacherSearchInput = document.getElementById('teacherSearchInput');
+            if (teacherSearchInput) {
+                teacherSearchInput.value = '';
+            }
             
             // 检查用户权限，管理员显示教师选择
             const userStr = sessionStorage.getItem('user');
@@ -913,10 +958,13 @@
                     await gesp_loadTeachersForEdit();
                     
                     // 设置当前教师
+                    const teacherInput = document.getElementById('edit-teacher');
                     if (student.teacher) {
-                        document.getElementById('edit-teacher').value = student.teacher.id;
+                        teacherInput.value = student.teacher.username;
+                        teacherInput.dataset.id = student.teacher.id;
                     } else {
-                        document.getElementById('edit-teacher').value = '';
+                        teacherInput.value = '';
+                        teacherInput.dataset.id = '';
                     }
                     
                     // 存储学员ID
@@ -948,26 +996,97 @@
                 
                 const result = await response.json();
                 if (result.success) {
-                    const teachers = result.data;
-                    const select = document.getElementById('edit-teacher');
-                    select.innerHTML = '<option value="">请选择教师</option>';
-                    
-                    teachers.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.username;
-                        select.appendChild(option);
-                    });
+                    teachersList = result.data;
+                    // 初始化搜索功能
+                    initEditTeacherSearch();
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
             }
         }
         
+        // 初始化修改学员归属的教师搜索功能
+        function initEditTeacherSearch() {
+            const searchInput = document.getElementById('edit-teacher');
+            const dropdown = document.getElementById('editTeacherDropdown');
+            const teacherList = document.getElementById('editTeacherList');
+            const teacherSearchInput = document.getElementById('editTeacherSearchInput');
+            
+            if (searchInput && dropdown && teacherList && teacherSearchInput) {
+                // 点击输入框显示弹窗
+                searchInput.addEventListener('click', function() {
+                    renderEditTeachers(teachersList);
+                    dropdown.style.display = 'block';
+                    // 聚焦搜索框
+                    teacherSearchInput.focus();
+                });
+                
+                // 搜索框输入事件 - 过滤教师
+                teacherSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredTeachers = teachersList.filter(teacher => 
+                        teacher.username.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    // 更新弹窗列表
+                    renderEditTeachers(filteredTeachers);
+                });
+                
+                // 点击其他地方关闭弹窗
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 渲染修改学员归属的教师列表
+        function renderEditTeachers(teachers) {
+            const teacherList = document.getElementById('editTeacherList');
+            if (!teacherList) return;
+            
+            teacherList.innerHTML = '';
+            
+            if (teachers.length > 0) {
+                teachers.forEach(teacher => {
+                    const item = document.createElement('div');
+                    item.style.padding = '8px 12px';
+                    item.style.cursor = 'pointer';
+                    item.textContent = teacher.username;
+                    item.dataset.id = teacher.id;
+                    
+                    item.addEventListener('click', function() {
+                        const searchInput = document.getElementById('edit-teacher');
+                        searchInput.value = teacher.username;
+                        searchInput.dataset.id = teacher.id;
+                        document.getElementById('editTeacherDropdown').style.display = 'none';
+                    });
+                    
+                    item.addEventListener('mouseover', function() {
+                        this.style.backgroundColor = '#f0f7ff';
+                    });
+                    
+                    item.addEventListener('mouseout', function() {
+                        this.style.backgroundColor = 'white';
+                    });
+                    
+                    teacherList.appendChild(item);
+                });
+            } else {
+                const emptyItem = document.createElement('div');
+                emptyItem.style.padding = '8px 12px';
+                emptyItem.style.color = '#999';
+                emptyItem.textContent = '没有找到匹配的教师';
+                teacherList.appendChild(emptyItem);
+            }
+        }
+        
         // 更新学员归属
         async function gesp_updateStudentTeacher() {
             const studentId = document.getElementById('editTeacherModal').dataset.studentId;
-            const teacherId = document.getElementById('edit-teacher').value;
+            const teacherInput = document.getElementById('edit-teacher');
+            const teacherId = teacherInput.dataset.id;
             
             try {
                 const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}/teacher`, {
@@ -1004,6 +1123,9 @@
             }
         }
         
+        // 存储教师列表
+        let teachersList = [];
+        
         // 加载教师列表
         async function gesp_loadTeachers() {
             try {
@@ -1015,19 +1137,89 @@
                 
                 const result = await response.json();
                 if (result.success) {
-                    const teachers = result.data;
-                    const select = document.getElementById('modal-teacher');
-                    select.innerHTML = '<option value="">请选择教师</option>';
-                    
-                    teachers.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.username;
-                        select.appendChild(option);
-                    });
+                    teachersList = result.data;
+                    // 初始化搜索框事件
+                    initTeacherSearch();
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
+            }
+        }
+        
+        // 初始化教师搜索功能
+        function initTeacherSearch() {
+            const searchInput = document.getElementById('modal-teacher');
+            const dropdown = document.getElementById('teacherDropdown');
+            const teacherList = document.getElementById('teacherList');
+            const teacherSearchInput = document.getElementById('teacherSearchInput');
+            
+            if (searchInput && dropdown && teacherList && teacherSearchInput) {
+                // 点击输入框显示弹窗
+                searchInput.addEventListener('click', function() {
+                    renderTeachers(teachersList);
+                    dropdown.style.display = 'block';
+                    // 聚焦搜索框
+                    teacherSearchInput.focus();
+                });
+                
+                // 搜索框输入事件 - 过滤教师
+                teacherSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredTeachers = teachersList.filter(teacher => 
+                        teacher.username.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    // 更新弹窗列表
+                    renderTeachers(filteredTeachers);
+                });
+                
+                // 点击其他地方关闭弹窗
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 渲染教师列表
+        function renderTeachers(teachers) {
+            const teacherList = document.getElementById('teacherList');
+            if (!teacherList) return;
+            
+            teacherList.innerHTML = '';
+            
+            if (teachers.length > 0) {
+                teachers.forEach(teacher => {
+                    const item = document.createElement('div');
+                    item.style.padding = '8px 12px';
+                    item.style.cursor = 'pointer';
+                    item.textContent = teacher.username;
+                    item.dataset.id = teacher.id;
+                    
+                    item.addEventListener('click', function() {
+                        const searchInput = document.getElementById('modal-teacher');
+                        searchInput.value = teacher.username;
+                        searchInput.dataset.id = teacher.id;
+                        document.getElementById('teacherDropdown').style.display = 'none';
+                    });
+                    
+                    item.addEventListener('mouseover', function() {
+                        this.style.backgroundColor = '#f0f7ff';
+                    });
+                    
+                    item.addEventListener('mouseout', function() {
+                        this.style.backgroundColor = 'white';
+                    });
+                    
+                    teacherList.appendChild(item);
+                });
+            } else {
+                const emptyItem = document.createElement('div');
+                emptyItem.style.padding = '8px 12px';
+                emptyItem.style.color = '#999';
+                emptyItem.textContent = '没有找到匹配的教师';
+                teacherList.appendChild(emptyItem);
             }
         }
         
@@ -1039,7 +1231,8 @@
             const grade = document.getElementById('modal-grade').value;
             const project = document.getElementById('modal-project').value;
             const phone = document.getElementById('modal-phone').value;
-            const teacherId = document.getElementById('modal-teacher').value;
+            const teacherInput = document.getElementById('modal-teacher');
+            const teacherId = teacherInput.dataset.id;
             
             if (!name || !age || !phone) {
                 alert('姓名、年龄和手机号是必填项');

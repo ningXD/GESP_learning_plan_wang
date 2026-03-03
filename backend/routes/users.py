@@ -47,3 +47,10 @@ def get_user(user_id):
     if not user:
         return jsonify({'error': '用户不存在'}), 404
     return jsonify(user.to_dict()), 200
+
+@bp.route('/teachers', methods=['GET'])
+@jwt_required()
+def get_teachers():
+    """获取所有教师用户"""
+    teachers = User.query.filter((User.role == 'teacher') | (User.admin == True)).all()
+    return jsonify({'success': True, 'data': [teacher.to_dict() for teacher in teachers]}), 200
