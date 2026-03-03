@@ -52,5 +52,6 @@ def get_user(user_id):
 @jwt_required()
 def get_teachers():
     """获取所有教师用户"""
-    teachers = User.query.filter((User.role == 'teacher') | (User.admin == True)).all()
+    # 只返回role为teacher的用户，不包括admin用户
+    teachers = User.query.filter(User.role == 'teacher').all()
     return jsonify({'success': True, 'data': [teacher.to_dict() for teacher in teachers]}), 200
