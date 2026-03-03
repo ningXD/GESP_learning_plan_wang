@@ -61,30 +61,10 @@ def add_student(current_user):
         return jsonify({'success': False, 'message': '请提供学员信息'}), 400
     
     try:
-        # 生成用户名：根据学员姓名的拼音
+        # 不再自动生成账号，也不再创建User账户
+        # 只创建学员记录
         name = data.get('name')
         phone = data.get('phone')
-        pinyin = ''.join(lazy_pinyin(name)).lower()
-        
-        # 检查用户名是否已存在
-        existing_user = User.query.filter_by(username=pinyin).first()
-        if not existing_user:
-            # 创建新用户
-            hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            new_user = User(
-                username=pinyin,
-                password=hashed_password,
-                nickname=name,
-                role='student',
-                admin=False,
-                age=data.get('age'),
-                gender=data.get('gender'),
-                grade=data.get('grade'),
-                subject=data.get('project'),
-                phone=phone
-            )
-            db.session.add(new_user)
-            db.session.commit()
         
         # 创建学员记录
         new_student = Student(

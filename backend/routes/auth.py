@@ -13,9 +13,10 @@ def login():
     """用户登录"""
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
-        return jsonify({'error': '用户名/手机号和密码不能为空'}), 400
+        return jsonify({'error': '手机号和密码不能为空'}), 400
     
-    # 尝试通过用户名或手机号查找用户
+    # 注意：虽然前端界面显示为"手机号"，但后端支持通过用户名或手机号登录
+    # 这是一个隐藏功能，用于测试账号登录
     user = User.query.filter((User.username == data['username']) | (User.phone == data['username'])).first()
     if not user:
         return jsonify({'error': '用户不存在'}), 401
