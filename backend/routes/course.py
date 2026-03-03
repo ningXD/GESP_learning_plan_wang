@@ -88,10 +88,10 @@ def add_student(current_user):
         new_student = Student(
             teacher_id=current_user.id,
             name=data.get('name'),
-            gender=data.get('gender'),
+            gender=data.get('gender') or '',
             age=data.get('age'),
-            grade=data.get('grade'),
-            project=data.get('project')
+            grade=data.get('grade') or '',
+            project=data.get('project') or ''
         )
         db.session.add(new_student)
         db.session.commit()

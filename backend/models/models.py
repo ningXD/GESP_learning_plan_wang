@@ -68,10 +68,10 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
-    gender = db.Column(db.String(10), nullable=False)
+    gender = db.Column(db.String(10), nullable=True)
     age = db.Column(db.Integer, nullable=False)
-    grade = db.Column(db.String(20), nullable=False)
-    project = db.Column(db.String(50), nullable=False)
+    grade = db.Column(db.String(20), nullable=True)
+    project = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
