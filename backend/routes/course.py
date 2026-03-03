@@ -3,6 +3,8 @@ from models.models import Student, ClassRecord, CourseRecord, User
 from extensions import db
 from datetime import datetime
 from decorators import token_required
+import bcrypt
+from pypinyin import lazy_pinyin
 
 course_bp = Blueprint('course', __name__)
 
@@ -59,6 +61,30 @@ def add_student(current_user):
         return jsonify({'success': False, 'message': '请提供学员信息'}), 400
     
     try:
+        # 生成用户名：根据学员姓名的拼音
+        name = data.get('name')
+        pinyin = ''.join(lazy_pinyin(name)).lower()
+        
+        # 检查用户名是否已存在
+        existing_user = User.query.filter_by(username=pinyin).first()
+        if not existing_user:
+            # 创建新用户
+            hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            new_user = User(
+                username=pinyin,
+                password=hashed_password,
+                nickname=name,
+                role='student',
+                admin=False,
+                age=data.get('age'),
+                gender=data.get('gender'),
+                grade=data.get('grade'),
+                subject=data.get('project')
+            )
+            db.session.add(new_user)
+            db.session.commit()
+        
+        # 创建学员记录
         new_student = Student(
             teacher_id=current_user.id,
             name=data.get('name'),
