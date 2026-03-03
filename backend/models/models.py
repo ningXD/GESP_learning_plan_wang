@@ -8,6 +8,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=True)
+    phone = db.Column(db.String(20), unique=True, nullable=True)
     nickname = db.Column(db.String(50), nullable=True)
     role = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
     admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
@@ -28,13 +29,14 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'nickname': self.nickname,
+            'phone': self.phone or '',
+            'nickname': self.nickname or '',
             'role': self.role,
             'admin': self.admin,
-            'age': self.age,
-            'gender': self.gender,
-            'grade': self.grade,
-            'subject': self.subject,
+            'age': self.age or 0,
+            'gender': self.gender or '',
+            'grade': self.grade or '',
+            'subject': self.subject or '',
             'created_at': self.created_at.isoformat()
         }
 
@@ -72,6 +74,7 @@ class Student(db.Model):
     age = db.Column(db.Integer, nullable=False)
     grade = db.Column(db.String(20), nullable=True)
     project = db.Column(db.String(50), nullable=True)
+    phone = db.Column(db.String(20), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -87,6 +90,7 @@ class Student(db.Model):
             'age': self.age,
             'grade': self.grade,
             'project': self.project,
+            'phone': self.phone,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

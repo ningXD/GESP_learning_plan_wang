@@ -63,6 +63,7 @@ def add_student(current_user):
     try:
         # 生成用户名：根据学员姓名的拼音
         name = data.get('name')
+        phone = data.get('phone')
         pinyin = ''.join(lazy_pinyin(name)).lower()
         
         # 检查用户名是否已存在
@@ -79,7 +80,8 @@ def add_student(current_user):
                 age=data.get('age'),
                 gender=data.get('gender'),
                 grade=data.get('grade'),
-                subject=data.get('project')
+                subject=data.get('project'),
+                phone=phone
             )
             db.session.add(new_user)
             db.session.commit()
@@ -91,7 +93,8 @@ def add_student(current_user):
             gender=data.get('gender') or '',
             age=data.get('age'),
             grade=data.get('grade') or '',
-            project=data.get('project') or ''
+            project=data.get('project') or '',
+            phone=phone
         )
         db.session.add(new_student)
         db.session.commit()

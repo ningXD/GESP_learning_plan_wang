@@ -13,9 +13,10 @@ def login():
     """用户登录"""
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
-        return jsonify({'error': '用户名和密码不能为空'}), 400
+        return jsonify({'error': '用户名/手机号和密码不能为空'}), 400
     
-    user = User.query.filter_by(username=data['username']).first()
+    # 尝试通过用户名或手机号查找用户
+    user = User.query.filter((User.username == data['username']) | (User.phone == data['username'])).first()
     if not user:
         return jsonify({'error': '用户不存在'}), 401
     
@@ -49,6 +50,7 @@ def register():
         username=data['username'],
         password=hashed_password,
         email=data.get('email'),
+        phone=data.get('phone'),
         role=data.get('role', 'student'),
         admin=data['username'] == 'demo'  # demo用户默认为管理员
     )

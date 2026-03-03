@@ -61,11 +61,12 @@ if __name__ == '__main__':
         with app.app_context():
             from models.models import User, Note, Student, ClassRecord, CourseRecord, StudyPlan, StudyPlanWeek
             
+            # 首先创建所有表
+            db.create_all()
+            
             # 检查是否已存在demo账号
             demo_user = User.query.filter_by(username='demo').first()
             if not demo_user:
-                # 创建表
-                db.create_all()
                 # 初始化demo账号
                 import bcrypt
                 # 创建demo账号（管理员）

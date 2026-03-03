@@ -494,6 +494,10 @@
                         <label for="modal-project">学习项目:</label>
                         <input type="text" id="modal-project">
                     </div>
+                    <div class="form-group">
+                        <label for="modal-phone">手机号: <span style="color: red;">*</span></label>
+                        <input type="tel" id="modal-phone" required>
+                    </div>
                     <div class="form-group" id="teacherSelectGroup" style="display: none;">
                         <label for="modal-teacher">所属教师:</label>
                         <select id="modal-teacher" class="teacher-select">
@@ -684,12 +688,44 @@
             return true;
         }
         
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+            }
+        }
+        
         // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginAndRedirect);
+        window.addEventListener('load', function() {
+            gesp_checkLoginAndRedirect();
+            gesp_checkLoginStatus();
+            gesp_checkAdminPermission();
+            gesp_initData();
+        });
         
         // 获取token
         function gesp_getToken() {
-            return sessionStorage.getItem('access_token');
+            const token = sessionStorage.getItem('access_token');
+            console.log('Token:', token);
+            return token;
         }
         
         // 初始化数据
@@ -708,6 +744,7 @@
             document.getElementById('modal-age').value = '';
             document.getElementById('modal-grade').value = '';
             document.getElementById('modal-project').value = '';
+            document.getElementById('modal-phone').value = '';
             document.getElementById('modal-teacher').value = '';
             
             // 检查用户权限，管理员显示教师选择
@@ -735,7 +772,7 @@
         async function gesp_openEditStudentModal(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -804,7 +841,7 @@
             
             try {
                 // 验证密码
-                const response = await fetch('http://localhost:5000/api/auth/verify-password', {
+                const response = await fetch('http://127.0.0.1:5000/api/auth/verify-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -816,7 +853,7 @@
                 const verifyResult = await response.json();
                 if (verifyResult.success) {
                     // 密码验证成功，删除学员
-                    const deleteResponse = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    const deleteResponse = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -860,7 +897,7 @@
         async function gesp_editStudentTeacher(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -903,7 +940,7 @@
         // 加载教师列表（修改归属用）
         async function gesp_loadTeachersForEdit() {
             try {
-                const response = await fetch('http://localhost:5000/api/users/teachers', {
+                const response = await fetch('http://127.0.0.1:5000/api/users/teachers', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -933,7 +970,7 @@
             const teacherId = document.getElementById('edit-teacher').value;
             
             try {
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}/teacher`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}/teacher`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -970,7 +1007,7 @@
         // 加载教师列表
         async function gesp_loadTeachers() {
             try {
-                const response = await fetch('http://localhost:5000/api/users/teachers', {
+                const response = await fetch('http://127.0.0.1:5000/api/users/teachers', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1001,15 +1038,16 @@
             const age = document.getElementById('modal-age').value;
             const grade = document.getElementById('modal-grade').value;
             const project = document.getElementById('modal-project').value;
+            const phone = document.getElementById('modal-phone').value;
             const teacherId = document.getElementById('modal-teacher').value;
             
-            if (!name || !age) {
-                alert('姓名和年龄是必填项');
+            if (!name || !age || !phone) {
+                alert('姓名、年龄和手机号是必填项');
                 return;
             }
             
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
+                const response = await fetch('http://127.0.0.1:5000/api/students', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1021,6 +1059,7 @@
                         age: parseInt(age),
                         grade,
                         project,
+                        phone,
                         teacher_id: teacherId ? parseInt(teacherId) : null
                     })
                 });
@@ -1051,7 +1090,7 @@
         // 加载学员列表
         async function gesp_loadStudents() {
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
+                const response = await fetch('http://127.0.0.1:5000/api/students', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1117,7 +1156,7 @@
         async function gesp_deleteStudent(studentId) {
             if (confirm('确定要删除该学员吗？')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -1140,7 +1179,7 @@
         // 加载学员选择下拉框
         async function gesp_loadStudentSelect() {
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
+                const response = await fetch('http://127.0.0.1:5000/api/students', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1177,7 +1216,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:5000/api/class-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/class-records', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1221,7 +1260,7 @@
         // 加载上课记录列表
         async function gesp_loadClassRecords() {
             try {
-                const response = await fetch('http://localhost:5000/api/class-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/class-records', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1257,7 +1296,7 @@
         async function gesp_deleteClassRecord(recordId) {
             if (confirm('确定要删除该上课记录吗？')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/class-records/${recordId}`, {
+                    const response = await fetch(`http://127.0.0.1:5000/api/class-records/${recordId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -1281,7 +1320,7 @@
         // 加载所有消课记录
         async function gesp_loadAllRecords() {
             try {
-                const response = await fetch('http://localhost:5000/api/course-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/course-records', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
