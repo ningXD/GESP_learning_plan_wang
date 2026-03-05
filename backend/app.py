@@ -105,7 +105,7 @@ if __name__ == '__main__':
                     age=16,
                     gender='男',
                     grade='高二',
-                    subject='编程竞赛'
+                    subject='竞赛'
                 )
                 db.session.add(student_user)
                 

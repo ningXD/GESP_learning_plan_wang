@@ -98,7 +98,7 @@ def generate_test_data():
                 age=10 + (i % 10),
                 gender='男' if i % 2 == 0 else '女',
                 grade=f'{(i % 6) + 1}年级',
-                subject='编程竞赛'
+                subject='竞赛'
             )
             db.session.add(user)
             db.session.flush()  # 获取user.id
@@ -110,7 +110,7 @@ def generate_test_data():
                 gender='男' if i % 2 == 0 else '女',
                 age=10 + (i % 10),
                 grade=f'{(i % 6) + 1}年级',
-                project='编程竞赛',
+                project='竞赛',
                 phone=str(base_phone + 100 + i - 1)
             )
             db.session.add(student)

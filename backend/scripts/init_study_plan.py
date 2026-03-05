@@ -26,7 +26,7 @@ def init_study_plan_template():
                 age=15,
                 gender='女',
                 grade='高一',
-                subject='编程竞赛'
+                subject='竞赛'
             )
             db.session.add(student)
             db.session.commit()
@@ -40,10 +40,10 @@ def init_study_plan_template():
             # 创建学习计划模板
             study_plan = StudyPlan(
                 student_id=student.id,
-                name='编程竞赛 8周冲刺计划表',
+                name='竞赛 8周冲刺计划表',
                 start_date=datetime.strptime('2026-01-16', '%Y-%m-%d').date(),
                 end_date=datetime.strptime('2026-03-13', '%Y-%m-%d').date(),
-                description='每周五19:00-21:00学习，共8周的编程竞赛冲刺计划'
+                description='每周五19:00-21:00学习，共8周的竞赛冲刺计划'
             )
             db.session.add(study_plan)
             db.session.commit()
