@@ -955,6 +955,11 @@
         async function gesp_fetch(url, options = {}) {
             const token = gesp_getToken();
             
+            // 如果没有token，直接返回null，避免无效请求
+            if (!token) {
+                return null;
+            }
+            
             // 设置默认选项
             const defaultOptions = {
                 headers: {
@@ -978,9 +983,10 @@
                 
                 // 处理401错误
                 if (response.status === 401) {
-                    alert('登录已过期，请重新登录');
+                    // 清除存储的登录信息
                     sessionStorage.removeItem('access_token');
                     sessionStorage.removeItem('user');
+                    // 重定向到登录页面
                     window.location.href = '../auth/login.html';
                     return null;
                 }
@@ -1005,10 +1011,13 @@
         
         // 初始化数据
         function gesp_initData() {
-            // 直接从API加载数据
-            gesp_loadUsers();
-            gesp_loadClassRecords();
-            gesp_loadAllRecords();
+            // 检查是否有token
+            if (gesp_checkLogin()) {
+                // 从API加载数据
+                gesp_loadUsers();
+                gesp_loadClassRecords();
+                gesp_loadAllRecords();
+            }
         }
         
         // 存储当前选中的用户类型
@@ -2009,13 +2018,14 @@
             gesp_checkLoginStatus();
             
             // 检查登录并重定向
-            if (!gesp_checkLoginAndRedirect()) {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再访问此页面');
+                window.location.href = '../index.html';
                 return;
             }
             
             // 初始化数据
             gesp_initData();
-            gesp_loadUsers();
             gesp_checkAdminPermission();
         };
         
