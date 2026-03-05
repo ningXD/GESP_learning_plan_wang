@@ -52,23 +52,37 @@ def get_user(user_id):
 @jwt_required()
 def get_teachers():
     """获取所有教师用户"""
-    # 获取分页参数
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
-    
-    # 只返回role为teacher的用户，不包括admin用户
-    pagination = User.query.filter(User.role == 'teacher').paginate(page=page, per_page=per_page, error_out=False)
-    teachers = pagination.items
-    total = pagination.total
-    
-    return jsonify({
-        'success': True, 
-        'data': [teacher.to_dict() for teacher in teachers],
-        'total': total,
-        'page': page,
-        'per_page': per_page,
-        'pages': pagination.pages
-    }), 200
+    try:
+        # 获取分页参数
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+        
+        # 只返回role为teacher的用户，不包括admin用户
+        pagination = User.query.filter(User.role == 'teacher').paginate(page=page, per_page=per_page, error_out=False)
+        teachers = pagination.items
+        total = pagination.total
+        
+        # 构建教师数据列表，使用User表中的nickname字段
+        teacher_data = []
+        for teacher in teachers:
+            teacher_dict = teacher.to_dict()
+            # 直接使用User表中的nickname字段
+            teacher_dict['name'] = teacher_dict.get('nickname', '')
+            teacher_data.append(teacher_dict)
+        
+        return jsonify({
+            'success': True, 
+            'data': teacher_data,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': pagination.pages
+        }), 200
+    except Exception as e:
+        print(f"获取教师列表时出错: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @bp.route('/teachers', methods=['POST'])
 @jwt_required()

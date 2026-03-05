@@ -100,6 +100,7 @@ class Teacher(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
+    name = db.Column(db.String(50), nullable=True)  # 教师名称
     gender = db.Column(db.String(10), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     phone = db.Column(db.String(20), unique=True, nullable=False)
@@ -114,6 +115,7 @@ class Teacher(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'name': self.name,
             'gender': self.gender,
             'age': self.age,
             'phone': self.phone,

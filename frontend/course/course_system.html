@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>消课系统 - 编程特攻队</title>
+    <title>编程特攻队</title>
     <style>
         * {
             margin: 0;
@@ -162,7 +162,7 @@
         }
         
         .tab-container {
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
         
         .tab {
@@ -193,7 +193,7 @@
         
         .tab-content {
             display: none;
-            padding: 20px;
+            padding: 10px 20px;
             border: 1px solid #ddd;
             border-radius: 0 5px 5px 5px;
             background-color: #f9f9f9;
@@ -477,6 +477,50 @@
             border-color: #3498db;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
+        
+        /* 教师下拉菜单样式 */
+        .teacher-dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            margin-bottom: 4px;
+        }
+        
+        /* 教师下拉菜单项样式 */
+        .teacher-dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .teacher-dropdown-item:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        /* 所有选择框的统一样式 */
+        select {
+            transition: all 0.3s ease;
+        }
+        
+        select:hover {
+            border-color: #3498db;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -511,7 +555,6 @@
     </nav>
     
     <div class="container">
-        <h1>消课系统</h1>
         
         <div class="tab-container">
             <button class="tab active" onclick="gesp_openTab(event, 'student')">用户管理</button>
@@ -522,49 +565,30 @@
         
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
-                        <style>
-                            #userTypeSelect option {
-                                padding: 8px;
-                            }
-                            #userTypeSelect:focus {
-                                border-color: #3498db;
-                                box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-                            }
-                            #userTypeSelect:active,
-                            #userTypeSelect:hover {
-                                border-color: #3498db;
-                            }
-                            /* 移除选择后的高亮效果 */
-                            #userTypeSelect option:checked {
-                                background-color: #f0f7ff;
-                                color: #3498db;
-                            }
-                        </style>
-                        <option value="student">学生管理</option>
-                        <option value="teacher">教师管理</option>
-                    </select>
-                    <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <select id="perPageSelect" onchange="gesp_changePerPage(this.value)" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
-                        <option value="10">10条/页</option>
-                        <option value="20">20条/页</option>
-                        <option value="50">50条/页</option>
-                        <option value="100">100条/页</option>
-                    </select>
-                    <div style="font-size: 14px; color: #666;">
-                        共 <span id="totalCount">0</span> 条记录
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <span style="font-size: 14px;">第</span>
-                        <input type="number" id="pageInput" min="1" max="1" value="1" style="width: 50px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px;">
-                        <span style="font-size: 14px;">页，共 <span id="totalPagesDisplay">1</span> 页</span>
-                        <button id="goToPage" onclick="gesp_goToPage()" class="btn" style="padding: 5px 10px; font-size: 12px;">跳转</button>
-                    </div>
-                </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                    <style>
+                        #userTypeSelect option {
+                            padding: 8px;
+                        }
+                        #userTypeSelect:focus {
+                            border-color: #3498db;
+                            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+                        }
+                        #userTypeSelect:active,
+                        #userTypeSelect:hover {
+                            border-color: #3498db;
+                        }
+                        /* 移除选择后的高亮效果 */
+                        #userTypeSelect option:checked {
+                            background-color: #f0f7ff;
+                            color: #3498db;
+                        }
+                    </style>
+                    <option value="student">学生管理</option>
+                    <option value="teacher">教师管理</option>
+                </select>
+                <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
@@ -582,6 +606,51 @@
                 <tbody>
                 </tbody>
             </table>
+            
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <select id="perPageSelect" onchange="gesp_changePerPage(this.value)" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                        <option value="100">100条/页</option>
+                    </select>
+                    <div style="font-size: 14px; color: #666;">
+                        共 <span id="totalCount">0</span> 条记录
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <button id="prevPage" onclick="gesp_prevPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">上一页</button>
+                        <span style="font-size: 14px;">第</span>
+                        <!-- 隐藏输入框，用于欺骗浏览器的自动填充 -->
+                        <input type="text" style="display: none;" name="username" autocomplete="off">
+                        <input type="password" style="display: none;" name="password" autocomplete="off">
+                        <!-- 页码输入框 -->
+                        <input type="text" id="pageInput_123456" name="unique_page_input_7890" value="1" autocomplete="new-password" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly', 'readonly');" onkeydown="if(event.key === 'Enter') { gesp_goToPage(); }" readonly style="width: 50px; padding: 8px 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px; -moz-appearance: textfield; appearance: textfield;">
+                        <style>
+                            /* 移除输入框的上下箭头 */
+                            #pageInput_123456::-webkit-outer-spin-button, 
+                            #pageInput_123456::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                            }
+                            /* 禁用自动填充 */
+                            #pageInput_123456 {
+                                -webkit-autofill: none;
+                                -moz-autofill: none;
+                                -ms-autofill: none;
+                                autofill: none;
+                            }
+                            /* 禁用表单自动填充 */
+                            form {
+                                autocomplete: off;
+                            }
+                        </style>
+                        <span style="font-size: 14px;">页，共 <span id="totalPagesDisplay">1</span> 页</span>
+                        <button id="goToPage" onclick="gesp_goToPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">跳转</button>
+                        <button id="nextPage" onclick="gesp_nextPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">下一页</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- 添加学员弹窗 -->
@@ -638,12 +707,12 @@
                         <label for="modal-teacher">所属教师:</label>
                         <div style="position: relative; display: inline-block;">
                             <input type="text" id="modal-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
-                            <div id="teacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; z-index: 1000; display: none; margin-bottom: 4px;">
+                            <div id="teacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
-                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
                                     <input type="text" id="teacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
                                 </div>
-                                <div id="teacherList" style="padding: 4px 0;"></div>
+                                <div id="teacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
                             </div>
                         </div>
                     </div>
@@ -725,12 +794,12 @@
                         <label for="edit-teacher">所属教师:</label>
                         <div style="position: relative; display: inline-block;">
                             <input type="text" id="edit-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
-                            <div id="editTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; overflow-y: auto; z-index: 1000; display: none; margin-bottom: 4px;">
+                            <div id="editTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
-                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
                                     <input type="text" id="editTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
                                 </div>
-                                <div id="editTeacherList" style="padding: 4px 0;"></div>
+                                <div id="editTeacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
                             </div>
                         </div>
                     </div>
@@ -822,6 +891,9 @@
         </div>
     </div>
     
+    <!-- 退出登录通知窗口 -->
+    <div id="logout-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; color: red; border: 1px solid black; padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; display: none; transition: all 0.3s ease; max-width: 90%; text-align: center;"></div>
+    
     <script>
         // 检查登录状态
         function gesp_checkLogin() {
@@ -845,11 +917,12 @@
             
             if (userStr) {
                 const user = JSON.parse(userStr);
-                // 显示用户信息
+                // 显示用户信息，优先使用nickname
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                const displayName = user.nickname || user.username || '用户';
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
             } else if (token) {
                 // 有token但没有user对象，保持登录状态
                 document.getElementById('authSection').style.display = 'none';
@@ -987,9 +1060,25 @@
         
 
         
+        // 上一页
+        function gesp_prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                gesp_loadUsers();
+            }
+        }
+        
+        // 下一页
+        function gesp_nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                gesp_loadUsers();
+            }
+        }
+        
         // 跳转到指定页码
         function gesp_goToPage() {
-            const pageInput = document.getElementById('pageInput');
+            const pageInput = document.getElementById('pageInput_123456');
             const page = parseInt(pageInput.value);
             if (page >= 1 && page <= totalPages) {
                 currentPage = page;
@@ -1087,20 +1176,20 @@
                                 </td>
                             `;
                         } else {
-                            const userAge = user.age || '';
-                            const userGrade = user.grade || '';
-                            const teacherName = user.teacher ? user.teacher.username : '未分配';
-                            row.innerHTML = `
-                                <td>${userName}</td>
-                                <td>${userPhone}</td>
-                                <td>${userGender}</td>
-                                <td>${userSubject}</td>
-                                <td>${teacherName}</td>
-                                <td>
-                                    ${actionButtons}
-                                </td>
-                            `;
-                        }
+                        const userAge = user.age || '';
+                        const userGrade = user.grade || '';
+                        const teacherName = user.teacher ? (user.teacher.nickname || user.teacher.username) : '未分配';
+                        row.innerHTML = `
+                            <td>${userName}</td>
+                            <td>${userPhone}</td>
+                            <td>${userGender}</td>
+                            <td>${userSubject}</td>
+                            <td>${teacherName}</td>
+                            <td>
+                                ${actionButtons}
+                            </td>
+                        `;
+                    }
                         tableBody.appendChild(row);
                     });
                     
@@ -1114,11 +1203,12 @@
                     document.getElementById('totalPagesDisplay').textContent = totalPages;
                     
                     // 更新页码输入框
-                    const pageInput = document.getElementById('pageInput');
+                    const pageInput = document.getElementById('pageInput_123456');
                     pageInput.value = currentPage;
-                    pageInput.max = totalPages;
                     
-
+                    // 启用/禁用分页按钮
+                    document.getElementById('prevPage').disabled = currentPage === 1;
+                    document.getElementById('nextPage').disabled = currentPage === totalPages;
                     
                     // 同时更新学员选择下拉框
                     if (currentUserType === 'student') {
@@ -1350,9 +1440,14 @@
                 // 搜索框输入事件 - 过滤教师
                 teacherSearchInput.addEventListener('input', function() {
                     const searchTerm = this.value.toLowerCase();
-                    const filteredTeachers = teachersList.filter(teacher => 
-                        teacher.username.toLowerCase().includes(searchTerm)
-                    );
+                    console.log('搜索词:', searchTerm);
+                    console.log('教师列表:', teachersList);
+                    const filteredTeachers = teachersList.filter(teacher => {
+                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
+                        console.log('教师名称:', teacherName);
+                        return teacherName.includes(searchTerm);
+                    });
+                    console.log('过滤结果:', filteredTeachers);
                     
                     // 更新弹窗列表
                     renderEditTeachers(filteredTeachers);
@@ -1377,24 +1472,15 @@
             if (teachers.length > 0) {
                 teachers.forEach(teacher => {
                     const item = document.createElement('div');
-                    item.style.padding = '8px 12px';
-                    item.style.cursor = 'pointer';
-                    item.textContent = teacher.username;
+                    item.className = 'teacher-dropdown-item';
+                    item.textContent = teacher.name || teacher.nickname || teacher.username;
                     item.dataset.id = teacher.id;
                     
                     item.addEventListener('click', function() {
                         const searchInput = document.getElementById('edit-teacher');
-                        searchInput.value = teacher.username;
+                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
                         searchInput.dataset.id = teacher.id;
                         document.getElementById('editTeacherDropdown').style.display = 'none';
-                    });
-                    
-                    item.addEventListener('mouseover', function() {
-                        this.style.backgroundColor = '#f0f7ff';
-                    });
-                    
-                    item.addEventListener('mouseout', function() {
-                        this.style.backgroundColor = 'white';
                     });
                     
                     teacherList.appendChild(item);
@@ -1458,13 +1544,27 @@
                 const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
                 if (!response) return;
                 
-                const result = await response.json();
-                if (result.success) {
-                    teachersList = result.data;
-                    // 初始化搜索框事件
-                    initTeacherSearch();
-                } else {
-                    console.error('加载教师列表失败:', result.message);
+                // 检查响应状态
+                if (!response.ok) {
+                    console.error('加载教师列表失败:', response.status);
+                    return;
+                }
+                
+                // 尝试解析JSON
+                try {
+                    const result = await response.json();
+                    if (result.success) {
+                        teachersList = result.data;
+                        // 初始化搜索框事件
+                        initTeacherSearch();
+                    } else {
+                        console.error('加载教师列表失败:', result.message);
+                    }
+                } catch (jsonError) {
+                    console.error('JSON解析失败:', jsonError);
+                    // 尝试获取响应文本
+                    const text = await response.text();
+                    console.error('响应内容:', text);
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
@@ -1490,9 +1590,14 @@
                 // 搜索框输入事件 - 过滤教师
                 teacherSearchInput.addEventListener('input', function() {
                     const searchTerm = this.value.toLowerCase();
-                    const filteredTeachers = teachersList.filter(teacher => 
-                        teacher.username.toLowerCase().includes(searchTerm)
-                    );
+                    console.log('搜索词:', searchTerm);
+                    console.log('教师列表:', teachersList);
+                    const filteredTeachers = teachersList.filter(teacher => {
+                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
+                        console.log('教师名称:', teacherName);
+                        return teacherName.includes(searchTerm);
+                    });
+                    console.log('过滤结果:', filteredTeachers);
                     
                     // 更新弹窗列表
                     renderTeachers(filteredTeachers);
@@ -1517,24 +1622,15 @@
             if (teachers.length > 0) {
                 teachers.forEach(teacher => {
                     const item = document.createElement('div');
-                    item.style.padding = '8px 12px';
-                    item.style.cursor = 'pointer';
-                    item.textContent = teacher.username;
+                    item.className = 'teacher-dropdown-item';
+                    item.textContent = teacher.name || teacher.nickname || teacher.username;
                     item.dataset.id = teacher.id;
                     
                     item.addEventListener('click', function() {
                         const searchInput = document.getElementById('modal-teacher');
-                        searchInput.value = teacher.username;
+                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
                         searchInput.dataset.id = teacher.id;
                         document.getElementById('teacherDropdown').style.display = 'none';
-                    });
-                    
-                    item.addEventListener('mouseover', function() {
-                        this.style.backgroundColor = '#f0f7ff';
-                    });
-                    
-                    item.addEventListener('mouseout', function() {
-                        this.style.backgroundColor = 'white';
                     });
                     
                     teacherList.appendChild(item);
@@ -1957,11 +2053,12 @@
             
             if (userStr) {
                 const user = JSON.parse(userStr);
-                // 显示用户信息
+                // 显示用户信息，优先使用nickname
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                const displayName = user.nickname || user.username || '用户';
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
                 // 消课系统页面本身不需要控制消课系统链接的显示
@@ -1986,12 +2083,44 @@
             }
         }
         
+        // 显示退出登录通知
+        function gesp_showLogoutNotification(message) {
+            const notification = document.getElementById('logout-notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                }, 300);
+            }, 3000);
+        }
+        
         // 退出登录
         function gesp_logout() {
+            // 获取当前用户信息
+            const userStr = sessionStorage.getItem('user');
+            let username = '用户';
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                username = user.nickname || user.username || '用户';
+            }
+            
+            // 显示退出提示
+            gesp_showLogoutNotification(`${username}已退出`);
+            
+            // 执行退出登录逻辑
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('user');
             gesp_checkLoginStatus();
-            window.location.href = '../index.html';
+            
+            // 延迟重定向，让用户有时间看到通知
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1000);
         }
         
 
