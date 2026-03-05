@@ -267,7 +267,7 @@
         
         th, td {
             padding: 14px 16px;
-            text-align: left;
+            text-align: center;
             border-bottom: 1px solid #e0e0e0;
         }
         
@@ -278,6 +278,22 @@
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background-color: #2980b9;
+        }
+        
+        .sort-icon {
+            font-size: 12px;
+            margin-left: 5px;
+            opacity: 0.7;
+        }
+        
+        th:hover .sort-icon {
+            opacity: 1;
         }
         
         tr {
@@ -607,11 +623,11 @@
             <table id="studentTable">
                 <thead id="tableHeader">
                     <tr>
-                        <th>姓名</th>
+                        <th onclick="gesp_sortTable('name')">姓名 <span class="sort-icon" id="sort-name">↕</span></th>
                         <th>电话</th>
                         <th>性别</th>
-                        <th>学习项目</th>
-                        <th>所属教师</th>
+                        <th onclick="gesp_sortTable('project')">学习项目 <span class="sort-icon" id="sort-project">↕</span></th>
+                        <th onclick="gesp_sortTable('teacher')">所属教师 <span class="sort-icon" id="sort-teacher">↕</span></th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -1055,6 +1071,10 @@
         let totalCount = 0;
         let totalPages = 1;
         
+        // 排序相关变量
+        let sortField = '';
+        let sortOrder = 'asc'; // asc 或 desc
+        
         // 切换用户类型
         function gesp_switchUserType(type) {
             currentUserType = type;
@@ -1131,6 +1151,31 @@
             gesp_loadUsers();
         }
         
+        // 排序表格
+        function gesp_sortTable(field) {
+            // 切换排序顺序
+            if (sortField === field) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortField = field;
+                sortOrder = 'asc';
+            }
+            
+            // 更新排序图标
+            document.querySelectorAll('.sort-icon').forEach(icon => {
+                icon.textContent = '↕';
+            });
+            
+            const currentIcon = document.getElementById(`sort-${field}`);
+            if (currentIcon) {
+                currentIcon.textContent = sortOrder === 'asc' ? '↑' : '↓';
+            }
+            
+            // 重置页码并重新加载数据
+            currentPage = 1;
+            gesp_loadUsers();
+        }
+        
         // 打开添加用户弹窗
         function gesp_openAddUserModal() {
             // 清空表单
@@ -1173,6 +1218,11 @@
                 let url = `http://127.0.0.1:5000/api/students?page=${currentPage}&per_page=${perPage}`;
                 if (currentUserType === 'teacher') {
                     url = `http://127.0.0.1:5000/api/users/teachers?page=${currentPage}&per_page=${perPage}`;
+                }
+                
+                // 添加排序参数
+                if (sortField) {
+                    url += `&sort=${sortField}&order=${sortOrder}`;
                 }
                 
                 const response = await gesp_fetch(url);

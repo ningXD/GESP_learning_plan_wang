@@ -20,12 +20,85 @@ def get_students(current_user):
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
     
+    # 获取排序参数
+    sort = request.args.get('sort', '')
+    order = request.args.get('order', 'asc')
+    
+    # 构建查询
     if current_user.admin:
         # 管理员可以看到所有学生（Student表中的学生）
-        pagination = Student.query.paginate(page=page, per_page=per_page, error_out=False)
+        query = Student.query
     else:
         # 普通教师只能看到自己的学生
-        pagination = Student.query.filter_by(teacher_id=current_user.id).paginate(page=page, per_page=per_page, error_out=False)
+        query = Student.query.filter_by(teacher_id=current_user.id)
+    
+    # 执行排序
+    if sort == 'name':
+        # 按姓名拼音排序
+        students = query.all()
+        # 按拼音排序
+        students.sort(key=lambda s: ''.join(lazy_pinyin(s.name or '')), reverse=(order == 'desc'))
+        # 手动分页
+        total = len(students)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_students = students[start:end]
+        total_pages = (total + per_page - 1) // per_page
+        
+        # 构建响应
+        return jsonify({
+            'success': True, 
+            'data': [student.to_dict() for student in paginated_students],
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': total_pages
+        }), 200
+    elif sort == 'project':
+        # 按学习项目拼音排序
+        students = query.all()
+        # 按拼音排序
+        students.sort(key=lambda s: ''.join(lazy_pinyin(s.project or '')), reverse=(order == 'desc'))
+        # 手动分页
+        total = len(students)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_students = students[start:end]
+        total_pages = (total + per_page - 1) // per_page
+        
+        # 构建响应
+        return jsonify({
+            'success': True, 
+            'data': [student.to_dict() for student in paginated_students],
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': total_pages
+        }), 200
+    elif sort == 'teacher':
+        # 按所属教师拼音排序
+        students = query.all()
+        # 加载教师信息并按教师姓名拼音排序
+        students.sort(key=lambda s: ''.join(lazy_pinyin(s.teacher.nickname or s.teacher.username or '') if s.teacher else ''), reverse=(order == 'desc'))
+        # 手动分页
+        total = len(students)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_students = students[start:end]
+        total_pages = (total + per_page - 1) // per_page
+        
+        # 构建响应
+        return jsonify({
+            'success': True, 
+            'data': [student.to_dict() for student in paginated_students],
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': total_pages
+        }), 200
+    
+    # 默认分页（无排序）
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     
     students = pagination.items
     total = pagination.total

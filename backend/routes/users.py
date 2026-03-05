@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.models import User, Teacher
 from extensions import db
 import bcrypt
+from pypinyin import lazy_pinyin
 
 # 创建蓝图
 bp = Blueprint('users', __name__, url_prefix='/api/users')
@@ -57,8 +58,45 @@ def get_teachers():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
+        # 获取排序参数
+        sort = request.args.get('sort', '')
+        order = request.args.get('order', 'asc')
+        
         # 只返回role为teacher的用户，不包括admin用户
-        pagination = User.query.filter(User.role == 'teacher').paginate(page=page, per_page=per_page, error_out=False)
+        query = User.query.filter(User.role == 'teacher')
+        
+        # 执行排序
+        if sort == 'name':
+            # 按姓名拼音排序
+            teachers = query.all()
+            # 按拼音排序
+            teachers.sort(key=lambda t: ''.join(lazy_pinyin(t.nickname or t.username or '')), reverse=(order == 'desc'))
+            # 手动分页
+            total = len(teachers)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_teachers = teachers[start:end]
+            total_pages = (total + per_page - 1) // per_page
+            
+            # 构建教师数据列表，使用User表中的nickname字段
+            teacher_data = []
+            for teacher in paginated_teachers:
+                teacher_dict = teacher.to_dict()
+                # 直接使用User表中的nickname字段
+                teacher_dict['name'] = teacher_dict.get('nickname', '')
+                teacher_data.append(teacher_dict)
+            
+            return jsonify({
+                'success': True, 
+                'data': teacher_data,
+                'total': total,
+                'page': page,
+                'per_page': per_page,
+                'pages': total_pages
+            }), 200
+        
+        # 默认分页（无排序）
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         teachers = pagination.items
         total = pagination.total
         
