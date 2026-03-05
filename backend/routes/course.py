@@ -16,14 +16,28 @@ def get_students(current_user):
     if current_user.role != 'teacher' and not current_user.admin:
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
+    # 获取分页参数
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
     if current_user.admin:
-        # 管理员可以看到所有学生（User表中role为student的用户）
-        students = User.query.filter_by(role='student').all()
+        # 管理员可以看到所有学生（Student表中的学生）
+        pagination = Student.query.paginate(page=page, per_page=per_page, error_out=False)
     else:
         # 普通教师只能看到自己的学生
-        students = Student.query.filter_by(teacher_id=current_user.id).all()
+        pagination = Student.query.filter_by(teacher_id=current_user.id).paginate(page=page, per_page=per_page, error_out=False)
     
-    return jsonify({'success': True, 'data': [student.to_dict() for student in students]}), 200
+    students = pagination.items
+    total = pagination.total
+    
+    return jsonify({
+        'success': True, 
+        'data': [student.to_dict() for student in students],
+        'total': total,
+        'page': page,
+        'per_page': per_page,
+        'pages': pagination.pages
+    }), 200
 
 @course_bp.route('/api/students/<int:student_id>', methods=['GET'])
 @token_required
@@ -61,37 +75,39 @@ def add_student(current_user):
         return jsonify({'success': False, 'message': '请提供学员信息'}), 400
     
     try:
-        # 生成用户名：根据学员姓名的拼音
         name = data.get('name')
-        pinyin = ''.join(lazy_pinyin(name)).lower()
+        phone = data.get('phone')
         
-        # 检查用户名是否已存在
-        existing_user = User.query.filter_by(username=pinyin).first()
-        if not existing_user:
-            # 创建新用户
-            hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-            new_user = User(
-                username=pinyin,
-                password=hashed_password,
-                nickname=name,
-                role='student',
-                admin=False,
-                age=data.get('age'),
-                gender=data.get('gender'),
-                grade=data.get('grade'),
-                subject=data.get('project')
-            )
-            db.session.add(new_user)
-            db.session.commit()
+        # 检查phone是否已存在
+        existing_user = User.query.filter_by(phone=phone).first()
+        if existing_user:
+            return jsonify({'success': False, 'message': '手机号已存在'}), 400
+        
+        # 创建用户记录（密码默认为123456）
+        hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        new_user = User(
+            username=None,  # 不再自动生成账号
+            password=hashed_password,
+            phone=phone,
+            nickname=name,
+            role='student',
+            gender=data.get('gender') or '',
+            age=data.get('age'),
+            grade=data.get('grade') or '',
+            subject=data.get('project') or ''
+        )
+        db.session.add(new_user)
+        db.session.commit()
         
         # 创建学员记录
         new_student = Student(
             teacher_id=current_user.id,
-            name=data.get('name'),
-            gender=data.get('gender'),
+            name=name,
+            gender=data.get('gender') or '',
             age=data.get('age'),
-            grade=data.get('grade'),
-            project=data.get('project')
+            grade=data.get('grade') or '',
+            project=data.get('project') or '',
+            phone=phone
         )
         db.session.add(new_student)
         db.session.commit()

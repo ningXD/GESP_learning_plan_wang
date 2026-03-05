@@ -395,6 +395,9 @@
         <p>编程特攻队 - 竞赛考试必胜系统 | 个人空间</p>
     </div>
     
+    <!-- 退出登录通知窗口 -->
+    <div id="logout-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; color: red; border: 1px solid black; padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; display: none; transition: all 0.3s ease; max-width: 90%; text-align: center;"></div>
+    
     <script>
         // 检查登录状态
         function gesp_checkLogin() {
@@ -570,12 +573,44 @@
         
 
         
+        // 显示退出登录通知
+        function gesp_showLogoutNotification(message) {
+            const notification = document.getElementById('logout-notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                }, 300);
+            }, 3000);
+        }
+        
         // 退出登录
         function gesp_logout() {
+            // 获取当前用户信息
+            const userStr = sessionStorage.getItem('user');
+            let username = '用户';
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                username = user.nickname || user.username || '用户';
+            }
+            
+            // 显示退出提示
+            gesp_showLogoutNotification(`${username}已退出`);
+            
+            // 执行退出登录逻辑
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('user');
             gesp_checkLoginStatus();
-            window.location.href = '../index.html';
+            
+            // 延迟重定向，让用户有时间看到通知
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1000);
         }
         
         // 页面加载时检查登录状态

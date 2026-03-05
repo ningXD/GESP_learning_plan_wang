@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>消课系统 - 编程特攻队</title>
+    <title>编程特攻队</title>
     <style>
         * {
             margin: 0;
@@ -162,29 +162,38 @@
         }
         
         .tab-container {
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
         
         .tab {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #ecf0f1;
-            border: none;
+            padding: 12px 24px;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
             cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            margin-right: 8px;
             transition: all 0.3s ease;
+            color: #333;
+        }
+        
+        .tab:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
         }
         
         .tab.active {
             background-color: #3498db;
             color: white;
+            border-color: #3498db;
         }
         
         .tab-content {
             display: none;
-            padding: 20px;
+            padding: 10px 20px;
             border: 1px solid #ddd;
             border-radius: 0 5px 5px 5px;
             background-color: #f9f9f9;
@@ -206,24 +215,37 @@
         
         .form-group input,
         .form-group select {
-            padding: 8px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             width: 200px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
         
         .form-group button {
             padding: 10px 20px;
-            background-color: #27ae60;
+            background-color: #3498db;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         
         .form-group button:hover {
-            background-color: #219a52;
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
         }
         
         table {
@@ -233,28 +255,43 @@
         }
         
         th, td {
-            padding: 12px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         th {
             background-color: #3498db;
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr {
+            transition: all 0.3s ease;
         }
         
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
         }
         
         .action-btn {
-            padding: 5px 10px;
+            padding: 8px 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
         
         .add-class-btn {
@@ -262,9 +299,17 @@
             color: white;
         }
         
+        .add-class-btn:hover {
+            background-color: #2980b9;
+        }
+        
         .delete-btn {
             background-color: #e74c3c;
             color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
         }
         
         .class-record-form {
@@ -294,7 +339,8 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
         }
         
         .modal-content {
@@ -303,28 +349,40 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 20px;
-            border: 1px solid #ddd;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
             width: 90%;
             max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             overflow: hidden;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
         }
         
         .close-btn {
@@ -336,11 +394,13 @@
             cursor: pointer;
             padding: 0;
             line-height: 1;
+            transition: all 0.3s ease;
         }
         
         .close-btn:hover,
         .close-btn:focus {
             color: #333;
+            transform: rotate(90deg);
             text-decoration: none;
             cursor: pointer;
         }
@@ -352,19 +412,25 @@
         .modal-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
         }
         
         .btn {
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         
         .btn-primary {
@@ -386,12 +452,74 @@
             background-color: #e2e6ea;
         }
         
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
         /* 教师选择下拉框 */
         .teacher-select {
             width: 200px;
-            padding: 8px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .teacher-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* 教师下拉菜单样式 */
+        .teacher-dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: white;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            margin-bottom: 4px;
+        }
+        
+        /* 教师下拉菜单项样式 */
+        .teacher-dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .teacher-dropdown-item:hover {
+            background-color: #f0f7ff;
+            color: #3498db;
+        }
+        
+        /* 所有选择框的统一样式 */
+        select {
+            transition: all 0.3s ease;
+        }
+        
+        select:hover {
+            border-color: #3498db;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
     </style>
 </head>
@@ -427,10 +555,9 @@
     </nav>
     
     <div class="container">
-        <h1>消课系统</h1>
         
         <div class="tab-container">
-            <button class="tab active" onclick="gesp_openTab(event, 'student')">学员管理</button>
+            <button class="tab active" onclick="gesp_openTab(event, 'student')">用户管理</button>
             <button class="tab" onclick="gesp_openTab(event, 'class')">上课记录</button>
             <button class="tab" onclick="gesp_openTab(event, 'record')">消课记录</button>
             <button class="tab" id="adminTab" onclick="gesp_openTab(event, 'admin')">管理员设置</button>
@@ -438,20 +565,39 @@
         
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>学员管理</h2>
-                <button class="btn btn-primary" onclick="gesp_openAddStudentModal()">添加学员</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                    <style>
+                        #userTypeSelect option {
+                            padding: 8px;
+                        }
+                        #userTypeSelect:focus {
+                            border-color: #3498db;
+                            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+                        }
+                        #userTypeSelect:active,
+                        #userTypeSelect:hover {
+                            border-color: #3498db;
+                        }
+                        /* 移除选择后的高亮效果 */
+                        #userTypeSelect option:checked {
+                            background-color: #f0f7ff;
+                            color: #3498db;
+                        }
+                    </style>
+                    <option value="student">学生管理</option>
+                    <option value="teacher">教师管理</option>
+                </select>
+                <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
-            <h3>学员列表</h3>
             <table id="studentTable">
-                <thead>
+                <thead id="tableHeader">
                     <tr>
                         <th>姓名</th>
+                        <th>电话</th>
                         <th>性别</th>
-                        <th>年龄</th>
-                        <th>年级</th>
                         <th>学习项目</th>
                         <th>所属教师</th>
                         <th>操作</th>
@@ -460,6 +606,51 @@
                 <tbody>
                 </tbody>
             </table>
+            
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <select id="perPageSelect" onchange="gesp_changePerPage(this.value)" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                        <option value="10">10条/页</option>
+                        <option value="20">20条/页</option>
+                        <option value="50">50条/页</option>
+                        <option value="100">100条/页</option>
+                    </select>
+                    <div style="font-size: 14px; color: #666;">
+                        共 <span id="totalCount">0</span> 条记录
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <button id="prevPage" onclick="gesp_prevPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">上一页</button>
+                        <span style="font-size: 14px;">第</span>
+                        <!-- 隐藏输入框，用于欺骗浏览器的自动填充 -->
+                        <input type="text" style="display: none;" name="username" autocomplete="off">
+                        <input type="password" style="display: none;" name="password" autocomplete="off">
+                        <!-- 页码输入框 -->
+                        <input type="text" id="pageInput_123456" name="unique_page_input_7890" value="1" autocomplete="new-password" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly', 'readonly');" onkeydown="if(event.key === 'Enter') { gesp_goToPage(); }" readonly style="width: 50px; padding: 8px 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px; -moz-appearance: textfield; appearance: textfield;">
+                        <style>
+                            /* 移除输入框的上下箭头 */
+                            #pageInput_123456::-webkit-outer-spin-button, 
+                            #pageInput_123456::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                            }
+                            /* 禁用自动填充 */
+                            #pageInput_123456 {
+                                -webkit-autofill: none;
+                                -moz-autofill: none;
+                                -ms-autofill: none;
+                                autofill: none;
+                            }
+                            /* 禁用表单自动填充 */
+                            form {
+                                autocomplete: off;
+                            }
+                        </style>
+                        <span style="font-size: 14px;">页，共 <span id="totalPagesDisplay">1</span> 页</span>
+                        <button id="goToPage" onclick="gesp_goToPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">跳转</button>
+                        <button id="nextPage" onclick="gesp_nextPage()" class="btn" style="padding: 8px 12px; font-size: 14px;">下一页</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <!-- 添加学员弹窗 -->
@@ -471,34 +662,59 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="modal-name">姓名:</label>
-                        <input type="text" id="modal-name" required>
+                        <label for="modal-name">姓名: <span style="color: red;">*</span></label>
+                        <input type="text" id="modal-name" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="modal-gender">性别:</label>
-                        <select id="modal-gender" required>
+                        <select id="modal-gender" autocomplete="off">
                             <option value="">请选择</option>
                             <option value="男">男</option>
                             <option value="女">女</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="modal-age">年龄:</label>
-                        <input type="number" id="modal-age" min="1" required>
+                        <label for="modal-age">年龄: <span style="color: red;">*</span></label>
+                        <input type="number" id="modal-age" min="1" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="modal-grade">年级:</label>
-                        <input type="text" id="modal-grade" required>
+                        <select id="modal-grade" autocomplete="off">
+                            <option value="">请选择</option>
+                            <option value="一年级">一年级</option>
+                            <option value="二年级">二年级</option>
+                            <option value="三年级">三年级</option>
+                            <option value="四年级">四年级</option>
+                            <option value="五年级">五年级</option>
+                            <option value="六年级">六年级</option>
+                            <option value="初一">初一</option>
+                            <option value="初二">初二</option>
+                            <option value="初三">初三</option>
+                            <option value="高一">高一</option>
+                            <option value="高二">高二</option>
+                            <option value="高三">高三</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="modal-project">学习项目:</label>
-                        <input type="text" id="modal-project" required>
+                        <input type="text" id="modal-project" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-phone">手机号: <span style="color: red;">*</span></label>
+                        <input type="tel" id="modal-phone" required autocomplete="off">
                     </div>
                     <div class="form-group" id="teacherSelectGroup" style="display: none;">
                         <label for="modal-teacher">所属教师:</label>
-                        <select id="modal-teacher" class="teacher-select">
-                            <option value="">请选择教师</option>
-                        </select>
+                        <div style="position: relative; display: inline-block;">
+                            <input type="text" id="modal-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
+                            <div id="teacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
+                                    <input type="text" id="teacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                </div>
+                                <div id="teacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -576,9 +792,16 @@
                     </div>
                     <div class="form-group">
                         <label for="edit-teacher">所属教师:</label>
-                        <select id="edit-teacher" class="teacher-select">
-                            <option value="">请选择教师</option>
-                        </select>
+                        <div style="position: relative; display: inline-block;">
+                            <input type="text" id="edit-teacher" placeholder="点击选择教师..." autocomplete="off" readonly>
+                            <div id="editTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
+                                    <input type="text" id="editTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                </div>
+                                <div id="editTeacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -668,89 +891,238 @@
         </div>
     </div>
     
+    <!-- 退出登录通知窗口 -->
+    <div id="logout-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; color: red; border: 1px solid black; padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; display: none; transition: all 0.3s ease; max-width: 90%; text-align: center;"></div>
+    
     <script>
         // 检查登录状态
         function gesp_checkLogin() {
             return sessionStorage.getItem('access_token') !== null;
         }
         
-        // 验证token是否有效
-        async function gesp_verifyToken() {
-            const token = sessionStorage.getItem('access_token');
-            if (!token) {
-                return false;
-            }
-            
-            try {
-                // 发送一个简单的请求来验证token
-                const response = await fetch('http://localhost:5000/api/users/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                return response.ok;
-            } catch (error) {
-                console.error('Token verification failed:', error);
-                return false;
-            }
-        }
-        
         // 检查登录并重定向
-        async function gesp_checkLoginAndRedirect() {
+        function gesp_checkLoginAndRedirect() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
                 window.location.href = '../index.html';
                 return false;
             }
-            
-            // 验证token是否有效
-            const isValid = await gesp_verifyToken();
-            if (!isValid) {
-                // token无效，清除sessionStorage并跳转到登录页面
-                sessionStorage.removeItem('access_token');
-                sessionStorage.removeItem('user');
-                alert('登录已过期，请重新登录');
-                window.location.href = '../index.html';
-                return false;
-            }
-            
             return true;
         }
         
+        // 检查用户登录状态
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息，优先使用nickname
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                const displayName = user.nickname || user.username || '用户';
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+            }
+        }
+        
         // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginAndRedirect);
+        window.addEventListener('load', function() {
+            gesp_checkLoginAndRedirect();
+            gesp_checkLoginStatus();
+            gesp_checkAdminPermission();
+            gesp_initData();
+        });
         
         // 获取token
         function gesp_getToken() {
-            return sessionStorage.getItem('access_token');
+            const token = sessionStorage.getItem('access_token');
+            console.log('Token:', token);
+            return token;
         }
+        
+        // 处理API请求
+        async function gesp_fetch(url, options = {}) {
+            const token = gesp_getToken();
+            
+            // 设置默认选项
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            // 合并选项
+            const fetchOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+            
+            try {
+                const response = await fetch(url, fetchOptions);
+                
+                // 处理401错误
+                if (response.status === 401) {
+                    alert('登录已过期，请重新登录');
+                    sessionStorage.removeItem('access_token');
+                    sessionStorage.removeItem('user');
+                    window.location.href = '../auth/login.html';
+                    return null;
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                alert('网络错误，请稍后重试');
+                return null;
+            }
+        }
+        
+        // 测试token
+        function testToken() {
+            console.log('Session storage:', sessionStorage);
+            console.log('Access token:', sessionStorage.getItem('access_token'));
+            console.log('User:', sessionStorage.getItem('user'));
+        }
+        
+        // 页面加载时测试token
+        window.addEventListener('load', testToken);
         
         // 初始化数据
         function gesp_initData() {
             // 直接从API加载数据
-            gesp_loadStudents();
+            gesp_loadUsers();
             gesp_loadClassRecords();
             gesp_loadAllRecords();
         }
         
-        // 打开添加学员弹窗
-        function gesp_openAddStudentModal() {
+        // 存储当前选中的用户类型
+        let currentUserType = 'student';
+        
+        // 分页相关变量
+        let currentPage = 1;
+        let perPage = 10;
+        let totalCount = 0;
+        let totalPages = 1;
+        
+        // 切换用户类型
+        function gesp_switchUserType(type) {
+            currentUserType = type;
+            // 更新按钮文本
+            const addBtn = document.getElementById('addUserBtn');
+            addBtn.textContent = type === 'student' ? '添加学生' : '添加教师';
+            // 更新表头
+            const tableHeader = document.getElementById('tableHeader');
+            if (type === 'teacher') {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>性别</th>
+                        <th>教学科目</th>
+                        <th>操作</th>
+                    </tr>
+                `;
+            } else {
+                tableHeader.innerHTML = `
+                    <tr>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>性别</th>
+                        <th>学习项目</th>
+                        <th>所属教师</th>
+                        <th>操作</th>
+                    </tr>
+                `;
+            }
+            // 重置分页参数
+            currentPage = 1;
+            perPage = 10;
+            document.getElementById('perPageSelect').value = '10';
+            // 重新加载用户列表
+            gesp_loadUsers();
+        }
+        
+
+        
+        // 上一页
+        function gesp_prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                gesp_loadUsers();
+            }
+        }
+        
+        // 下一页
+        function gesp_nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                gesp_loadUsers();
+            }
+        }
+        
+        // 跳转到指定页码
+        function gesp_goToPage() {
+            const pageInput = document.getElementById('pageInput_123456');
+            const page = parseInt(pageInput.value);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                gesp_loadUsers();
+            } else {
+                alert('请输入有效的页码');
+                pageInput.value = currentPage;
+            }
+        }
+        
+        // 更改每页显示数量
+        function gesp_changePerPage(value) {
+            perPage = parseInt(value);
+            currentPage = 1;
+            gesp_loadUsers();
+        }
+        
+        // 打开添加用户弹窗
+        function gesp_openAddUserModal() {
             // 清空表单
             document.getElementById('modal-name').value = '';
             document.getElementById('modal-gender').value = '';
             document.getElementById('modal-age').value = '';
             document.getElementById('modal-grade').value = '';
             document.getElementById('modal-project').value = '';
-            document.getElementById('modal-teacher').value = '';
+            document.getElementById('modal-phone').value = '';
+            const teacherInput = document.getElementById('modal-teacher');
+            teacherInput.value = '';
+            teacherInput.dataset.id = '';
+            document.getElementById('teacherDropdown').style.display = 'none';
+            const teacherSearchInput = document.getElementById('teacherSearchInput');
+            if (teacherSearchInput) {
+                teacherSearchInput.value = '';
+            }
             
             // 检查用户权限，管理员显示教师选择
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
                 if (user.admin) {
-                    document.getElementById('teacherSelectGroup').style.display = 'block';
-                    gesp_loadTeachers();
+                    document.getElementById('teacherSelectGroup').style.display = currentUserType === 'student' ? 'block' : 'none';
+                    if (currentUserType === 'student') {
+                        gesp_loadTeachers();
+                    }
                 } else {
                     document.getElementById('teacherSelectGroup').style.display = 'none';
                 }
@@ -758,6 +1130,98 @@
             
             // 显示弹窗
             document.getElementById('addStudentModal').style.display = 'block';
+        }
+        
+        // 加载用户列表（学生或教师）
+        async function gesp_loadUsers() {
+            try {
+                let url = `http://127.0.0.1:5000/api/students?page=${currentPage}&per_page=${perPage}`;
+                if (currentUserType === 'teacher') {
+                    url = `http://127.0.0.1:5000/api/users/teachers?page=${currentPage}&per_page=${perPage}`;
+                }
+                
+                const response = await gesp_fetch(url);
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    const users = result.data;
+                    const tableBody = document.querySelector('#studentTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    // 检查用户权限
+                    const userStr = sessionStorage.getItem('user');
+                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        // 处理User对象和Student对象的不同字段
+                        const userName = user.name || user.nickname || user.username;
+                        const userPhone = user.phone || '';
+                        const userGender = user.gender || '';
+                        const userSubject = currentUserType === 'teacher' ? (user.teaching_subject || user.subject || '') : (user.project || user.subject || '');
+                        
+                        let actionButtons = `
+                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${user.id})">编辑</button>
+                        `;
+                        
+                        if (currentUserType === 'teacher') {
+                            row.innerHTML = `
+                                <td>${userName}</td>
+                                <td>${userPhone}</td>
+                                <td>${userGender}</td>
+                                <td>${userSubject}</td>
+                                <td>
+                                    ${actionButtons}
+                                </td>
+                            `;
+                        } else {
+                        const userAge = user.age || '';
+                        const userGrade = user.grade || '';
+                        const teacherName = user.teacher ? (user.teacher.nickname || user.teacher.username) : '未分配';
+                        row.innerHTML = `
+                            <td>${userName}</td>
+                            <td>${userPhone}</td>
+                            <td>${userGender}</td>
+                            <td>${userSubject}</td>
+                            <td>${teacherName}</td>
+                            <td>
+                                ${actionButtons}
+                            </td>
+                        `;
+                    }
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // 更新分页信息
+                    totalCount = result.total || 0;
+                    totalPages = result.pages || 1;
+                    currentPage = result.page || 1;
+                    
+                    // 更新分页控件
+                    document.getElementById('totalCount').textContent = totalCount;
+                    document.getElementById('totalPagesDisplay').textContent = totalPages;
+                    
+                    // 更新页码输入框
+                    const pageInput = document.getElementById('pageInput_123456');
+                    pageInput.value = currentPage;
+                    
+                    // 启用/禁用分页按钮
+                    document.getElementById('prevPage').disabled = currentPage === 1;
+                    document.getElementById('nextPage').disabled = currentPage === totalPages;
+                    
+                    // 同时更新学员选择下拉框
+                    if (currentUserType === 'student') {
+                        gesp_loadStudentSelect();
+                    }
+                } else {
+                    console.error('加载用户列表失败:', result.message);
+                    alert('加载用户列表失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+                alert('加载用户列表失败: ' + error.message);
+            }
         }
         
         // 关闭添加学员弹窗
@@ -769,7 +1233,7 @@
         async function gesp_openEditStudentModal(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -838,7 +1302,7 @@
             
             try {
                 // 验证密码
-                const response = await fetch('http://localhost:5000/api/auth/verify-password', {
+                const response = await fetch('http://127.0.0.1:5000/api/auth/verify-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -850,7 +1314,7 @@
                 const verifyResult = await response.json();
                 if (verifyResult.success) {
                     // 密码验证成功，删除学员
-                    const deleteResponse = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    const deleteResponse = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -864,7 +1328,7 @@
                         gesp_closeEditStudentModal();
                         
                         // 刷新学员列表
-                        gesp_loadStudents();
+                        gesp_loadUsers();
                     } else {
                         alert('删除学员失败: ' + deleteResult.message);
                     }
@@ -894,7 +1358,7 @@
         async function gesp_editStudentTeacher(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -910,10 +1374,13 @@
                     await gesp_loadTeachersForEdit();
                     
                     // 设置当前教师
+                    const teacherInput = document.getElementById('edit-teacher');
                     if (student.teacher) {
-                        document.getElementById('edit-teacher').value = student.teacher.id;
+                        teacherInput.value = student.teacher.username;
+                        teacherInput.dataset.id = student.teacher.id;
                     } else {
-                        document.getElementById('edit-teacher').value = '';
+                        teacherInput.value = '';
+                        teacherInput.dataset.id = '';
                     }
                     
                     // 存储学员ID
@@ -937,7 +1404,7 @@
         // 加载教师列表（修改归属用）
         async function gesp_loadTeachersForEdit() {
             try {
-                const response = await fetch('http://localhost:5000/api/users/teachers', {
+                const response = await fetch('http://127.0.0.1:5000/api/users/teachers', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -945,29 +1412,96 @@
                 
                 const result = await response.json();
                 if (result.success) {
-                    const teachers = result.data;
-                    const select = document.getElementById('edit-teacher');
-                    select.innerHTML = '<option value="">请选择教师</option>';
-                    
-                    teachers.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.username;
-                        select.appendChild(option);
-                    });
+                    teachersList = result.data;
+                    // 初始化搜索功能
+                    initEditTeacherSearch();
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
             }
         }
         
+        // 初始化修改学员归属的教师搜索功能
+        function initEditTeacherSearch() {
+            const searchInput = document.getElementById('edit-teacher');
+            const dropdown = document.getElementById('editTeacherDropdown');
+            const teacherList = document.getElementById('editTeacherList');
+            const teacherSearchInput = document.getElementById('editTeacherSearchInput');
+            
+            if (searchInput && dropdown && teacherList && teacherSearchInput) {
+                // 点击输入框显示弹窗
+                searchInput.addEventListener('click', function() {
+                    renderEditTeachers(teachersList);
+                    dropdown.style.display = 'block';
+                    // 聚焦搜索框
+                    teacherSearchInput.focus();
+                });
+                
+                // 搜索框输入事件 - 过滤教师
+                teacherSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    console.log('搜索词:', searchTerm);
+                    console.log('教师列表:', teachersList);
+                    const filteredTeachers = teachersList.filter(teacher => {
+                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
+                        console.log('教师名称:', teacherName);
+                        return teacherName.includes(searchTerm);
+                    });
+                    console.log('过滤结果:', filteredTeachers);
+                    
+                    // 更新弹窗列表
+                    renderEditTeachers(filteredTeachers);
+                });
+                
+                // 点击其他地方关闭弹窗
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 渲染修改学员归属的教师列表
+        function renderEditTeachers(teachers) {
+            const teacherList = document.getElementById('editTeacherList');
+            if (!teacherList) return;
+            
+            teacherList.innerHTML = '';
+            
+            if (teachers.length > 0) {
+                teachers.forEach(teacher => {
+                    const item = document.createElement('div');
+                    item.className = 'teacher-dropdown-item';
+                    item.textContent = teacher.name || teacher.nickname || teacher.username;
+                    item.dataset.id = teacher.id;
+                    
+                    item.addEventListener('click', function() {
+                        const searchInput = document.getElementById('edit-teacher');
+                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
+                        searchInput.dataset.id = teacher.id;
+                        document.getElementById('editTeacherDropdown').style.display = 'none';
+                    });
+                    
+                    teacherList.appendChild(item);
+                });
+            } else {
+                const emptyItem = document.createElement('div');
+                emptyItem.style.padding = '8px 12px';
+                emptyItem.style.color = '#999';
+                emptyItem.textContent = '没有找到匹配的教师';
+                teacherList.appendChild(emptyItem);
+            }
+        }
+        
         // 更新学员归属
         async function gesp_updateStudentTeacher() {
             const studentId = document.getElementById('editTeacherModal').dataset.studentId;
-            const teacherId = document.getElementById('edit-teacher').value;
+            const teacherInput = document.getElementById('edit-teacher');
+            const teacherId = teacherInput.dataset.id;
             
             try {
-                const response = await fetch(`http://localhost:5000/api/students/${studentId}/teacher`, {
+                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}/teacher`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -992,7 +1526,7 @@
                     gesp_closeEditTeacherModal();
                     
                     // 刷新学员列表
-                    gesp_loadStudents();
+                    gesp_loadUsers();
                 } else {
                     alert('修改学员归属失败: ' + result.message);
                 }
@@ -1001,69 +1535,165 @@
             }
         }
         
+        // 存储教师列表
+        let teachersList = [];
+        
         // 加载教师列表
         async function gesp_loadTeachers() {
             try {
-                const response = await fetch('http://localhost:5000/api/users/teachers', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
+                if (!response) return;
                 
-                const result = await response.json();
-                if (result.success) {
-                    const teachers = result.data;
-                    const select = document.getElementById('modal-teacher');
-                    select.innerHTML = '<option value="">请选择教师</option>';
-                    
-                    teachers.forEach(teacher => {
-                        const option = document.createElement('option');
-                        option.value = teacher.id;
-                        option.textContent = teacher.username;
-                        select.appendChild(option);
-                    });
+                // 检查响应状态
+                if (!response.ok) {
+                    console.error('加载教师列表失败:', response.status);
+                    return;
+                }
+                
+                // 尝试解析JSON
+                try {
+                    const result = await response.json();
+                    if (result.success) {
+                        teachersList = result.data;
+                        // 初始化搜索框事件
+                        initTeacherSearch();
+                    } else {
+                        console.error('加载教师列表失败:', result.message);
+                    }
+                } catch (jsonError) {
+                    console.error('JSON解析失败:', jsonError);
+                    // 尝试获取响应文本
+                    const text = await response.text();
+                    console.error('响应内容:', text);
                 }
             } catch (error) {
                 console.error('加载教师列表失败:', error);
             }
         }
         
-        // 添加学员
+        // 初始化教师搜索功能
+        function initTeacherSearch() {
+            const searchInput = document.getElementById('modal-teacher');
+            const dropdown = document.getElementById('teacherDropdown');
+            const teacherList = document.getElementById('teacherList');
+            const teacherSearchInput = document.getElementById('teacherSearchInput');
+            
+            if (searchInput && dropdown && teacherList && teacherSearchInput) {
+                // 点击输入框显示弹窗
+                searchInput.addEventListener('click', function() {
+                    renderTeachers(teachersList);
+                    dropdown.style.display = 'block';
+                    // 聚焦搜索框
+                    teacherSearchInput.focus();
+                });
+                
+                // 搜索框输入事件 - 过滤教师
+                teacherSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    console.log('搜索词:', searchTerm);
+                    console.log('教师列表:', teachersList);
+                    const filteredTeachers = teachersList.filter(teacher => {
+                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
+                        console.log('教师名称:', teacherName);
+                        return teacherName.includes(searchTerm);
+                    });
+                    console.log('过滤结果:', filteredTeachers);
+                    
+                    // 更新弹窗列表
+                    renderTeachers(filteredTeachers);
+                });
+                
+                // 点击其他地方关闭弹窗
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 渲染教师列表
+        function renderTeachers(teachers) {
+            const teacherList = document.getElementById('teacherList');
+            if (!teacherList) return;
+            
+            teacherList.innerHTML = '';
+            
+            if (teachers.length > 0) {
+                teachers.forEach(teacher => {
+                    const item = document.createElement('div');
+                    item.className = 'teacher-dropdown-item';
+                    item.textContent = teacher.name || teacher.nickname || teacher.username;
+                    item.dataset.id = teacher.id;
+                    
+                    item.addEventListener('click', function() {
+                        const searchInput = document.getElementById('modal-teacher');
+                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
+                        searchInput.dataset.id = teacher.id;
+                        document.getElementById('teacherDropdown').style.display = 'none';
+                    });
+                    
+                    teacherList.appendChild(item);
+                });
+            } else {
+                const emptyItem = document.createElement('div');
+                emptyItem.style.padding = '8px 12px';
+                emptyItem.style.color = '#999';
+                emptyItem.textContent = '没有找到匹配的教师';
+                teacherList.appendChild(emptyItem);
+            }
+        }
+        
+        // 添加用户（学生或教师）
         async function gesp_addStudent() {
             const name = document.getElementById('modal-name').value;
             const gender = document.getElementById('modal-gender').value;
             const age = document.getElementById('modal-age').value;
             const grade = document.getElementById('modal-grade').value;
             const project = document.getElementById('modal-project').value;
-            const teacherId = document.getElementById('modal-teacher').value;
+            const phone = document.getElementById('modal-phone').value;
+            const teacherInput = document.getElementById('modal-teacher');
+            const teacherId = teacherInput.dataset.id;
             
-            if (!name || !gender || !age || !grade || !project) {
-                alert('请填写所有必填项');
+            if (!name || !phone) {
+                alert('姓名和手机号是必填项');
                 return;
             }
             
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
-                    body: JSON.stringify({
+                let url = 'http://127.0.0.1:5000/api/students';
+                let data = {
+                    name,
+                    gender,
+                    age: parseInt(age),
+                    grade,
+                    project,
+                    phone,
+                    teacher_id: teacherId ? parseInt(teacherId) : null
+                };
+                
+                if (currentUserType === 'teacher') {
+                    url = 'http://127.0.0.1:5000/api/users/teachers';
+                    data = {
                         name,
                         gender,
                         age: parseInt(age),
-                        grade,
-                        project,
-                        teacher_id: teacherId ? parseInt(teacherId) : null
-                    })
+                        phone,
+                        teaching_subject: project
+                    };
+                }
+                
+                const response = await gesp_fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
                 });
+                if (!response) return;
                 
                 const result = await response.json();
-                if (result.success) {
+                if (result.success || (result.access_token && result.user)) {
                     // 显示成功消息
                     const message = document.getElementById('studentMessage');
-                    message.textContent = '学员添加成功！';
+                    message.textContent = currentUserType === 'student' ? '学员添加成功！' : '教师添加成功！';
                     message.style.display = 'block';
                     setTimeout(() => {
                         message.style.display = 'none';
@@ -1072,72 +1702,17 @@
                     // 关闭弹窗
                     gesp_closeAddStudentModal();
                     
-                    // 刷新学员列表
-                    gesp_loadStudents();
+                    // 刷新用户列表
+                    gesp_loadUsers();
                 } else {
-                    alert('添加学员失败: ' + result.message);
+                    alert('添加失败: ' + (result.message || result.error));
                 }
             } catch (error) {
-                alert('添加学员失败: ' + error.message);
+                alert('添加失败: ' + error.message);
             }
         }
         
-        // 加载学员列表
-        async function gesp_loadStudents() {
-            try {
-                const response = await fetch('http://localhost:5000/api/students', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    const students = result.data;
-                    const tableBody = document.querySelector('#studentTable tbody');
-                    tableBody.innerHTML = '';
-                    
-                    // 检查用户权限
-                    const userStr = sessionStorage.getItem('user');
-                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
-                    
-                    students.forEach(student => {
-                        const row = document.createElement('tr');
-                        // 处理User对象和Student对象的不同字段
-                        const studentName = student.name || student.nickname || student.username;
-                        const studentGender = student.gender || '';
-                        const studentAge = student.age || '';
-                        const studentGrade = student.grade || '';
-                        const studentProject = student.project || student.subject || '';
-                        const teacherName = student.teacher ? student.teacher.username : '未分配';
-                        
-                        let actionButtons = `
-                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${student.id})">编辑</button>
-                        `;
-                        
-                        row.innerHTML = `
-                            <td>${studentName}</td>
-                            <td>${studentGender}</td>
-                            <td>${studentAge}</td>
-                            <td>${studentGrade}</td>
-                            <td>${studentProject}</td>
-                            <td>${teacherName}</td>
-                            <td>
-                                ${actionButtons}
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                    
-                    // 同时更新学员选择下拉框
-                    gesp_loadStudentSelect();
-                } else {
-                    console.error('加载学员列表失败:', result.message);
-                }
-            } catch (error) {
-                console.error('加载学员列表失败:', error);
-            }
-        }
+
         
         // 跳转到添加课程页面并选择学员
         function gesp_goToAddClass(studentId) {
@@ -1151,7 +1726,7 @@
         async function gesp_deleteStudent(studentId) {
             if (confirm('确定要删除该学员吗？')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/students/${studentId}`, {
+                    const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -1161,7 +1736,7 @@
                     const result = await response.json();
                     if (result.success) {
                         // 刷新学员列表
-                        gesp_loadStudents();
+                        gesp_loadUsers();
                     } else {
                         alert('删除学员失败: ' + result.message);
                     }
@@ -1174,7 +1749,7 @@
         // 加载学员选择下拉框
         async function gesp_loadStudentSelect() {
             try {
-                const response = await fetch('http://localhost:5000/api/students', {
+                const response = await fetch('http://127.0.0.1:5000/api/students', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1211,7 +1786,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:5000/api/class-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/class-records', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1255,7 +1830,7 @@
         // 加载上课记录列表
         async function gesp_loadClassRecords() {
             try {
-                const response = await fetch('http://localhost:5000/api/class-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/class-records', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1291,7 +1866,7 @@
         async function gesp_deleteClassRecord(recordId) {
             if (confirm('确定要删除该上课记录吗？')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/class-records/${recordId}`, {
+                    const response = await fetch(`http://127.0.0.1:5000/api/class-records/${recordId}`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Bearer ${gesp_getToken()}`
@@ -1315,7 +1890,7 @@
         // 加载所有消课记录
         async function gesp_loadAllRecords() {
             try {
-                const response = await fetch('http://localhost:5000/api/course-records', {
+                const response = await fetch('http://127.0.0.1:5000/api/course-records', {
                     headers: {
                         'Authorization': `Bearer ${gesp_getToken()}`
                     }
@@ -1429,18 +2004,19 @@
         }
         
         // 初始化
-        window.onload = async function() {
-            // 检查登录状态
-            const isLoggedIn = await gesp_checkLoginAndRedirect();
-            if (!isLoggedIn) {
+        window.onload = function() {
+            // 立即检查登录状态并更新导航栏
+            gesp_checkLoginStatus();
+            
+            // 检查登录并重定向
+            if (!gesp_checkLoginAndRedirect()) {
                 return;
             }
             
             // 初始化数据
             gesp_initData();
-            gesp_loadStudents();
+            gesp_loadUsers();
             gesp_checkAdminPermission();
-            gesp_checkLoginStatus();
         };
         
         // 打开标签页
@@ -1459,7 +2035,7 @@
             
             // 切换到对应标签时刷新数据
             if (tabName === 'student') {
-                gesp_loadStudents();
+                gesp_loadUsers();
             } else if (tabName === 'class') {
                 gesp_loadStudentSelect();
                 gesp_loadClassRecords();
@@ -1477,11 +2053,12 @@
             
             if (userStr) {
                 const user = JSON.parse(userStr);
-                // 显示用户信息
+                // 显示用户信息，优先使用nickname
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                const displayName = user.nickname || user.username || '用户';
+                document.getElementById('userName').textContent = displayName;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
                 // 消课系统页面本身不需要控制消课系统链接的显示
@@ -1506,12 +2083,44 @@
             }
         }
         
+        // 显示退出登录通知
+        function gesp_showLogoutNotification(message) {
+            const notification = document.getElementById('logout-notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                }, 300);
+            }, 3000);
+        }
+        
         // 退出登录
         function gesp_logout() {
+            // 获取当前用户信息
+            const userStr = sessionStorage.getItem('user');
+            let username = '用户';
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                username = user.nickname || user.username || '用户';
+            }
+            
+            // 显示退出提示
+            gesp_showLogoutNotification(`${username}已退出`);
+            
+            // 执行退出登录逻辑
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('user');
             gesp_checkLoginStatus();
-            window.location.href = '../index.html';
+            
+            // 延迟重定向，让用户有时间看到通知
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 1000);
         }
         
 
