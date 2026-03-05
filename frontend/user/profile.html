@@ -503,12 +503,8 @@
             const email = document.getElementById('email').value;
             
             try {
-                const response = await fetch('http://localhost:5000/api/users/me', {
+                const response = await gesp_fetch('http://localhost:5000/api/users/me', {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify({
                         nickname,
                         email
@@ -549,11 +545,7 @@
         // 加载用户信息
         async function gesp_loadUserInfo() {
             try {
-                const response = await fetch('http://localhost:5000/api/users/me', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://localhost:5000/api/users/me');
                 
                 const user = await response.json();
                 if (user.error) {
@@ -587,6 +579,68 @@
                     notification.style.opacity = '1';
                 }, 300);
             }, 3000);
+        }
+        
+        // 处理API请求
+        async function gesp_fetch(url, options = {}) {
+            const token = gesp_getToken();
+            
+            // 如果没有token，直接返回null，避免无效请求
+            if (!token) {
+                return null;
+            }
+            
+            // 设置默认选项
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            // 合并选项
+            const fetchOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+            
+            try {
+                const response = await fetch(url, fetchOptions);
+                
+                // 处理401错误
+                if (response.status === 401) {
+                    // 获取当前用户信息
+                    const userStr = sessionStorage.getItem('user');
+                    let username = '用户';
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        username = user.nickname || user.username || '用户';
+                    }
+                    
+                    // 显示退出提示
+                    gesp_showLogoutNotification(`${username}已退出`);
+                    
+                    // 清除存储的登录信息
+                    sessionStorage.removeItem('access_token');
+                    sessionStorage.removeItem('user');
+                    
+                    // 延迟重定向，让用户有时间看到通知
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 1000);
+                    return null;
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                alert('网络错误，请稍后重试');
+                return null;
+            }
         }
         
         // 退出登录

@@ -995,11 +995,25 @@
                 
                 // 处理401错误
                 if (response.status === 401) {
+                    // 获取当前用户信息
+                    const userStr = sessionStorage.getItem('user');
+                    let username = '用户';
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        username = user.nickname || user.username || '用户';
+                    }
+                    
+                    // 显示退出提示
+                    gesp_showLogoutNotification(`${username}已退出`);
+                    
                     // 清除存储的登录信息
                     sessionStorage.removeItem('access_token');
                     sessionStorage.removeItem('user');
-                    // 重定向到登录页面
-                    window.location.href = '../auth/login.html';
+                    
+                    // 延迟重定向，让用户有时间看到通知
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 1000);
                     return null;
                 }
                 
@@ -1254,11 +1268,7 @@
         async function gesp_openEditStudentModal(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`);
                 
                 const result = await response.json();
                 if (result.success) {
@@ -1323,23 +1333,16 @@
             
             try {
                 // 验证密码
-                const response = await fetch('http://127.0.0.1:5000/api/auth/verify-password', {
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/auth/verify-password', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify({ password })
                 });
                 
                 const verifyResult = await response.json();
                 if (verifyResult.success) {
                     // 密码验证成功，删除学员
-                    const deleteResponse = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${gesp_getToken()}`
-                        }
+                    const deleteResponse = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
+                        method: 'DELETE'
                     });
                     
                     const deleteResult = await deleteResponse.json();
@@ -1379,11 +1382,7 @@
         async function gesp_editStudentTeacher(studentId) {
             try {
                 // 获取学员信息
-                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`);
                 
                 const result = await response.json();
                 if (result.success) {
@@ -1425,11 +1424,7 @@
         // 加载教师列表（修改归属用）
         async function gesp_loadTeachersForEdit() {
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/users/teachers', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
                 
                 const result = await response.json();
                 if (result.success) {
@@ -1554,12 +1549,8 @@
             const teacherId = teacherInput.dataset.id;
             
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}/teacher`, {
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}/teacher`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify({
                         teacher_id: teacherId ? parseInt(teacherId) : null
                     })
@@ -1797,11 +1788,8 @@
         async function gesp_deleteStudent(studentId) {
             if (confirm('确定要删除该学员吗？')) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${gesp_getToken()}`
-                        }
+                    const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
+                        method: 'DELETE'
                     });
                     
                     const result = await response.json();

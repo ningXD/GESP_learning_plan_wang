@@ -1578,11 +1578,7 @@ for (int i = 0; i < n; i++) {
             const token = gesp_getToken();
             
             try {
-                const response = await fetch('http://localhost:5000/api/study-plans', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await gesp_fetch('http://localhost:5000/api/study-plans');
                 
                 if (response.ok) {
                     const plans = await response.json();
@@ -1636,11 +1632,7 @@ for (int i = 0; i < n; i++) {
             
             try {
                 // 加载学生列表
-                const studentsResponse = await fetch('http://localhost:5000/api/students', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const studentsResponse = await gesp_fetch('http://localhost:5000/api/students');
                 
                 if (studentsResponse.ok) {
                     let students = await studentsResponse.json();
@@ -1650,11 +1642,7 @@ for (int i = 0; i < n; i++) {
                     }
                     
                     // 加载所有学习计划
-                    const plansResponse = await fetch('http://localhost:5000/api/study-plans', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    const plansResponse = await gesp_fetch('http://localhost:5000/api/study-plans');
                     
                     if (plansResponse.ok) {
                         const plans = await plansResponse.json();
@@ -2711,11 +2699,9 @@ int main() {
                         const formData = new FormData();
                         formData.append('file', file);
                         
-                        const response = await fetch('http://localhost:5000/api/notes/upload', {
+                        const response = await gesp_fetch('http://localhost:5000/api/notes/upload', {
                             method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${gesp_getToken()}`
-                            },
+                            headers: {}, // 移除Content-Type，让浏览器自动设置
                             body: formData
                         });
                         
@@ -2802,12 +2788,8 @@ int main() {
         // 保存笔记到服务器
         async function saveNoteToServer(noteData) {
             try {
-                const response = await fetch('http://localhost:5000/api/notes', {
+                const response = await gesp_fetch('http://localhost:5000/api/notes', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify(noteData)
                 });
                 
@@ -2834,11 +2816,7 @@ int main() {
         // 从服务器获取所有笔记
         async function loadNotes() {
             try {
-                const response = await fetch('http://localhost:5000/api/notes', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://localhost:5000/api/notes');
                 
                 if (response.ok) {
                     notes = await response.json();
@@ -3640,12 +3618,66 @@ int main() {
             }
         }
         
-        // 退出登录
-        function gesp_logout() {
-            sessionStorage.removeItem('access_token');
-            sessionStorage.removeItem('user');
-            gesp_checkLoginStatus();
-            window.location.href = '../index.html';
+        // 处理API请求
+        async function gesp_fetch(url, options = {}) {
+            const token = gesp_getToken();
+            
+            // 如果没有token，直接返回null，避免无效请求
+            if (!token) {
+                return null;
+            }
+            
+            // 设置默认选项
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            // 合并选项
+            const fetchOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+            
+            try {
+                const response = await fetch(url, fetchOptions);
+                
+                // 处理401错误
+                if (response.status === 401) {
+                    // 获取当前用户信息
+                    const userStr = sessionStorage.getItem('user');
+                    let username = '用户';
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        username = user.nickname || user.username || '用户';
+                    }
+                    
+                    // 显示退出提示
+                    gesp_showLogoutNotification(`${username}已退出`);
+                    
+                    // 清除存储的登录信息
+                    sessionStorage.removeItem('access_token');
+                    sessionStorage.removeItem('user');
+                    
+                    // 延迟重定向，让用户有时间看到通知
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 1000);
+                    return null;
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                alert('网络错误，请稍后重试');
+                return null;
+            }
         }
         
         // 显示退出登录通知
