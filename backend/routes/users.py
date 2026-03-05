@@ -84,6 +84,47 @@ def get_teachers():
         traceback.print_exc()
         return jsonify({'success': False, 'message': str(e)}), 500
 
+@bp.route('/teachers/search', methods=['GET'])
+@jwt_required()
+def search_teachers():
+    """搜索教师"""
+    try:
+        # 获取搜索参数
+        keyword = request.args.get('keyword', '')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        
+        # 构建搜索查询
+        query = User.query.filter(User.role == 'teacher')
+        if keyword:
+            query = query.filter(User.nickname.like(f'%{keyword}%'))
+        
+        # 分页查询
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        teachers = pagination.items
+        total = pagination.total
+        
+        # 构建教师数据列表
+        teacher_data = []
+        for teacher in teachers:
+            teacher_dict = teacher.to_dict()
+            teacher_dict['name'] = teacher_dict.get('nickname', '')
+            teacher_data.append(teacher_dict)
+        
+        return jsonify({
+            'success': True, 
+            'data': teacher_data,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+            'pages': pagination.pages
+        }), 200
+    except Exception as e:
+        print(f"搜索教师时出错: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 @bp.route('/teachers', methods=['POST'])
 @jwt_required()
 def add_teacher():

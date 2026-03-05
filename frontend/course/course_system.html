@@ -16,6 +16,17 @@
             line-height: 1.6;
             color: #333;
             background-color: #f4f4f4;
+            overflow-y: auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
         
         /* 导航栏样式 */
@@ -493,6 +504,7 @@
             z-index: 1000;
             display: none;
             margin-bottom: 4px;
+            overflow-x: hidden;
         }
         
         /* 教师下拉菜单项样式 */
@@ -710,9 +722,9 @@
                             <div id="teacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
-                                    <input type="text" id="teacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                    <input type="text" id="teacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师..." autocomplete="off">
                                 </div>
-                                <div id="teacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
+                                <div id="teacherList" style="padding: 4px 0;"></div>
                             </div>
                         </div>
                     </div>
@@ -797,9 +809,9 @@
                             <div id="editTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
                                 <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
-                                    <input type="text" id="editTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师...">
+                                    <input type="text" id="editTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师..." autocomplete="off">
                                 </div>
-                                <div id="editTeacherList" style="padding: 4px 0; max-height: 220px; overflow-y: auto;"></div>
+                                <div id="editTeacherList" style="padding: 4px 0;"></div>
                             </div>
                         </div>
                     </div>
@@ -1439,27 +1451,41 @@
             
             if (searchInput && dropdown && teacherList && teacherSearchInput) {
                 // 点击输入框显示弹窗
-                searchInput.addEventListener('click', function() {
-                    renderEditTeachers(teachersList);
+                searchInput.addEventListener('click', async function() {
+                    // 显示弹窗
                     dropdown.style.display = 'block';
                     // 聚焦搜索框
                     teacherSearchInput.focus();
+                    // 清空搜索框
+                    teacherSearchInput.value = '';
+                    // 加载默认教师列表（前20个）
+                    await loadEditTeachers(1, 20);
                 });
                 
-                // 搜索框输入事件 - 过滤教师
+                // 搜索框输入事件 - 调用后端搜索API
+                const debouncedSearch = debounce(async function(keyword) {
+                    console.log('搜索词:', keyword);
+                    try {
+                        // 调用后端搜索API
+                        const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers/search?keyword=${encodeURIComponent(keyword)}&page=1&per_page=20`);
+                        if (!response) return;
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            const filteredTeachers = result.data;
+                            console.log('过滤结果:', filteredTeachers);
+                            // 更新弹窗列表
+                            renderEditTeachers(filteredTeachers);
+                        }
+                    } catch (error) {
+                        console.error('搜索教师失败:', error);
+                    }
+                }, 300);
+                
+                // 绑定搜索事件
                 teacherSearchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    console.log('搜索词:', searchTerm);
-                    console.log('教师列表:', teachersList);
-                    const filteredTeachers = teachersList.filter(teacher => {
-                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
-                        console.log('教师名称:', teacherName);
-                        return teacherName.includes(searchTerm);
-                    });
-                    console.log('过滤结果:', filteredTeachers);
-                    
-                    // 更新弹窗列表
-                    renderEditTeachers(filteredTeachers);
+                    const keyword = this.value;
+                    debouncedSearch(keyword);
                 });
                 
                 // 点击其他地方关闭弹窗
@@ -1468,6 +1494,22 @@
                         dropdown.style.display = 'none';
                     }
                 });
+            }
+        }
+        
+        // 加载修改教师归属的教师列表
+        async function loadEditTeachers(page = 1, perPage = 20) {
+            try {
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers?page=${page}&per_page=${perPage}`);
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    teachersList = result.data;
+                    renderEditTeachers(teachersList);
+                }
+            } catch (error) {
+                console.error('加载教师列表失败:', error);
             }
         }
         
@@ -1482,12 +1524,14 @@
                 teachers.forEach(teacher => {
                     const item = document.createElement('div');
                     item.className = 'teacher-dropdown-item';
-                    item.textContent = teacher.name || teacher.nickname || teacher.username;
+                    // 直接使用nickname字段，因为教师表里的name就是nickname
+                    item.textContent = teacher.nickname || teacher.username;
                     item.dataset.id = teacher.id;
                     
                     item.addEventListener('click', function() {
                         const searchInput = document.getElementById('edit-teacher');
-                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
+                        // 直接使用nickname字段，因为教师表里的name就是nickname
+                        searchInput.value = teacher.nickname || teacher.username;
                         searchInput.dataset.id = teacher.id;
                         document.getElementById('editTeacherDropdown').style.display = 'none';
                     });
@@ -1550,34 +1594,20 @@
         // 加载教师列表
         async function gesp_loadTeachers() {
             try {
-                const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
-                if (!response) return;
-                
-                // 检查响应状态
-                if (!response.ok) {
-                    console.error('加载教师列表失败:', response.status);
-                    return;
-                }
-                
-                // 尝试解析JSON
-                try {
-                    const result = await response.json();
-                    if (result.success) {
-                        teachersList = result.data;
-                        // 初始化搜索框事件
-                        initTeacherSearch();
-                    } else {
-                        console.error('加载教师列表失败:', result.message);
-                    }
-                } catch (jsonError) {
-                    console.error('JSON解析失败:', jsonError);
-                    // 尝试获取响应文本
-                    const text = await response.text();
-                    console.error('响应内容:', text);
-                }
+                // 初始化搜索框事件
+                initTeacherSearch();
             } catch (error) {
                 console.error('加载教师列表失败:', error);
             }
+        }
+        
+        // 防抖函数
+        function debounce(func, delay) {
+            let timeoutId;
+            return function() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(this, arguments), delay);
+            };
         }
         
         // 初始化教师搜索功能
@@ -1589,27 +1619,41 @@
             
             if (searchInput && dropdown && teacherList && teacherSearchInput) {
                 // 点击输入框显示弹窗
-                searchInput.addEventListener('click', function() {
-                    renderTeachers(teachersList);
+                searchInput.addEventListener('click', async function() {
+                    // 显示弹窗
                     dropdown.style.display = 'block';
                     // 聚焦搜索框
                     teacherSearchInput.focus();
+                    // 清空搜索框
+                    teacherSearchInput.value = '';
+                    // 加载默认教师列表（前20个）
+                    await loadTeachers(1, 20);
                 });
                 
-                // 搜索框输入事件 - 过滤教师
+                // 搜索框输入事件 - 调用后端搜索API
+                const debouncedSearch = debounce(async function(keyword) {
+                    console.log('搜索词:', keyword);
+                    try {
+                        // 调用后端搜索API
+                        const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers/search?keyword=${encodeURIComponent(keyword)}&page=1&per_page=20`);
+                        if (!response) return;
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            const filteredTeachers = result.data;
+                            console.log('过滤结果:', filteredTeachers);
+                            // 更新弹窗列表
+                            renderTeachers(filteredTeachers);
+                        }
+                    } catch (error) {
+                        console.error('搜索教师失败:', error);
+                    }
+                }, 300);
+                
+                // 绑定搜索事件
                 teacherSearchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    console.log('搜索词:', searchTerm);
-                    console.log('教师列表:', teachersList);
-                    const filteredTeachers = teachersList.filter(teacher => {
-                        const teacherName = (teacher.name || teacher.nickname || teacher.username).toLowerCase();
-                        console.log('教师名称:', teacherName);
-                        return teacherName.includes(searchTerm);
-                    });
-                    console.log('过滤结果:', filteredTeachers);
-                    
-                    // 更新弹窗列表
-                    renderTeachers(filteredTeachers);
+                    const keyword = this.value;
+                    debouncedSearch(keyword);
                 });
                 
                 // 点击其他地方关闭弹窗
@@ -1618,6 +1662,22 @@
                         dropdown.style.display = 'none';
                     }
                 });
+            }
+        }
+        
+        // 加载教师列表
+        async function loadTeachers(page = 1, perPage = 20) {
+            try {
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers?page=${page}&per_page=${perPage}`);
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    teachersList = result.data;
+                    renderTeachers(teachersList);
+                }
+            } catch (error) {
+                console.error('加载教师列表失败:', error);
             }
         }
         
@@ -1632,12 +1692,14 @@
                 teachers.forEach(teacher => {
                     const item = document.createElement('div');
                     item.className = 'teacher-dropdown-item';
-                    item.textContent = teacher.name || teacher.nickname || teacher.username;
+                    // 直接使用nickname字段，因为教师表里的name就是nickname
+                    item.textContent = teacher.nickname || teacher.username;
                     item.dataset.id = teacher.id;
                     
                     item.addEventListener('click', function() {
                         const searchInput = document.getElementById('modal-teacher');
-                        searchInput.value = teacher.name || teacher.nickname || teacher.username;
+                        // 直接使用nickname字段，因为教师表里的name就是nickname
+                        searchInput.value = teacher.nickname || teacher.username;
                         searchInput.dataset.id = teacher.id;
                         document.getElementById('teacherDropdown').style.display = 'none';
                     });

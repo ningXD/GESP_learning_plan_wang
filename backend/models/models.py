@@ -9,7 +9,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)  # 密码，加密存储
     email = db.Column(db.String(100), unique=True, nullable=True)  # 邮箱，唯一
     phone = db.Column(db.String(20), unique=True, nullable=True)  # 手机号，唯一，可用于登录
-    nickname = db.Column(db.String(50), nullable=True)  # 用户姓名，用于显示
+    nickname = db.Column(db.String(50), nullable=True, index=True)  # 用户姓名，用于显示，添加索引提高搜索性能
     role = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
     admin = db.Column(db.Boolean, nullable=False, default=False)  # 是否为管理员
     age = db.Column(db.Integer, nullable=True)  # 年龄
