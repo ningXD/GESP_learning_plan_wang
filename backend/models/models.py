@@ -75,7 +75,10 @@ class Student(db.Model):
     grade = db.Column(db.String(20), nullable=True)
     project = db.Column(db.String(50), nullable=True)
     phone = db.Column(db.String(20), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    remaining_classes = db.Column(db.Integer, default=0)  # 剩余课时数
+    remaining_fee = db.Column(db.Float, default=0.0)  # 剩余学费
+    enrollment_date = db.Column(db.Date, nullable=True)  # 入学时间
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 信息录入时间
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # 关系
@@ -91,6 +94,9 @@ class Student(db.Model):
             'grade': self.grade,
             'project': self.project,
             'phone': self.phone,
+            'remaining_classes': self.remaining_classes,
+            'remaining_fee': self.remaining_fee,
+            'enrollment_date': self.enrollment_date.isoformat() if self.enrollment_date else None,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

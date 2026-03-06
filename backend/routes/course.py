@@ -284,6 +284,14 @@ def update_student(current_user, student_id):
             student.grade = data['grade']
         if 'project' in data:
             student.project = data['project']
+        if 'phone' in data:
+            student.phone = data['phone']
+        if 'remaining_classes' in data:
+            student.remaining_classes = data['remaining_classes']
+        if 'remaining_fee' in data:
+            student.remaining_fee = data['remaining_fee']
+        if 'enrollment_date' in data and data['enrollment_date']:
+            student.enrollment_date = datetime.strptime(data['enrollment_date'], '%Y-%m-%d').date()
         
         db.session.commit()
         return jsonify({'success': True, 'data': student.to_dict()}), 200

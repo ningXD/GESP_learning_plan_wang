@@ -808,15 +808,55 @@
         
         <!-- 编辑学员弹窗 -->
         <div id="editStudentModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
                 <div class="modal-header">
-                    <h2 class="modal-title">编辑学员</h2>
+                    <h2 class="modal-title">学员信息</h2>
                     <button class="close-btn" onclick="gesp_closeEditStudentModal()">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="edit-student-name">学员姓名:</label>
-                        <input type="text" id="edit-student-name" readonly>
+                        <label for="edit-student-name">姓名:</label>
+                        <input type="text" id="edit-student-name" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-phone">电话:</label>
+                        <input type="text" id="edit-student-phone" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-gender">性别:</label>
+                        <input type="text" id="edit-student-gender" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-age">年龄:</label>
+                        <input type="text" id="edit-student-age" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-grade">年级:</label>
+                        <input type="text" id="edit-student-grade" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-project">学习项目:</label>
+                        <input type="text" id="edit-student-project" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-teacher">所属教师:</label>
+                        <input type="text" id="edit-student-teacher" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-remaining-classes">剩余课时数:</label>
+                        <input type="text" id="edit-student-remaining-classes" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-remaining-fee">剩余学费:</label>
+                        <input type="text" id="edit-student-remaining-fee" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-enrollment-date">入学时间:</label>
+                        <input type="text" id="edit-student-enrollment-date" readonly autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-student-created-at">信息录入时间:</label>
+                        <input type="text" id="edit-student-created-at" readonly autocomplete="off">
                     </div>
                     <div class="form-group" id="editTeacherGroup" style="display: none;">
                         <label for="edit-teacher">所属教师:</label>
@@ -824,17 +864,29 @@
                             <option value="">请选择教师</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>操作:</label>
-                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <div class="form-group" style="margin-top: 20px;">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                             <button class="btn btn-primary" onclick="gesp_goToAddClassFromModal()">添加课程</button>
                             <button class="btn btn-danger" onclick="gesp_openDeleteConfirmModal()">删除学员</button>
                             <button class="btn btn-secondary" id="editTeacherBtn" onclick="gesp_showTeacherSelect()" style="display: none;">修改归属</button>
+                            <button class="btn btn-success" onclick="gesp_openEditMode()">编辑</button>
+                        </div>
+                    </div>
+                    <div class="form-group" id="passwordVerification" style="display: none; margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 6px;">
+                        <h4>请输入密码以进入编辑模式</h4>
+                        <div style="margin-top: 10px;">
+                            <label for="edit-password">密码:</label>
+                            <input type="password" id="edit-password" required style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-top: 5px;">
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button class="btn btn-secondary" onclick="gesp_cancelEditMode()">取消</button>
+                            <button class="btn btn-primary" onclick="gesp_verifyPassword()">确认</button>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" onclick="gesp_closeEditStudentModal()">关闭</button>
+                    <button class="btn btn-primary" id="saveChangesBtn" onclick="gesp_saveChanges()" style="display: none;">保存更改</button>
                 </div>
             </div>
         </div>
@@ -1221,7 +1273,7 @@
                         <th>电话</th>
                         <th>性别</th>
                         <th onclick="gesp_sortTable('project')"><span>教学科目 <span class="sort-icon" id="sort-project">↕</span></span></th>
-                        <th>操作</th>
+                        <th></th>
                     </tr>
                 `;
             } else {
@@ -1232,7 +1284,7 @@
                         <th>性别</th>
                         <th onclick="gesp_sortTable('project')"><span>学习项目 <span class="sort-icon" id="sort-project">↕</span></span></th>
                         <th onclick="gesp_sortTable('teacher')"><span>所属教师 <span class="sort-icon" id="sort-teacher">↕</span></span></th>
-                        <th>操作</th>
+                        <th></th>
                     </tr>
                 `;
             }
@@ -1491,7 +1543,7 @@
                         const userSubject = currentUserType === 'teacher' ? (user.teaching_subject || user.subject || '') : (user.project || user.subject || '');
                         
                         let actionButtons = `
-                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${user.id})">编辑</button>
+                            <button class="action-btn add-class-btn" onclick="gesp_openEditStudentModal(${user.id})">更多</button>
                         `;
                         
                         if (currentUserType === 'teacher') {
@@ -1569,6 +1621,16 @@
                     const student = result.data;
                     const studentName = student.name || student.nickname || student.username;
                     document.getElementById('edit-student-name').value = studentName;
+                    document.getElementById('edit-student-phone').value = student.phone || '';
+                    document.getElementById('edit-student-gender').value = student.gender || '';
+                    document.getElementById('edit-student-age').value = student.age || '';
+                    document.getElementById('edit-student-grade').value = student.grade || '';
+                    document.getElementById('edit-student-project').value = student.project || student.subject || '';
+                    document.getElementById('edit-student-teacher').value = student.teacher ? (student.teacher.nickname || student.teacher.username) : '未分配';
+                    document.getElementById('edit-student-remaining-classes').value = student.remaining_classes || '0';
+                    document.getElementById('edit-student-remaining-fee').value = student.remaining_fee || '0';
+                    document.getElementById('edit-student-enrollment-date').value = student.enrollment_date || '';
+                    document.getElementById('edit-student-created-at').value = student.created_at || '';
                     
                     // 检查用户权限，管理员显示修改归属按钮
                     const userStr = sessionStorage.getItem('user');
@@ -1595,6 +1657,96 @@
         // 关闭编辑学员弹窗
         function gesp_closeEditStudentModal() {
             document.getElementById('editStudentModal').style.display = 'none';
+        }
+        
+        // 打开编辑模式
+        function gesp_openEditMode() {
+            document.getElementById('passwordVerification').style.display = 'block';
+        }
+        
+        // 取消编辑模式
+        function gesp_cancelEditMode() {
+            document.getElementById('passwordVerification').style.display = 'none';
+            document.getElementById('edit-password').value = '';
+        }
+        
+        // 验证密码
+        async function gesp_verifyPassword() {
+            const password = document.getElementById('edit-password').value;
+            
+            if (!password) {
+                alert('请输入密码');
+                return;
+            }
+            
+            try {
+                // 验证密码
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/auth/verify-password', {
+                    method: 'POST',
+                    body: JSON.stringify({ password })
+                });
+                
+                const verifyResult = await response.json();
+                if (verifyResult.success) {
+                    // 密码验证成功，进入编辑模式
+                    document.getElementById('passwordVerification').style.display = 'none';
+                    
+                    // 启用所有输入框
+                    const inputs = document.querySelectorAll('#editStudentModal input[readonly]');
+                    inputs.forEach(input => {
+                        input.removeAttribute('readonly');
+                    });
+                    
+                    // 显示保存按钮
+                    document.getElementById('saveChangesBtn').style.display = 'block';
+                } else {
+                    alert('密码错误，请重新输入');
+                }
+            } catch (error) {
+                alert('验证密码失败: ' + error.message);
+            }
+        }
+        
+        // 保存更改
+        async function gesp_saveChanges() {
+            const studentId = document.getElementById('editStudentModal').dataset.studentId;
+            
+            // 获取表单数据
+            const studentData = {
+                name: document.getElementById('edit-student-name').value,
+                phone: document.getElementById('edit-student-phone').value,
+                gender: document.getElementById('edit-student-gender').value,
+                age: document.getElementById('edit-student-age').value,
+                grade: document.getElementById('edit-student-grade').value,
+                project: document.getElementById('edit-student-project').value,
+                remaining_classes: document.getElementById('edit-student-remaining-classes').value,
+                remaining_fee: document.getElementById('edit-student-remaining-fee').value,
+                enrollment_date: document.getElementById('edit-student-enrollment-date').value
+            };
+            
+            try {
+                // 保存更改
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(studentData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 显示成功消息
+                    alert('信息更新成功');
+                    
+                    // 重新加载用户列表
+                    gesp_loadUsers();
+                    
+                    // 关闭弹窗
+                    gesp_closeEditStudentModal();
+                } else {
+                    alert('更新失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('更新失败: ' + error.message);
+            }
         }
         
         // 从弹窗中跳转到添加课程
