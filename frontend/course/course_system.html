@@ -660,7 +660,7 @@
                 <button class="btn btn-secondary" id="searchBtn" onclick="gesp_toggleSearchBar()">搜索学生</button>
                 <div id="searchBar" style="flex: 1; min-width: 200px; display: none; transition: all 0.3s ease;">
                     <div style="display: flex; gap: 5px;">
-                        <input type="text" id="searchInput" placeholder="输入搜索关键词..." style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;">
+                        <input type="text" id="searchInput" placeholder="输入搜索关键词..." style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" autocomplete="off">
                         <button class="btn btn-primary" onclick="gesp_performSearch()">查询</button>
                     </div>
                     <style>
@@ -990,28 +990,33 @@
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
                     <label>搜索范围:</label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="search-name" checked>
-                            姓名
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; transition: all 0.3s ease;">
+                            <input type="checkbox" id="search-name" checked style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="cursor: pointer;">姓名</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="search-phone" checked>
-                            电话
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; transition: all 0.3s ease;">
+                            <input type="checkbox" id="search-phone" checked style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="cursor: pointer;">电话</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="search-gender" checked>
-                            性别
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; transition: all 0.3s ease;">
+                            <input type="checkbox" id="search-gender" checked style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="cursor: pointer;">性别</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="search-project" checked>
-                            学习项目
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; transition: all 0.3s ease;">
+                            <input type="checkbox" id="search-project" checked style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="cursor: pointer;">学习项目</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" id="search-teacher" checked>
-                            所属教师
+                        <label style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; transition: all 0.3s ease;">
+                            <input type="checkbox" id="search-teacher" checked style="width: 16px; height: 16px; cursor: pointer;">
+                            <span style="cursor: pointer;">所属教师</span>
                         </label>
                     </div>
+                    <style>
+                        #searchModal label:hover {
+                            background-color: #f8f9fa;
+                        }
+                    </style>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1201,6 +1206,12 @@
             // 更新搜索按钮文本
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.textContent = type === 'student' ? '搜索学生' : '搜索教师';
+            // 隐藏搜索框
+            const searchBar = document.getElementById('searchBar');
+            searchBar.style.display = 'none';
+            // 清空搜索输入框
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
             // 更新表头
             const tableHeader = document.getElementById('tableHeader');
             if (type === 'teacher') {
@@ -1320,12 +1331,15 @@
             document.getElementById('search-teacher').checked = searchFields.teacher;
             
             // 根据当前用户类型调整搜索选项
-            if (currentUserType === 'teacher') {
-                // 教师管理模式下，隐藏所属教师选项
-                document.querySelector('label[for="search-teacher"]').style.display = 'none';
-            } else {
-                // 学生管理模式下，显示所有选项
-                document.querySelector('label[for="search-teacher"]').style.display = 'flex';
+            const teacherSearchLabel = document.querySelector('label[for="search-teacher"]');
+            if (teacherSearchLabel) {
+                if (currentUserType === 'teacher') {
+                    // 教师管理模式下，隐藏所属教师选项
+                    teacherSearchLabel.style.display = 'none';
+                } else {
+                    // 学生管理模式下，显示所有选项
+                    teacherSearchLabel.style.display = 'flex';
+                }
             }
             
             // 显示弹窗
