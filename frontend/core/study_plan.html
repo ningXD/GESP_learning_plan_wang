@@ -1711,11 +1711,11 @@ for (int i = 0; i < n; i++) {
                 };
                 
                 tr.innerHTML = `
-                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.nickname}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.name || student.nickname}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.age || '未知'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.gender || '未知'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.grade || '未知'}</td>
-                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || '竞赛'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || student.project || '竞赛'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">
                         ${hasPlan ? 
                             `<button class="btn-small" onclick="viewStudentPlan(${plan.id})">查看计划</button>` : 

@@ -149,14 +149,13 @@ def get_students(user):
     if user.role != 'teacher' and not user.admin:
         return jsonify({'error': 'Unauthorized'}), 401
     
-    students = User.query.filter_by(role='student').all()
+    # 从 Student 表获取学生数据
+    students = Student.query.all()
     return jsonify([{
         'id': student.id,
-        'username': student.username,
-        'nickname': student.nickname,
-        'email': student.email,
+        'name': student.name,
         'age': student.age,
         'gender': student.gender,
         'grade': student.grade,
-        'subject': student.subject
+        'subject': student.project
     } for student in students])
