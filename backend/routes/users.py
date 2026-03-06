@@ -91,10 +91,24 @@ def get_teachers():
         
         # 执行排序
         if sort == 'name':
-            # 按姓名拼音排序
+            # 按姓名拼音排序，支持数字自然排序
+            import re
+            
+            def natural_sort_key(s):
+                # 将字符串分解为字母和数字部分
+                parts = re.split(r'(\d+)', s)
+                # 将数字部分转换为整数，字母部分转换为拼音
+                key = []
+                for part in parts:
+                    if part.isdigit():
+                        key.append(int(part))
+                    else:
+                        key.append(''.join(lazy_pinyin(part)))
+                return key
+            
             teachers = query.all()
-            # 按拼音排序
-            teachers.sort(key=lambda t: ''.join(lazy_pinyin(t.nickname or t.username or '')), reverse=(order == 'desc'))
+            # 按自然排序
+            teachers.sort(key=lambda t: natural_sort_key(t.nickname or t.username or ''), reverse=(order == 'desc'))
             # 手动分页
             total = len(teachers)
             start = (page - 1) * per_page

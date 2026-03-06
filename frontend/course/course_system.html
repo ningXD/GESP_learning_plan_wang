@@ -1217,21 +1217,21 @@
             if (type === 'teacher') {
                 tableHeader.innerHTML = `
                     <tr>
-                        <th>姓名</th>
+                        <th onclick="gesp_sortTable('name')"><span>姓名 <span class="sort-icon" id="sort-name">↕</span></span></th>
                         <th>电话</th>
                         <th>性别</th>
-                        <th>教学科目</th>
+                        <th onclick="gesp_sortTable('project')"><span>教学科目 <span class="sort-icon" id="sort-project">↕</span></span></th>
                         <th>操作</th>
                     </tr>
                 `;
             } else {
                 tableHeader.innerHTML = `
                     <tr>
-                        <th>姓名</th>
+                        <th onclick="gesp_sortTable('name')"><span>姓名 <span class="sort-icon" id="sort-name">↕</span></span></th>
                         <th>电话</th>
                         <th>性别</th>
-                        <th>学习项目</th>
-                        <th>所属教师</th>
+                        <th onclick="gesp_sortTable('project')"><span>学习项目 <span class="sort-icon" id="sort-project">↕</span></span></th>
+                        <th onclick="gesp_sortTable('teacher')"><span>所属教师 <span class="sort-icon" id="sort-teacher">↕</span></span></th>
                         <th>操作</th>
                     </tr>
                 `;

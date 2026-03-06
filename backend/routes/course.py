@@ -67,11 +67,25 @@ def get_students(current_user):
             query = query.filter(db.or_(*search_conditions))
     
     # 执行排序
+    import re
+    
+    def natural_sort_key(s):
+        # 将字符串分解为字母和数字部分
+        parts = re.split(r'(\d+)', s)
+        # 将数字部分转换为整数，字母部分转换为拼音
+        key = []
+        for part in parts:
+            if part.isdigit():
+                key.append(int(part))
+            else:
+                key.append(''.join(lazy_pinyin(part)))
+        return key
+    
     if sort == 'name':
-        # 按姓名拼音排序
+        # 按姓名拼音排序，支持数字自然排序
         students = query.all()
-        # 按拼音排序
-        students.sort(key=lambda s: ''.join(lazy_pinyin(s.name or '')), reverse=(order == 'desc'))
+        # 按自然排序
+        students.sort(key=lambda s: natural_sort_key(s.name or ''), reverse=(order == 'desc'))
         # 手动分页
         total = len(students)
         start = (page - 1) * per_page
@@ -89,10 +103,10 @@ def get_students(current_user):
             'pages': total_pages
         }), 200
     elif sort == 'project':
-        # 按学习项目拼音排序
+        # 按学习项目拼音排序，支持数字自然排序
         students = query.all()
-        # 按拼音排序
-        students.sort(key=lambda s: ''.join(lazy_pinyin(s.project or '')), reverse=(order == 'desc'))
+        # 按自然排序
+        students.sort(key=lambda s: natural_sort_key(s.project or ''), reverse=(order == 'desc'))
         # 手动分页
         total = len(students)
         start = (page - 1) * per_page
@@ -110,10 +124,10 @@ def get_students(current_user):
             'pages': total_pages
         }), 200
     elif sort == 'teacher':
-        # 按所属教师拼音排序
+        # 按所属教师拼音排序，支持数字自然排序
         students = query.all()
-        # 加载教师信息并按教师姓名拼音排序
-        students.sort(key=lambda s: ''.join(lazy_pinyin(s.teacher.nickname or s.teacher.username or '') if s.teacher else ''), reverse=(order == 'desc'))
+        # 加载教师信息并按教师姓名自然排序
+        students.sort(key=lambda s: natural_sort_key(s.teacher.nickname or s.teacher.username or '') if s.teacher else '', reverse=(order == 'desc'))
         # 手动分页
         total = len(students)
         start = (page - 1) * per_page
