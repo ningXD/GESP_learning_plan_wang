@@ -1407,6 +1407,24 @@
                 teacherSearchInput.value = '';
             }
             
+            // 根据当前用户类型调整弹窗内容
+            const modalTitle = document.querySelector('#addStudentModal .modal-title');
+            const projectLabel = document.querySelector('label[for="modal-project"]');
+            const gradeGroup = document.querySelector('.form-group:nth-child(4)'); // 年级字段
+            const addButton = document.querySelector('#addStudentModal .btn-primary');
+            
+            if (currentUserType === 'teacher') {
+                modalTitle.textContent = '添加教师信息';
+                projectLabel.textContent = '教学科目:';
+                gradeGroup.style.display = 'none'; // 隐藏年级字段
+                addButton.textContent = '添加教师';
+            } else {
+                modalTitle.textContent = '添加学员信息';
+                projectLabel.textContent = '学习项目:';
+                gradeGroup.style.display = 'block'; // 显示年级字段
+                addButton.textContent = '添加学员';
+            }
+            
             // 检查用户权限，管理员显示教师选择
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
