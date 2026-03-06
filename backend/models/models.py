@@ -94,9 +94,9 @@ class Student(db.Model):
             'grade': self.grade,
             'project': self.project,
             'phone': self.phone,
-            'remaining_classes': self.remaining_classes,
-            'remaining_fee': self.remaining_fee,
-            'enrollment_date': self.enrollment_date.isoformat() if self.enrollment_date else None,
+            'remaining_classes': getattr(self, 'remaining_classes', 0),
+            'remaining_fee': getattr(self, 'remaining_fee', 0.0),
+            'enrollment_date': getattr(self, 'enrollment_date', None).isoformat() if getattr(self, 'enrollment_date', None) else None,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

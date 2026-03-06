@@ -286,11 +286,12 @@ def update_student(current_user, student_id):
             student.project = data['project']
         if 'phone' in data:
             student.phone = data['phone']
-        if 'remaining_classes' in data:
+        # 检查字段是否存在，避免数据库字段不存在时的错误
+        if 'remaining_classes' in data and hasattr(student, 'remaining_classes'):
             student.remaining_classes = data['remaining_classes']
-        if 'remaining_fee' in data:
+        if 'remaining_fee' in data and hasattr(student, 'remaining_fee'):
             student.remaining_fee = data['remaining_fee']
-        if 'enrollment_date' in data and data['enrollment_date']:
+        if 'enrollment_date' in data and data['enrollment_date'] and hasattr(student, 'enrollment_date'):
             student.enrollment_date = datetime.strptime(data['enrollment_date'], '%Y-%m-%d').date()
         
         db.session.commit()

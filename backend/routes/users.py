@@ -1,48 +1,39 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.models import User, Teacher
 from extensions import db
 import bcrypt
 from pypinyin import lazy_pinyin
+from decorators import token_required
 
 # 创建蓝图
 bp = Blueprint('users', __name__, url_prefix='/api/users')
 
 @bp.route('/me', methods=['GET'])
-@jwt_required()
-def get_current_user():
+@token_required
+def get_current_user(current_user):
     """获取当前用户信息"""
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'error': '用户不存在'}), 404
-    return jsonify(user.to_dict()), 200
+    return jsonify(current_user.to_dict()), 200
 
 @bp.route('/me', methods=['PUT'])
-@jwt_required()
-def update_current_user():
+@token_required
+def update_current_user(current_user):
     """更新当前用户信息"""
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'error': '用户不存在'}), 404
-    
     data = request.get_json()
     if 'email' in data:
-        user.email = data['email']
+        current_user.email = data['email']
     if 'nickname' in data:
-        user.nickname = data['nickname']
+        current_user.nickname = data['nickname']
     if 'password' in data:
         # 加密新密码
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        user.password = hashed_password
+        current_user.password = hashed_password
     
     db.session.commit()
-    return jsonify(user.to_dict()), 200
+    return jsonify(current_user.to_dict()), 200
 
 @bp.route('/<int:user_id>', methods=['GET'])
-@jwt_required()
-def get_user(user_id):
+@token_required
+def get_user(current_user, user_id):
     """获取指定用户信息"""
     user = User.query.get(user_id)
     if not user:
@@ -50,8 +41,8 @@ def get_user(user_id):
     return jsonify(user.to_dict()), 200
 
 @bp.route('/teachers', methods=['GET'])
-@jwt_required()
-def get_teachers():
+@token_required
+def get_teachers(current_user):
     """获取所有教师用户"""
     try:
         # 获取分页参数
@@ -161,8 +152,8 @@ def get_teachers():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 @bp.route('/teachers/search', methods=['GET'])
-@jwt_required()
-def search_teachers():
+@token_required
+def search_teachers(current_user):
     """搜索教师"""
     try:
         # 获取搜索参数
@@ -202,12 +193,9 @@ def search_teachers():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 @bp.route('/teachers', methods=['POST'])
-@jwt_required()
-def add_teacher():
+@token_required
+def add_teacher(current_user):
     """添加教师用户"""
-    current_user_id = get_jwt_identity()
-    current_user = User.query.get(current_user_id)
-    
     # 只有管理员可以添加教师
     if not current_user.admin:
         return jsonify({'error': '权限不足'}), 403
