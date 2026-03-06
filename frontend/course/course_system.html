@@ -267,14 +267,24 @@
         }
         
         th, td {
-            padding: 14px 16px;
+            padding: 10px 16px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            height: 60px;
-            line-height: 60px;
+            height: 40px;
+            line-height: 40px;
+        }
+        
+        th {
+            position: relative;
+        }
+        
+        th span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
         
         th:nth-child(1), td:nth-child(1) {
@@ -623,7 +633,7 @@
         
         <!-- 学员管理 -->
         <div id="student" class="tab-content active">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                 <select id="userTypeSelect" onchange="gesp_switchUserType(this.value)" style="padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; outline: none; transition: all 0.3s ease;">
                     <style>
                         #userTypeSelect option {
@@ -647,18 +657,32 @@
                     <option value="teacher">教师管理</option>
                 </select>
                 <button class="btn btn-primary" id="addUserBtn" onclick="gesp_openAddUserModal()">添加学生</button>
+                <button class="btn btn-secondary" id="searchBtn" onclick="gesp_toggleSearchBar()">搜索学生</button>
+                <div id="searchBar" style="flex: 1; min-width: 200px; display: none; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="searchInput" placeholder="输入搜索关键词..." style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;">
+                        <button class="btn btn-primary" onclick="gesp_performSearch()">查询</button>
+                    </div>
+                    <style>
+                        #searchInput:focus {
+                            outline: none;
+                            border-color: #3498db;
+                            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+                        }
+                    </style>
+                </div>
             </div>
             <div class="success-message" id="studentMessage"></div>
             
             <table id="studentTable">
                 <thead id="tableHeader">
                     <tr>
-                        <th onclick="gesp_sortTable('name')">姓名 <span class="sort-icon" id="sort-name">↕</span></th>
-                        <th>电话</th>
-                        <th>性别</th>
-                        <th onclick="gesp_sortTable('project')">学习项目 <span class="sort-icon" id="sort-project">↕</span></th>
-                        <th onclick="gesp_sortTable('teacher')">所属教师 <span class="sort-icon" id="sort-teacher">↕</span></th>
-                        <th>操作</th>
+                        <th onclick="gesp_sortTable('name')"><span>姓名 <span class="sort-icon" id="sort-name">↕</span></span></th>
+                        <th><span>电话</span></th>
+                        <th><span>性别</span></th>
+                        <th onclick="gesp_sortTable('project')"><span>学习项目 <span class="sort-icon" id="sort-project">↕</span></span></th>
+                        <th onclick="gesp_sortTable('teacher')"><span>所属教师 <span class="sort-icon" id="sort-teacher">↕</span></span></th>
+                        <th><span>操作</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -952,6 +976,51 @@
     <!-- 退出登录通知窗口 -->
     <div id="logout-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; color: red; border: 1px solid black; padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; display: none; transition: all 0.3s ease; max-width: 90%; text-align: center;"></div>
     
+    <!-- 搜索弹窗 -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">搜索</h2>
+                <button class="close-btn" onclick="gesp_closeSearchModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal-search">搜索关键词:</label>
+                    <input type="text" id="modal-search" placeholder="输入搜索关键词..." style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>搜索范围:</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="search-name" checked>
+                            姓名
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="search-phone" checked>
+                            电话
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="search-gender" checked>
+                            性别
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="search-project" checked>
+                            学习项目
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="search-teacher" checked>
+                            所属教师
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="gesp_closeSearchModal()">取消</button>
+                <button class="btn btn-primary" onclick="gesp_performSearch()">搜索</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // 检查登录状态
         function gesp_checkLogin() {
@@ -1000,6 +1069,14 @@
             gesp_checkLoginStatus();
             gesp_checkAdminPermission();
             gesp_initData();
+            
+            // 初始化搜索框事件
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('click', function() {
+                    gesp_openSearchModal();
+                });
+            }
         });
         
         // 获取token
@@ -1105,12 +1182,25 @@
         let sortField = '';
         let sortOrder = 'asc'; // asc 或 desc
         
+        // 搜索相关变量
+        let searchKeyword = '';
+        let searchFields = {
+            name: true,
+            phone: true,
+            gender: true,
+            project: true,
+            teacher: true
+        };
+        
         // 切换用户类型
         function gesp_switchUserType(type) {
             currentUserType = type;
             // 更新按钮文本
             const addBtn = document.getElementById('addUserBtn');
             addBtn.textContent = type === 'student' ? '添加学生' : '添加教师';
+            // 更新搜索按钮文本
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.textContent = type === 'student' ? '搜索学生' : '搜索教师';
             // 更新表头
             const tableHeader = document.getElementById('tableHeader');
             if (type === 'teacher') {
@@ -1141,6 +1231,17 @@
             document.getElementById('perPageSelect').value = '10';
             // 重新加载用户列表
             gesp_loadUsers();
+        }
+        
+        // 切换搜索栏显示/隐藏
+        function gesp_toggleSearchBar() {
+            const searchBar = document.getElementById('searchBar');
+            if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                searchBar.style.display = 'block';
+                document.getElementById('searchInput').focus();
+            } else {
+                searchBar.style.display = 'none';
+            }
         }
         
 
@@ -1206,6 +1307,74 @@
             gesp_loadUsers();
         }
         
+        // 打开搜索弹窗
+        function gesp_openSearchModal() {
+            // 清空搜索输入框
+            document.getElementById('modal-search').value = searchKeyword;
+            
+            // 重置复选框状态
+            document.getElementById('search-name').checked = searchFields.name;
+            document.getElementById('search-phone').checked = searchFields.phone;
+            document.getElementById('search-gender').checked = searchFields.gender;
+            document.getElementById('search-project').checked = searchFields.project;
+            document.getElementById('search-teacher').checked = searchFields.teacher;
+            
+            // 根据当前用户类型调整搜索选项
+            if (currentUserType === 'teacher') {
+                // 教师管理模式下，隐藏所属教师选项
+                document.querySelector('label[for="search-teacher"]').style.display = 'none';
+            } else {
+                // 学生管理模式下，显示所有选项
+                document.querySelector('label[for="search-teacher"]').style.display = 'flex';
+            }
+            
+            // 显示弹窗
+            document.getElementById('searchModal').style.display = 'block';
+        }
+        
+        // 关闭搜索弹窗
+        function gesp_closeSearchModal() {
+            document.getElementById('searchModal').style.display = 'none';
+        }
+        
+        // 执行搜索
+        function gesp_performSearch() {
+            // 检查是否有搜索框输入
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && searchInput.value) {
+                // 使用搜索框中的值
+                searchKeyword = searchInput.value;
+                
+                // 默认搜索所有字段
+                searchFields = {
+                    name: true,
+                    phone: true,
+                    gender: true,
+                    project: true,
+                    teacher: currentUserType === 'student'
+                };
+            } else {
+                // 使用弹窗中的值
+                searchKeyword = document.getElementById('modal-search').value;
+                
+                // 获取搜索范围
+                searchFields = {
+                    name: document.getElementById('search-name').checked,
+                    phone: document.getElementById('search-phone').checked,
+                    gender: document.getElementById('search-gender').checked,
+                    project: document.getElementById('search-project').checked,
+                    teacher: currentUserType === 'student' && document.getElementById('search-teacher').checked
+                };
+                
+                // 关闭弹窗
+                gesp_closeSearchModal();
+            }
+            
+            // 重置页码并重新加载数据
+            currentPage = 1;
+            gesp_loadUsers();
+        }
+        
         // 打开添加用户弹窗
         function gesp_openAddUserModal() {
             // 清空表单
@@ -1253,6 +1422,19 @@
                 // 添加排序参数
                 if (sortField) {
                     url += `&sort=${sortField}&order=${sortOrder}`;
+                }
+                
+                // 添加搜索参数
+                if (searchKeyword) {
+                    url += `&keyword=${encodeURIComponent(searchKeyword)}`;
+                    // 添加搜索字段参数
+                    const fields = Object.entries(searchFields)
+                        .filter(([_, value]) => value)
+                        .map(([key, _]) => key)
+                        .join(',');
+                    if (fields) {
+                        url += `&fields=${fields}`;
+                    }
                 }
                 
                 const response = await gesp_fetch(url);

@@ -62,8 +62,32 @@ def get_teachers():
         sort = request.args.get('sort', '')
         order = request.args.get('order', 'asc')
         
+        # 获取搜索参数
+        keyword = request.args.get('keyword', '')
+        
         # 只返回role为teacher的用户，不包括admin用户
         query = User.query.filter(User.role == 'teacher')
+        
+        # 执行搜索
+        if keyword:
+            # 获取搜索字段
+            fields = request.args.get('fields', 'name,phone,gender,project,teacher').split(',')
+            search_conditions = []
+            
+            if 'name' in fields:
+                search_conditions.append(db.or_(
+                    User.nickname.like(f'%{keyword}%'),
+                    User.username.like(f'%{keyword}%')
+                ))
+            if 'phone' in fields:
+                search_conditions.append(User.phone.like(f'%{keyword}%'))
+            if 'gender' in fields:
+                search_conditions.append(User.gender.like(f'%{keyword}%'))
+            if 'project' in fields or 'subject' in fields:
+                search_conditions.append(User.subject.like(f'%{keyword}%'))
+            
+            if search_conditions:
+                query = query.filter(db.or_(*search_conditions))
         
         # 执行排序
         if sort == 'name':

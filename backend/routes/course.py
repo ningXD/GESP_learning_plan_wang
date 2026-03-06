@@ -24,6 +24,9 @@ def get_students(current_user):
     sort = request.args.get('sort', '')
     order = request.args.get('order', 'asc')
     
+    # 获取搜索参数
+    keyword = request.args.get('keyword', '')
+    
     # 构建查询
     if current_user.admin:
         # 管理员可以看到所有学生（Student表中的学生）
@@ -31,6 +34,37 @@ def get_students(current_user):
     else:
         # 普通教师只能看到自己的学生
         query = Student.query.filter_by(teacher_id=current_user.id)
+    
+    # 执行搜索
+    if keyword:
+        # 获取搜索字段
+        fields = request.args.get('fields', 'name,phone,gender,project,teacher').split(',')
+        search_conditions = []
+        
+        if 'name' in fields:
+            search_conditions.append(Student.name.like(f'%{keyword}%'))
+        if 'phone' in fields:
+            search_conditions.append(Student.phone.like(f'%{keyword}%'))
+        if 'gender' in fields:
+            search_conditions.append(Student.gender.like(f'%{keyword}%'))
+        if 'project' in fields:
+            search_conditions.append(Student.project.like(f'%{keyword}%'))
+        if 'teacher' in fields:
+            # 搜索教师姓名
+            search_conditions.append(
+                db.exists().where(
+                    db.and_(
+                        User.id == Student.teacher_id,
+                        db.or_(
+                            User.nickname.like(f'%{keyword}%'),
+                            User.username.like(f'%{keyword}%')
+                        )
+                    )
+                )
+            )
+        
+        if search_conditions:
+            query = query.filter(db.or_(*search_conditions))
     
     # 执行排序
     if sort == 'name':
