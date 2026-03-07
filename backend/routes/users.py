@@ -28,6 +28,15 @@ def update_current_user(current_user):
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         current_user.password = hashed_password
     
+    # 同步更新学生表中的对应数据（如果用户是学生）
+    if current_user.role == 'student':
+        from models.models import Student
+        student = Student.query.filter_by(name=current_user.nickname).first()
+        if student:
+            if 'nickname' in data:
+                student.name = data['nickname']
+            # 可以根据需要添加其他字段的同步更新
+    
     db.session.commit()
     return jsonify(current_user.to_dict()), 200
 
@@ -236,6 +245,53 @@ def add_teacher(current_user):
             'success': True, 
             'data': new_teacher.to_dict()
         }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/students/<int:student_id>', methods=['PUT'])
+@token_required
+def update_student(current_user):
+    """更新学生信息"""
+    # 只有管理员或教师可以更新学生信息
+    if current_user.role not in ['admin', 'teacher']:
+        return jsonify({'error': '权限不足'}), 403
+    
+    data = request.get_json()
+    student_id = request.view_args.get('student_id')
+    
+    try:
+        # 获取学生记录
+        from models.models import Student
+        student = Student.query.get(student_id)
+        if not student:
+            return jsonify({'error': '学生不存在'}), 404
+        
+        # 更新学生信息
+        if 'name' in data:
+            student.name = data['name']
+        if 'gender' in data:
+            student.gender = data['gender']
+        if 'age' in data:
+            student.age = data['age']
+        if 'grade' in data:
+            student.grade = data['grade']
+        if 'phone' in data:
+            student.phone = data['phone']
+        
+        # 同步更新用户表中的对应数据
+        user = User.query.filter_by(nickname=student.name).first()
+        if user and user.role == 'student':
+            if 'name' in data:
+                user.nickname = data['name']
+            if 'phone' in data:
+                user.phone = data['phone']
+        
+        db.session.commit()
+        return jsonify({
+            'success': True, 
+            'data': student.to_dict()
+        }), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500

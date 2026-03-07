@@ -1,5 +1,8 @@
 from extensions import db
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# 设置中国时区（UTC+8）
+china_timezone = timezone(timedelta(hours=8))
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -11,8 +14,8 @@ class User(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)  # 手机号，唯一，可用于登录
     nickname = db.Column(db.String(50), nullable=False, index=True)  # 用户姓名，用于显示，添加索引提高搜索性能
     role = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 创建时间
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # 更新时间
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone))  # 创建时间
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone), onupdate=lambda: datetime.now(china_timezone))  # 更新时间
     
     # 关系
     notes = db.relationship('Note', backref='user', lazy=True)
@@ -68,8 +71,8 @@ class Student(db.Model):
     remaining_classes = db.Column(db.Integer, default=0)  # 剩余课时数
     remaining_fee = db.Column(db.Float, default=0.0)  # 剩余学费
     enrollment_date = db.Column(db.Date, nullable=True)  # 入学时间
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 信息录入时间
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone))  # 信息录入时间
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone), onupdate=lambda: datetime.now(china_timezone))
     
     # 关系
     class_records = db.relationship('ClassRecord', backref='student', lazy=True)
