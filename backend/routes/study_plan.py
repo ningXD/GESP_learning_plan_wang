@@ -13,7 +13,7 @@ def get_study_plans(user):
     if user.role == 'student':
         # 学生只能查看自己的学习计划
         plans = StudyPlan.query.filter_by(student_id=user.id).all()
-    elif user.role == 'teacher' or user.admin:
+    elif user.role == 'teacher' or user.role == 'admin':
         # 教师和管理员可以查看所有学习计划
         plans = StudyPlan.query.all()
     else:
@@ -40,7 +40,7 @@ def get_study_plan(user, plan_id):
 def create_study_plan(user):
     
     # 只有教师和管理员可以创建学习计划
-    if user.role != 'teacher' and not user.admin:
+    if user.role != 'teacher' and user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     
     data = request.get_json()
@@ -88,7 +88,7 @@ def update_study_plan(user, plan_id):
         return jsonify({'error': 'Study plan not found'}), 404
     
     # 只有教师和管理员可以更新学习计划
-    if user.role != 'teacher' and not user.admin:
+    if user.role != 'teacher' and user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     
     data = request.get_json()
@@ -133,7 +133,7 @@ def delete_study_plan(user, plan_id):
         return jsonify({'error': 'Study plan not found'}), 404
     
     # 只有教师和管理员可以删除学习计划
-    if user.role != 'teacher' and not user.admin:
+    if user.role != 'teacher' and user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     
     db.session.delete(plan)
@@ -146,17 +146,16 @@ def delete_study_plan(user, plan_id):
 def get_students(user):
     
     # 只有教师和管理员可以查看学生列表
-    if user.role != 'teacher' and not user.admin:
+    if user.role != 'teacher' and user.role != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     
-    students = User.query.filter_by(role='student').all()
+    # 从 Student 表获取学生数据
+    students = Student.query.all()
     return jsonify([{
         'id': student.id,
-        'username': student.username,
-        'nickname': student.nickname,
-        'email': student.email,
+        'name': student.name,
         'age': student.age,
         'gender': student.gender,
         'grade': student.grade,
-        'subject': student.subject
+        'subject': student.project
     } for student in students])

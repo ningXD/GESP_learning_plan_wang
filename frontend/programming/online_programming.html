@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在线编程 - 编程特攻队</title>
+    <title>在线编程 - 竞赛特攻队</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
     <style>
@@ -497,7 +497,7 @@
         <div class="navbar-container">
             <a href="../index.html" class="logo">
                 <span>💻</span>
-                编程特攻队 - 竞赛考试必胜系统
+                竞赛特攻队 - 竞赛考试必胜系统
             </a>
             <div class="nav-links">
                 <a href="../index.html" class="nav-link">首页</a>
@@ -575,7 +575,7 @@ int main() {
     </div>
     
     <div class="footer">
-        <p>编程特攻队 - 竞赛考试必胜系统 | 基于浏览器的多语言编程环境</p>
+        <p>竞赛特攻队 - 竞赛考试必胜系统 | 基于浏览器的多语言编程环境</p>
     </div>
     
     <script>
@@ -598,7 +598,7 @@ int main() {
         function gesp_checkLoginAndRedirect() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
+                window.location.href = '../auth/login.html';
                 return false;
             }
             return true;
@@ -1453,14 +1453,14 @@ print("最大公约数:", a)`
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher' && !user.admin) {
+                if (user.role !== 'teacher' && user.role !== 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';

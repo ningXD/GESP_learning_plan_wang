@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编程特攻队 - 竞赛考试必胜系统</title>
+    <title>竞赛特攻队 - 竞赛考试必胜系统</title>
     <style>
         * {
             margin: 0;
@@ -1204,7 +1204,7 @@
         <div class="navbar-container">
             <a href="../index.html" class="logo">
                 <span>💻</span>
-                编程特攻队 - 竞赛考试必胜系统
+                竞赛特攻队 - 竞赛考试必胜系统
             </a>
             <div class="nav-links">
                 <a href="../index.html" class="nav-link">首页</a>
@@ -1231,7 +1231,7 @@
     
     <div class="container">
         <div class="header">
-            <h1>编程竞赛 8周冲刺计划表</h1>
+            <h1>竞赛 8周冲刺计划表</h1>
             <p>2026年1月16日 - 3月13日 | 每周五19:00-21:00学习</p>
         </div>
         
@@ -1269,7 +1269,7 @@
             </div>
             <div class="info-item">
                 <h4>学习目标</h4>
-                <p>• 掌握编程竞赛核心考点</p>
+                <p>• 掌握竞赛核心考点</p>
                 <p>• 熟练完成各类编程题目</p>
                 <p>• 独立解决算法题和编程题</p>
                 <p>• 为多种编程语言竞赛做准备</p>
@@ -1529,7 +1529,7 @@ for (int i = 0; i < n; i++) {
     </div>
     
     <div class="footer">
-        <p>编程特攻队 - 竞赛考试必胜系统 | 生成时间: 2026年1月17日</p>
+        <p>竞赛特攻队 - 竞赛考试必胜系统 | 生成时间: 2026年1月17日</p>
         <p>坚持每周学习，考试必过！加油！💪</p>
     </div>
     
@@ -1557,11 +1557,18 @@ for (int i = 0; i < n; i++) {
         function gesp_checkLoginAndPrompt() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再使用此功能');
-                window.location.href = '../index.html';
+                window.location.href = '../auth/login.html';
                 return false;
             }
             return true;
         }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', function() {
+            if (!gesp_checkLogin()) {
+                window.location.href = '../auth/login.html';
+            }
+        });
         
         // 获取用户信息
         function gesp_getUserInfo() {
@@ -1578,13 +1585,9 @@ for (int i = 0; i < n; i++) {
             const token = gesp_getToken();
             
             try {
-                const response = await fetch('http://localhost:5000/api/study-plans', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await gesp_fetch('http://localhost:5000/api/study-plans');
                 
-                if (response.ok) {
+                if (response && response.ok) {
                     const plans = await response.json();
                     if (plans.length > 0) {
                         const plan = plans[0];
@@ -1628,7 +1631,7 @@ for (int i = 0; i < n; i++) {
         // 教师端：加载学生列表
         async function loadStudents() {
             const userInfo = gesp_getUserInfo();
-            if (userInfo.role !== 'teacher' && !userInfo.admin) {
+            if (userInfo.role !== 'teacher' && userInfo.role !== 'admin') {
                 return;
             }
             
@@ -1636,13 +1639,9 @@ for (int i = 0; i < n; i++) {
             
             try {
                 // 加载学生列表
-                const studentsResponse = await fetch('http://localhost:5000/api/students', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const studentsResponse = await gesp_fetch('http://localhost:5000/api/students');
                 
-                if (studentsResponse.ok) {
+                if (studentsResponse && studentsResponse.ok) {
                     let students = await studentsResponse.json();
                     // 处理不同的返回格式
                     if (students.success !== undefined) {
@@ -1650,13 +1649,9 @@ for (int i = 0; i < n; i++) {
                     }
                     
                     // 加载所有学习计划
-                    const plansResponse = await fetch('http://localhost:5000/api/study-plans', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    const plansResponse = await gesp_fetch('http://localhost:5000/api/study-plans');
                     
-                    if (plansResponse.ok) {
+                    if (plansResponse && plansResponse.ok) {
                         const plans = await plansResponse.json();
                         displayStudentTable(students, plans);
                     }
@@ -1723,11 +1718,11 @@ for (int i = 0; i < n; i++) {
                 };
                 
                 tr.innerHTML = `
-                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.nickname}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.name || student.nickname}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.age || '未知'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.gender || '未知'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.grade || '未知'}</td>
-                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || '编程竞赛'}</td>
+                    <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">${student.subject || student.project || '竞赛'}</td>
                     <td style="padding: 14px 12px; vertical-align: middle; text-align: center;">
                         ${hasPlan ? 
                             `<button class="btn-small" onclick="viewStudentPlan(${plan.id})">查看计划</button>` : 
@@ -1771,12 +1766,12 @@ for (int i = 0; i < n; i++) {
                 document.getElementById('userName').textContent = userInfo.username;
                 
                 // 只对管理员显示Wiki按钮
-                if (userInfo.admin) {
+                if (userInfo.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 }
                 
                 // 检查用户角色，控制消课系统的显示
-                if (userInfo.role === 'teacher' || userInfo.admin) {
+                if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'none';
@@ -1786,7 +1781,7 @@ for (int i = 0; i < n; i++) {
                 loadStudyPlan();
                 
                 // 教师和管理员加载学生列表
-                if (userInfo.role === 'teacher' || userInfo.admin) {
+                if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
                     loadStudents();
                 }
             } else {
@@ -2711,11 +2706,9 @@ int main() {
                         const formData = new FormData();
                         formData.append('file', file);
                         
-                        const response = await fetch('http://localhost:5000/api/notes/upload', {
+                        const response = await gesp_fetch('http://localhost:5000/api/notes/upload', {
                             method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${gesp_getToken()}`
-                            },
+                            headers: {}, // 移除Content-Type，让浏览器自动设置
                             body: formData
                         });
                         
@@ -2802,12 +2795,8 @@ int main() {
         // 保存笔记到服务器
         async function saveNoteToServer(noteData) {
             try {
-                const response = await fetch('http://localhost:5000/api/notes', {
+                const response = await gesp_fetch('http://localhost:5000/api/notes', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    },
                     body: JSON.stringify(noteData)
                 });
                 
@@ -2834,11 +2823,7 @@ int main() {
         // 从服务器获取所有笔记
         async function loadNotes() {
             try {
-                const response = await fetch('http://localhost:5000/api/notes', {
-                    headers: {
-                        'Authorization': `Bearer ${gesp_getToken()}`
-                    }
-                });
+                const response = await gesp_fetch('http://localhost:5000/api/notes');
                 
                 if (response.ok) {
                     notes = await response.json();
@@ -3613,14 +3598,14 @@ int main() {
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role === 'teacher' || user.admin) {
+                if (user.role === 'teacher' || user.role === 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 }
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';
@@ -3640,12 +3625,66 @@ int main() {
             }
         }
         
-        // 退出登录
-        function gesp_logout() {
-            sessionStorage.removeItem('access_token');
-            sessionStorage.removeItem('user');
-            gesp_checkLoginStatus();
-            window.location.href = '../index.html';
+        // 处理API请求
+        async function gesp_fetch(url, options = {}) {
+            const token = gesp_getToken();
+            
+            // 如果没有token，直接返回null，避免无效请求
+            if (!token) {
+                return null;
+            }
+            
+            // 设置默认选项
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            // 合并选项
+            const fetchOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+            
+            try {
+                const response = await fetch(url, fetchOptions);
+                
+                // 处理401错误
+                if (response.status === 401) {
+                    // 获取当前用户信息
+                    const userStr = sessionStorage.getItem('user');
+                    let username = '用户';
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        username = user.nickname || user.username || '用户';
+                    }
+                    
+                    // 显示退出提示
+                    gesp_showLogoutNotification(`${username}已退出`);
+                    
+                    // 清除存储的登录信息
+                    sessionStorage.removeItem('access_token');
+                    sessionStorage.removeItem('user');
+                    
+                    // 延迟重定向，让用户有时间看到通知
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 1000);
+                    return null;
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API请求失败:', error);
+                alert('网络错误，请稍后重试');
+                return null;
+            }
         }
         
         // 显示退出登录通知

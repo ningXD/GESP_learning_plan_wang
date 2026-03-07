@@ -1,10 +1,30 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, url_for
 import os
+import logging
+import logging.config
 from dotenv import load_dotenv
 from extensions import db, jwt, cors
+from flask_migrate import Migrate
 
 # 加载环境变量
 load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
+
+# 确保logs目录存在
+logs_dir = 'D:\\paitou\\Trae\\studyPlan_log'
+if not os.path.exists(logs_dir):
+    os.makedirs(logs_dir)
+
+# 配置日志
+log_file = os.path.join(logs_dir, 'app.log')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger('app')
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
@@ -24,6 +44,9 @@ db.init_app(app)
 jwt.init_app(app)
 cors.init_app(app, origins=['*'])
 
+# 初始化迁移
+migrate = Migrate(app, db)
+
 # JWT配置
 @app.route('/api/test-token')
 def test_token():
@@ -31,13 +54,20 @@ def test_token():
     token = create_access_token(identity=1)
     return jsonify({'token': token})
 
+# 根路由显示首页
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
 # 错误处理
 @app.errorhandler(404)
 def not_found_error(error):
+    logger.error(f"404 Error: {error}")
     return {'error': 'Resource not found'}, 404
 
 @app.errorhandler(500)
 def internal_error(error):
+    logger.error(f"500 Error: {error}")
     db.session.rollback()
     return {'error': 'Internal server error'}, 500
 
@@ -57,11 +87,13 @@ app.register_blueprint(study_plan_bp)
 
 if __name__ == '__main__':
     try:
+        logger.info("Starting server initialization...")
         # 创建数据库表
         with app.app_context():
             from models.models import User, Note, Student, ClassRecord, CourseRecord, StudyPlan, StudyPlanWeek
             
             # 首先创建所有表
+            logger.info("Creating database tables...")
             db.create_all()
             
             # 检查是否已存在demo账号
@@ -74,8 +106,7 @@ if __name__ == '__main__':
                 demo_user = User(
                     username='demo',
                     password=hashed_password,
-                    role='admin',
-                    admin=True
+                    role='admin'
                 )
                 db.session.add(demo_user)
                 
@@ -86,7 +117,7 @@ if __name__ == '__main__':
                     password=teacher_hashed_password,
                     nickname='测试教师',
                     role='teacher',
-                    admin=False
+
                 )
                 db.session.add(teacher_user)
                 
@@ -100,23 +131,19 @@ if __name__ == '__main__':
                     username='student_test',
                     password=student_hashed_password,
                     nickname='测试学生',
-                    role='student',
-                    admin=False,
-                    age=16,
-                    gender='男',
-                    grade='高二',
-                    subject='编程竞赛'
+                    role='student'
                 )
                 db.session.add(student_user)
                 
                 db.session.commit()
-                print("Demo account created successfully")
-                print("Teacher test account created successfully")
-                print("Student test account created successfully")
+                logger.info("Demo account created successfully")
+                logger.info("Teacher test account created successfully")
+                logger.info("Student test account created successfully")
             else:
-                print("Database already initialized")
+                logger.info("Database already initialized")
+        logger.info("Server starting on http://127.0.0.1:5000")
         app.run(debug=True)
     except Exception as e:
-        print(f"Error starting server: {e}")
+        logger.error(f"Error starting server: {e}")
         import traceback
         traceback.print_exc()

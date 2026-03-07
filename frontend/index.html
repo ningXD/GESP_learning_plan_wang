@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>编程特攻队 - 竞赛考试必胜系统</title>
+    <title>竞赛特攻队 - 竞赛考试必胜系统</title>
     <style>
         * {
             margin: 0;
@@ -333,7 +333,7 @@
         <div class="navbar-container">
             <a href="index.html" class="logo">
                 <span>💻</span>
-                编程特攻队 - 竞赛考试必胜系统
+                竞赛特攻队 - 竞赛考试必胜系统
             </a>
             <div class="nav-links">
                 <a href="index.html" class="nav-link active">首页</a>
@@ -361,7 +361,7 @@
     <!-- 首页横幅 -->
     <section class="hero-section">
         <div class="hero-container">
-            <h1 class="hero-title">编程特攻队 - 竞赛考试必胜系统</h1>
+            <h1 class="hero-title">竞赛特攻队 - 竞赛考试必胜系统</h1>
             <p class="hero-subtitle">专为编程和AI竞赛学习者设计的在线学习平台，支持多种编程语言，助力您轻松通过各类编程考试</p>
             <div class="hero-buttons">
                 <!-- 按钮将在后期设计中添加 -->
@@ -398,7 +398,7 @@
         <div class="footer-container">
             <div class="footer-section">
                 <h3>关于我们</h3>
-                <p>编程特攻队 - 竞赛考试必胜系统是专为编程和AI竞赛学习者设计的在线学习平台，支持C++、Python、Go、Scratch等多种编程语言，旨在帮助学生轻松通过各类编程考试。</p>
+                <p>竞赛特攻队 - 竞赛考试必胜系统是专为编程和AI竞赛学习者设计的在线学习平台，支持C++、Python、Go、Scratch等多种编程语言，旨在帮助学生轻松通过各类编程考试。</p>
             </div>
             <div class="footer-section">
                 <h3>快速链接</h3>
@@ -414,7 +414,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 编程特攻队 - 竞赛考试必胜系统. 保留所有权利.</p>
+            <p>&copy; 2026 竞赛特攻队 - 竞赛考试必胜系统. 保留所有权利.</p>
         </div>
     </footer>
     
@@ -436,14 +436,14 @@
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher' && !user.admin) {
+                if (user.role !== 'teacher' && user.role !== 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';
@@ -455,7 +455,7 @@
                 document.getElementById('userName').textContent = '用户';
                 document.getElementById('userAvatar').textContent = 'U';
             } else {
-                // 未登录状态
+                // 未登录状态，显示登录按钮
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('userSection').style.display = 'none';
                 document.getElementById('courseSystemLink').style.display = 'none';
