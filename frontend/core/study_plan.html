@@ -1553,21 +1553,60 @@ for (int i = 0; i < n; i++) {
             return true;
         }
         
-        // 检查登录并提示
+        // 检查登录并提示（不自动跳转）
         function gesp_checkLoginAndPrompt() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再使用此功能');
-                window.location.href = '../auth/login.html';
                 return false;
             }
             return true;
         }
         
+        // 检查登录状态并更新导航栏
+        function gesp_checkLoginStatus() {
+            const userStr = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('access_token');
+            
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                // 显示用户信息
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                
+                // 检查用户角色，控制消课系统的显示
+                if (user.role !== 'teacher' && user.role !== 'admin') {
+                    document.getElementById('courseSystemLink').style.display = 'none';
+                } else {
+                    document.getElementById('courseSystemLink').style.display = 'block';
+                }
+                
+                // 只显示Wiki链接给管理员用户
+                if (user.role === 'admin') {
+                    document.getElementById('wikiLink').style.display = 'block';
+                } else {
+                    document.getElementById('wikiLink').style.display = 'none';
+                }
+            } else if (token) {
+                // 有token但没有user对象，保持登录状态
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('userName').textContent = '用户';
+                document.getElementById('userAvatar').textContent = 'U';
+            } else {
+                // 未登录状态
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('courseSystemLink').style.display = 'none';
+                document.getElementById('wikiLink').style.display = 'none';
+            }
+        }
+        
         // 页面加载时检查登录状态
         window.addEventListener('load', function() {
-            if (!gesp_checkLogin()) {
-                window.location.href = '../auth/login.html';
-            }
+            // 立即更新导航栏状态，避免登录状态闪烁
+            gesp_checkLoginStatus();
         });
         
         // 获取用户信息
@@ -1630,8 +1669,13 @@ for (int i = 0; i < n; i++) {
         
         // 教师端：加载学生列表
         async function loadStudents() {
+            if (!gesp_checkLoginAndPrompt()) {
+                return;
+            }
+            
             const userInfo = gesp_getUserInfo();
             if (userInfo.role !== 'teacher' && userInfo.role !== 'admin') {
+                alert('只有教师和管理员可以查看学生列表');
                 return;
             }
             
@@ -1737,6 +1781,10 @@ for (int i = 0; i < n; i++) {
         
         // 查看学生学习计划
         async function viewStudentPlan(planId) {
+            if (!gesp_checkLoginAndPrompt()) {
+                return;
+            }
+            
             const token = gesp_getToken();
             
             try {
@@ -1758,25 +1806,10 @@ for (int i = 0; i < n; i++) {
         // 页面加载完成后执行
         window.onload = function() {
             // 检查登录状态并更新导航栏
+            gesp_checkLoginStatus();
+            
             const userInfo = gesp_getUserInfo();
             if (userInfo) {
-                document.getElementById('authSection').style.display = 'none';
-                document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userAvatar').textContent = userInfo.username.charAt(0);
-                document.getElementById('userName').textContent = userInfo.username;
-                
-                // 只对管理员显示Wiki按钮
-                if (userInfo.role === 'admin') {
-                    document.getElementById('wikiLink').style.display = 'block';
-                }
-                
-                // 检查用户角色，控制消课系统的显示
-                if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
-                    document.getElementById('courseSystemLink').style.display = 'block';
-                } else {
-                    document.getElementById('courseSystemLink').style.display = 'none';
-                }
-                
                 // 加载学习计划
                 loadStudyPlan();
                 
@@ -1784,10 +1817,6 @@ for (int i = 0; i < n; i++) {
                 if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
                     loadStudents();
                 }
-            } else {
-                document.getElementById('authSection').style.display = 'block';
-                document.getElementById('userSection').style.display = 'none';
-                document.getElementById('courseSystemLink').style.display = 'none';
             }
         };
         

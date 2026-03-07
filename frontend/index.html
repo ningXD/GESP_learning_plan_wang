@@ -503,8 +503,37 @@
             }, 1000);
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', gesp_checkLoginStatus);
+        // 为需要登录的链接添加点击事件
+        function gesp_addLoginCheckListeners() {
+            const protectedLinks = [
+                { selector: 'a[href="core/study_plan.html"]', name: '学习计划表' },
+                { selector: 'a[href="programming/online_programming.html"]', name: '线上编程' }
+            ];
+            
+            protectedLinks.forEach(linkInfo => {
+                const links = document.querySelectorAll(linkInfo.selector);
+                links.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        const userStr = sessionStorage.getItem('user');
+                        const token = sessionStorage.getItem('access_token');
+                        
+                        if (!userStr && !token) {
+                            e.preventDefault();
+                            gesp_showLogoutNotification(`需要登录才能使用${linkInfo.name}`);
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1000);
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 页面加载时检查登录状态并添加事件监听器
+        window.addEventListener('load', function() {
+            gesp_checkLoginStatus();
+            gesp_addLoginCheckListeners();
+        });
     </script>
 </body>
 </html>

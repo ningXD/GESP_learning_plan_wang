@@ -1088,7 +1088,15 @@
         function gesp_checkLoginAndRedirect() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
-                window.location.href = '../auth/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // 检查登录并提示（不自动跳转）
+        function gesp_checkLoginAndPrompt() {
+            if (!gesp_checkLogin()) {
+                alert('请先登录后再使用此功能');
                 return false;
             }
             return true;
@@ -1122,10 +1130,13 @@
         
         // 页面加载时检查登录状态
         window.addEventListener('load', function() {
-            gesp_checkLoginAndRedirect();
             gesp_checkLoginStatus();
             gesp_checkAdminPermission();
-            gesp_initData();
+            
+            // 只有登录后才初始化数据
+            if (gesp_checkLogin()) {
+                gesp_initData();
+            }
             
             // 初始化搜索框事件
             const searchInput = document.getElementById('searchInput');
