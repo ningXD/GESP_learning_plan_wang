@@ -1580,7 +1580,7 @@ for (int i = 0; i < n; i++) {
             try {
                 const response = await gesp_fetch('http://localhost:5000/api/study-plans');
                 
-                if (response.ok) {
+                if (response && response.ok) {
                     const plans = await response.json();
                     if (plans.length > 0) {
                         const plan = plans[0];
@@ -1634,7 +1634,7 @@ for (int i = 0; i < n; i++) {
                 // 加载学生列表
                 const studentsResponse = await gesp_fetch('http://localhost:5000/api/students');
                 
-                if (studentsResponse.ok) {
+                if (studentsResponse && studentsResponse.ok) {
                     let students = await studentsResponse.json();
                     // 处理不同的返回格式
                     if (students.success !== undefined) {
@@ -1644,7 +1644,7 @@ for (int i = 0; i < n; i++) {
                     // 加载所有学习计划
                     const plansResponse = await gesp_fetch('http://localhost:5000/api/study-plans');
                     
-                    if (plansResponse.ok) {
+                    if (plansResponse && plansResponse.ok) {
                         const plans = await plansResponse.json();
                         displayStudentTable(students, plans);
                     }

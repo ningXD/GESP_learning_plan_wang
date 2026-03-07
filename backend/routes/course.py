@@ -103,7 +103,7 @@ def get_students(current_user):
                 user_dict = user.to_dict()
                 # 添加必要的字段
                 user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = user.subject
+                user_dict['project'] = ''
                 user_dict['teacher'] = None  # User表中的学生可能没有关联教师
                 user_student_dicts.append(user_dict)
             
@@ -144,7 +144,7 @@ def get_students(current_user):
                 user_dict = user.to_dict()
                 # 添加必要的字段
                 user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = user.subject
+                user_dict['project'] = ''
                 user_dict['teacher'] = None  # User表中的学生可能没有关联教师
                 user_student_dicts.append(user_dict)
             
@@ -185,7 +185,7 @@ def get_students(current_user):
                 user_dict = user.to_dict()
                 # 添加必要的字段
                 user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = user.subject
+                user_dict['project'] = ''
                 user_dict['teacher'] = None  # User表中的学生可能没有关联教师
                 user_student_dicts.append(user_dict)
             

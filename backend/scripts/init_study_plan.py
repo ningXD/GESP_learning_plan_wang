@@ -21,12 +21,7 @@ def init_study_plan_template():
                 username='wanglexi',
                 password=hashed_password,
                 nickname='王乐汐',
-                role='student',
-                admin=False,
-                age=15,
-                gender='女',
-                grade='高一',
-                subject='竞赛'
+                role='student'
             )
             db.session.add(student)
             db.session.commit()
