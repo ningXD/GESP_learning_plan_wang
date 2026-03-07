@@ -1557,11 +1557,18 @@ for (int i = 0; i < n; i++) {
         function gesp_checkLoginAndPrompt() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再使用此功能');
-                window.location.href = '../index.html';
+                window.location.href = '../auth/login.html';
                 return false;
             }
             return true;
         }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', function() {
+            if (!gesp_checkLogin()) {
+                window.location.href = '../auth/login.html';
+            }
+        });
         
         // 获取用户信息
         function gesp_getUserInfo() {

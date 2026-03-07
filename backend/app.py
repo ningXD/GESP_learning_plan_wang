@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, url_for
 import os
 import logging
 import logging.config
@@ -53,6 +53,11 @@ def test_token():
     from flask_jwt_extended import create_access_token
     token = create_access_token(identity=1)
     return jsonify({'token': token})
+
+# 根路由显示首页
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 # 错误处理
 @app.errorhandler(404)

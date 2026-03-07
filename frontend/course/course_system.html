@@ -1088,7 +1088,7 @@
         function gesp_checkLoginAndRedirect() {
             if (!gesp_checkLogin()) {
                 alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
+                window.location.href = '../auth/login.html';
                 return false;
             }
             return true;
