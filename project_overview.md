@@ -1,5 +1,165 @@
 # 竞赛特攻队项目概述
 
+## 服务器启动指南
+
+### 基本启动步骤
+
+#### 启动后端服务器
+1. 打开命令提示符或 PowerShell
+2. 导航到项目根目录：
+   ```powershell
+   cd "d:\paitou\Trae\GESPC++_studyPlan"
+   ```
+3. 激活虚拟环境：
+   ```powershell
+   .venv\Scripts\Activate.ps1
+   ```
+4. 安装依赖（包括 pypinyin 库和 PostgreSQL 驱动）：
+   ```powershell
+   pip install -r backend\requirements.txt
+   ```
+5. 确保 PostgreSQL 数据库服务已启动
+6. 初始化数据库（首次运行时）：
+   ```powershell
+   python backend\init_postgres_db.py
+   ```
+7. 运行以下命令启动服务器：
+   ```powershell
+   python backend\start_server.py
+   ```
+8. 服务器将在 `http://127.0.0.1:5000` 上运行
+
+#### 访问前端页面
+1. 打开浏览器
+2. 导航到前端首页：
+   ```
+   d:\paitou\Trae\GESPC++_studyPlan\frontend\index.html
+   ```
+3. 使用以下演示账号登录：
+   - 用户名：`demo`
+   - 密码：`123456`
+
+### 在后台运行服务器
+
+#### 使用 PowerShell 在后台启动
+1. 打开 PowerShell 窗口
+2. 运行以下命令：
+   ```powershell
+   Start-Process python -ArgumentList "start_server.py" -WorkingDirectory "d:\paitou\Trae\GESPC++_studyPlan\backend" -NoNewWindow
+   ```
+
+#### 使用 cmd 命令在后台启动
+1. 打开命令提示符
+2. 运行以下命令：
+   ```cmd
+   cd /d "d:\paitou\Trae\GESPC++_studyPlan\backend"
+   start /B python start_server.py
+   ```
+
+### 查看服务器状态
+
+#### 查看 Python 进程
+```powershell
+Get-Process python
+```
+
+#### 查看端口占用
+```powershell
+netstat -ano | findstr :5000
+```
+
+### 停止服务器
+
+#### 在当前窗口中停止
+1. 确保运行服务器的 PowerShell 或命令提示符窗口是活动窗口
+2. 按下 `Ctrl+C` 组合键
+3. 服务器会停止运行并返回到命令提示符
+
+#### 通过进程 ID 停止
+1. 打开一个新的 PowerShell 窗口
+2. 运行以下命令获取 Python 进程 ID：
+   ```powershell
+   Get-Process python
+   ```
+3. 找到与服务器相关的进程 ID
+4. 运行以下命令停止进程：
+   ```powershell
+   Stop-Process -Id <进程ID>
+   ```
+
+#### 通过端口停止
+1. 打开一个新的 PowerShell 窗口
+2. 运行以下命令获取端口 5000 对应的进程 ID：
+   ```powershell
+   netstat -ano | findstr :5000
+   ```
+3. 运行以下命令停止进程：
+   ```powershell
+   taskkill /F /PID <进程ID>
+   ```
+
+### 数据库配置
+
+#### PostgreSQL 配置（当前使用）
+- 配置文件：`backend\config\.env`
+- 配置项：
+  ```
+  DATABASE_URL=postgresql://gesp_user:123456@localhost/gesp_study_plan
+  ```
+
+#### SQLite 配置（备用）
+- 配置文件：`backend\config\.env`
+- 配置项：
+  ```
+  # DATABASE_URL=sqlite:///gesp_study_plan.db
+  ```
+
+#### MySQL 配置（备用）
+- 配置文件：`backend\config\.env`
+- 配置项：
+  ```
+  # DATABASE_URL=mysql+pymysql://root:password@localhost/gesp_study_plan
+  ```
+
+### 常见问题和解决方案
+
+#### 服务器无法启动
+- **原因**：可能是端口被占用或依赖项缺失
+- **解决方案**：
+  1. 检查端口 5000 是否被占用
+  2. 确保已安装所有依赖项：
+     ```powershell
+     python -m pip install -r backend\requirements.txt
+     ```
+
+#### 数据库连接错误
+- **原因**：可能是数据库配置错误或数据库未初始化
+- **解决方案**：
+  1. 检查 `backend\config\.env` 文件中的数据库配置
+  2. 确保 PostgreSQL 数据库服务已启动
+  3. 运行数据库初始化脚本：
+     ```powershell
+     python backend\init_postgres_db.py
+     ```
+
+#### 前端无法连接到后端
+- **原因**：可能是后端服务器未运行或 CORS 配置错误
+- **解决方案**：
+  1. 确保后端服务器正在运行
+  2. 检查浏览器控制台是否有 CORS 错误
+
+#### 数据库迁移
+- **原因**：当修改数据库模型时需要进行迁移
+- **解决方案**：
+  1. 生成迁移文件：
+     ```powershell
+     python -m alembic revision --autogenerate -m "迁移描述"
+     ```
+  2. 执行迁移：
+     ```powershell
+     python -m alembic upgrade head
+     ```
+
 ## 项目简介
 这是一个面向 GESPC++ 竞赛的学习计划平台，包含前端和后端两部分，提供学习计划管理、在线编程、消课系统等功能。
 
@@ -48,16 +208,15 @@ backend/
 │   ├── study_plan.py      # 学习计划API
 │   └── users.py           # 用户相关API
 ├── scripts/
-│   ├── add_student_users.py      # 添加学生用户
-│   ├── check_db.py               # 数据库检查
-│   ├── check_users.py            # 用户检查
-│   ├── create_test_accounts.py   # 创建测试账号
-│   ├── generate_phone_numbers.py # 生成电话号码
-│   ├── generate_test_data.py     # 生成测试数据
-│   ├── init_db.py                # 数据库初始化
-│   ├── init_study_plan.py        # 学习计划初始化
-│   ├── sync_user_tables.py       # 同步用户表
-│   └── update_db_schema.py       # 更新数据库 schema
+│   ├── add_students_from_users.py  # 从users表添加学生到students表
+│   ├── add_teachers_from_users.py  # 从users表添加教师到teachers表
+│   ├── check_phone_format.py       # 检查手机号格式
+│   ├── check_users.py              # 用户检查
+│   ├── clear_teacher_subjects.py   # 清空教师科目
+│   ├── create_test_accounts.py     # 创建测试账号
+│   ├── generate_test_data.py       # 生成测试数据
+│   ├── generate_valid_phones.py    # 生成有效手机号
+│   └── init_study_plan.py          # 学习计划初始化
 ├── tests/
 │   ├── test_api.py           # API测试
 │   ├── test_compile.py       # 编译测试
@@ -65,14 +224,10 @@ backend/
 │   └── test_python_api.py    # Python API测试
 ├── alembic.ini              # Alembic配置文件
 ├── app.py                   # 应用主文件
-├── check_db_tables.py       # 数据库表检查脚本
-├── check_routes.py          # 路由检查脚本
 ├── decorators.py            # 装饰器
 ├── extensions.py            # 扩展初始化
-├── init_postgres_db.py      # PostgreSQL数据库初始化
 ├── requirements.txt         # 依赖项
-├── start_server.py          # 启动脚本
-└── test_db_connection.py    # 数据库连接测试
+└── start_server.py          # 启动脚本
 ```
 
 ## 技术栈
@@ -141,26 +296,6 @@ backend/
 ### 管理员账号
 - 用户名：demo
 - 密码：123456
-
-## 开发环境设置
-
-1. **前端**：直接打开 HTML 文件即可
-2. **后端**：
-   - 安装依赖：`pip install -r requirements.txt`
-   - 配置数据库：确保 PostgreSQL 数据库运行，在 `config/.env` 中设置数据库连接信息
-   - 初始化数据库：`python init_postgres_db.py`
-   - 启动服务：`python start_server.py`
-   - 访问地址：`http://localhost:5000`
-
-## 常见问题
-
-1. **数据库初始化**：运行 `python init_postgres_db.py`
-2. **创建测试账号**：运行 `python scripts/create_test_accounts.py`
-3. **API 文档**：查看 routes 目录下的文件
-4. **C++编译功能**：确保系统安装了 g++ 编译器，否则编译功能将不可用
-5. **编译超时**：系统设置了 10 秒编译超时和 5 秒运行超时，超时的代码会被自动终止
-6. **错误处理**：编译错误会在前端显示，帮助用户调试代码
-7. **数据库迁移**：使用 Alembic 进行数据库结构变更
 
 ## 项目扩展
 
