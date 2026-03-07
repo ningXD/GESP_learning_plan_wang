@@ -1481,7 +1481,7 @@
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('teacherSelectGroup').style.display = currentUserType === 'student' ? 'block' : 'none';
                     if (currentUserType === 'student') {
                         gesp_loadTeachers();
@@ -1634,7 +1634,8 @@
                     
                     // 检查用户权限，管理员显示修改归属按钮
                     const userStr = sessionStorage.getItem('user');
-                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    const user = userStr ? JSON.parse(userStr) : null;
+                    const isAdmin = user ? user.role === 'admin' : false;
                     if (isAdmin) {
                         document.getElementById('editTeacherBtn').style.display = 'block';
                     } else {
@@ -2445,7 +2446,7 @@
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (!user.admin) {
+                if (user.role !== 'admin') {
                     // 非管理员账号，隐藏管理员标签页
                     const adminTab = document.getElementById('adminTab');
                     if (adminTab) {

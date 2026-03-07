@@ -883,7 +883,7 @@
             const userStr = sessionStorage.getItem('user');
             if (userStr) {
                 const user = JSON.parse(userStr);
-                if (!user.admin) {
+                if (user.role !== 'admin') {
                     // 非管理员账号，重定向到学习计划页面
                     window.location.href = 'study_plan.html';
                 }
@@ -921,7 +921,7 @@
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher' && !user.admin) {
+                if (user.role !== 'teacher' && user.role !== 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';

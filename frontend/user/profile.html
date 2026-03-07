@@ -428,14 +428,14 @@
                 document.getElementById('userAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role !== 'teacher' && !user.admin) {
+                if (user.role !== 'teacher' && user.role !== 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 }
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';

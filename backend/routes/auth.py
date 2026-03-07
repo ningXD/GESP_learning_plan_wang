@@ -52,8 +52,7 @@ def register():
         password=hashed_password,
         email=data.get('email'),
         phone=data.get('phone'),
-        role='admin' if data['username'] == 'demo' else data.get('role', 'student'),
-        admin=data['username'] == 'demo'  # demo用户默认为管理员
+        role='admin' if data['username'] == 'demo' else data.get('role', 'student')
     )
     
     db.session.add(user)

@@ -13,7 +13,7 @@ course_bp = Blueprint('course', __name__)
 @token_required
 def get_students(current_user):
     # 只返回当前教师的学员，管理员可以看到所有学员
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     # 获取分页参数
@@ -28,8 +28,8 @@ def get_students(current_user):
     keyword = request.args.get('keyword', '')
     
     # 构建查询
-    if current_user.admin:
-        # 管理员可以看到所有学生（Student表中的学生）
+    if current_user.role == 'admin':
+        # 管理员可以看到所有学生（包括Student表和User表中的学生角色用户）
         query = Student.query
     else:
         # 普通教师只能看到自己的学生
@@ -93,10 +93,30 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
+        # 对于管理员，还需要添加User表中的学生角色用户
+        if current_user.role == 'admin':
+            # 查询User表中的学生角色用户
+            user_students = User.query.filter_by(role='student').all()
+            # 转换为字典格式
+            user_student_dicts = []
+            for user in user_students:
+                user_dict = user.to_dict()
+                # 添加必要的字段
+                user_dict['name'] = user.nickname or user.username
+                user_dict['project'] = user.subject
+                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
+                user_student_dicts.append(user_dict)
+            
+            # 合并Student表和User表中的学生
+            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
+            total = len(students) + len(user_students)
+        else:
+            all_students = [student.to_dict() for student in paginated_students]
+        
         # 构建响应
         return jsonify({
             'success': True, 
-            'data': [student.to_dict() for student in paginated_students],
+            'data': all_students,
             'total': total,
             'page': page,
             'per_page': per_page,
@@ -114,10 +134,30 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
+        # 对于管理员，还需要添加User表中的学生角色用户
+        if current_user.role == 'admin':
+            # 查询User表中的学生角色用户
+            user_students = User.query.filter_by(role='student').all()
+            # 转换为字典格式
+            user_student_dicts = []
+            for user in user_students:
+                user_dict = user.to_dict()
+                # 添加必要的字段
+                user_dict['name'] = user.nickname or user.username
+                user_dict['project'] = user.subject
+                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
+                user_student_dicts.append(user_dict)
+            
+            # 合并Student表和User表中的学生
+            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
+            total = len(students) + len(user_students)
+        else:
+            all_students = [student.to_dict() for student in paginated_students]
+        
         # 构建响应
         return jsonify({
             'success': True, 
-            'data': [student.to_dict() for student in paginated_students],
+            'data': all_students,
             'total': total,
             'page': page,
             'per_page': per_page,
@@ -135,10 +175,30 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
+        # 对于管理员，还需要添加User表中的学生角色用户
+        if current_user.role == 'admin':
+            # 查询User表中的学生角色用户
+            user_students = User.query.filter_by(role='student').all()
+            # 转换为字典格式
+            user_student_dicts = []
+            for user in user_students:
+                user_dict = user.to_dict()
+                # 添加必要的字段
+                user_dict['name'] = user.nickname or user.username
+                user_dict['project'] = user.subject
+                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
+                user_student_dicts.append(user_dict)
+            
+            # 合并Student表和User表中的学生
+            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
+            total = len(students) + len(user_students)
+        else:
+            all_students = [student.to_dict() for student in paginated_students]
+        
         # 构建响应
         return jsonify({
             'success': True, 
-            'data': [student.to_dict() for student in paginated_students],
+            'data': all_students,
             'total': total,
             'page': page,
             'per_page': per_page,
@@ -151,9 +211,29 @@ def get_students(current_user):
     students = pagination.items
     total = pagination.total
     
+    # 对于管理员，还需要添加User表中的学生角色用户
+    if current_user.role == 'admin':
+        # 查询User表中的学生角色用户
+        user_students = User.query.filter_by(role='student').all()
+        # 转换为字典格式
+        user_student_dicts = []
+        for user in user_students:
+            user_dict = user.to_dict()
+            # 添加必要的字段
+            user_dict['name'] = user.nickname or user.username
+            user_dict['project'] = user.subject
+            user_dict['teacher'] = None  # User表中的学生可能没有关联教师
+            user_student_dicts.append(user_dict)
+        
+        # 合并Student表和User表中的学生
+        all_students = [student.to_dict() for student in students] + user_student_dicts
+        total = len(students) + len(user_students)
+    else:
+        all_students = [student.to_dict() for student in students]
+    
     return jsonify({
         'success': True, 
-        'data': [student.to_dict() for student in students],
+        'data': all_students,
         'total': total,
         'page': page,
         'per_page': per_page,
@@ -164,10 +244,10 @@ def get_students(current_user):
 @token_required
 def get_student(current_user, student_id):
     # 获取单个学员信息
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以查看所有学生
         # 先检查是否是Student表中的学生
         student = Student.query.get(student_id)
@@ -188,7 +268,7 @@ def get_student(current_user, student_id):
 @course_bp.route('/api/students', methods=['POST'])
 @token_required
 def add_student(current_user):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     data = request.get_json()
@@ -240,10 +320,10 @@ def add_student(current_user):
 @course_bp.route('/api/students/<int:student_id>', methods=['PUT'])
 @token_required
 def update_student(current_user, student_id):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以更新所有学生
         student = Student.query.get(student_id)
         if not student:
@@ -303,10 +383,10 @@ def update_student(current_user, student_id):
 @course_bp.route('/api/students/<int:student_id>', methods=['DELETE'])
 @token_required
 def delete_student(current_user, student_id):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以删除所有学生
         student = Student.query.get(student_id)
         if not student:
@@ -344,10 +424,10 @@ def delete_student(current_user, student_id):
 @course_bp.route('/api/class-records', methods=['GET'])
 @token_required
 def get_class_records(current_user):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以看到所有课程记录
         class_records = ClassRecord.query.all()
     else:
@@ -359,7 +439,7 @@ def get_class_records(current_user):
 @course_bp.route('/api/class-records', methods=['POST'])
 @token_required
 def add_class_record(current_user):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     data = request.get_json()
@@ -368,7 +448,7 @@ def add_class_record(current_user):
     
     try:
         # 验证学员是否存在（管理员可以为任何学生添加课程记录）
-        if current_user.admin:
+        if current_user.role == 'admin':
             # 管理员可以为User表中的学生或Student表中的学生添加课程记录
             student = Student.query.get(data.get('student_id'))
             if not student:
@@ -423,10 +503,10 @@ def add_class_record(current_user):
 @course_bp.route('/api/class-records/<int:class_id>', methods=['PUT'])
 @token_required
 def update_class_record(current_user, class_id):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以更新所有课程记录
         class_record = ClassRecord.query.get(class_id)
     else:
@@ -461,10 +541,10 @@ def update_class_record(current_user, class_id):
 @course_bp.route('/api/class-records/<int:class_id>', methods=['DELETE'])
 @token_required
 def delete_class_record(current_user, class_id):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以删除所有课程记录
         class_record = ClassRecord.query.get(class_id)
     else:
@@ -491,12 +571,12 @@ def delete_class_record(current_user, class_id):
 @course_bp.route('/api/course-records', methods=['GET'])
 @token_required
 def get_course_records(current_user):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     # 获取消课记录
     course_records = []
-    if current_user.admin:
+    if current_user.role == 'admin':
         # 管理员可以看到所有消课记录
         course_records = CourseRecord.query.all()
     else:
@@ -511,7 +591,7 @@ def get_course_records(current_user):
 @course_bp.route('/api/course-records/<int:record_id>', methods=['PUT'])
 @token_required
 def update_course_record(current_user, record_id):
-    if current_user.role != 'teacher' and not current_user.admin:
+    if current_user.role != 'teacher' and current_user.role != 'admin':
         return jsonify({'success': False, 'message': '权限不足'}), 403
     
     course_record = CourseRecord.query.get(record_id)

@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import os
 from dotenv import load_dotenv
 from extensions import db, jwt, cors
+from flask_migrate import Migrate
 
 # 加载环境变量
 load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
@@ -23,6 +24,9 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 db.init_app(app)
 jwt.init_app(app)
 cors.init_app(app, origins=['*'])
+
+# 初始化迁移
+migrate = Migrate(app, db)
 
 # JWT配置
 @app.route('/api/test-token')
@@ -74,8 +78,7 @@ if __name__ == '__main__':
                 demo_user = User(
                     username='demo',
                     password=hashed_password,
-                    role='admin',
-                    admin=True
+                    role='admin'
                 )
                 db.session.add(demo_user)
                 
@@ -86,7 +89,7 @@ if __name__ == '__main__':
                     password=teacher_hashed_password,
                     nickname='测试教师',
                     role='teacher',
-                    admin=False
+
                 )
                 db.session.add(teacher_user)
                 
@@ -100,12 +103,7 @@ if __name__ == '__main__':
                     username='student_test',
                     password=student_hashed_password,
                     nickname='测试学生',
-                    role='student',
-                    admin=False,
-                    age=16,
-                    gender='男',
-                    grade='高二',
-                    subject='竞赛'
+                    role='student'
                 )
                 db.session.add(student_user)
                 

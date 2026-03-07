@@ -1624,7 +1624,7 @@ for (int i = 0; i < n; i++) {
         // 教师端：加载学生列表
         async function loadStudents() {
             const userInfo = gesp_getUserInfo();
-            if (userInfo.role !== 'teacher' && !userInfo.admin) {
+            if (userInfo.role !== 'teacher' && userInfo.role !== 'admin') {
                 return;
             }
             
@@ -1759,12 +1759,12 @@ for (int i = 0; i < n; i++) {
                 document.getElementById('userName').textContent = userInfo.username;
                 
                 // 只对管理员显示Wiki按钮
-                if (userInfo.admin) {
+                if (userInfo.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 }
                 
                 // 检查用户角色，控制消课系统的显示
-                if (userInfo.role === 'teacher' || userInfo.admin) {
+                if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'none';
@@ -1774,7 +1774,7 @@ for (int i = 0; i < n; i++) {
                 loadStudyPlan();
                 
                 // 教师和管理员加载学生列表
-                if (userInfo.role === 'teacher' || userInfo.admin) {
+                if (userInfo.role === 'teacher' || userInfo.role === 'admin') {
                     loadStudents();
                 }
             } else {
@@ -3591,14 +3591,14 @@ int main() {
                 document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
-                if (user.role === 'teacher' || user.admin) {
+                if (user.role === 'teacher' || user.role === 'admin') {
                     document.getElementById('courseSystemLink').style.display = 'block';
                 } else {
                     document.getElementById('courseSystemLink').style.display = 'none';
                 }
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';

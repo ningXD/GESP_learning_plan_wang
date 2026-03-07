@@ -72,10 +72,6 @@ def get_teachers(current_user):
                 ))
             if 'phone' in fields:
                 search_conditions.append(User.phone.like(f'%{keyword}%'))
-            if 'gender' in fields:
-                search_conditions.append(User.gender.like(f'%{keyword}%'))
-            if 'project' in fields or 'subject' in fields:
-                search_conditions.append(User.subject.like(f'%{keyword}%'))
             
             if search_conditions:
                 query = query.filter(db.or_(*search_conditions))
@@ -197,7 +193,7 @@ def search_teachers(current_user):
 def add_teacher(current_user):
     """添加教师用户"""
     # 只有管理员可以添加教师
-    if not current_user.admin:
+    if current_user.role != 'admin':
         return jsonify({'error': '权限不足'}), 403
     
     data = request.get_json()
@@ -220,10 +216,7 @@ def add_teacher(current_user):
             password=hashed_password,
             phone=phone,
             nickname=name,
-            role='teacher',
-            gender=data.get('gender') or '',
-            age=data.get('age'),
-            subject=data.get('teaching_subject') or ''
+            role='teacher'
         )
         db.session.add(new_user)
         db.session.commit()
