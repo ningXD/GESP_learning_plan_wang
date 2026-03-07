@@ -154,49 +154,35 @@
             注册失败，请重试
         </div>
         
-        <form id="studentRegisterForm">
+        <form id="studentRegisterForm" autocomplete="off">
             <div class="form-group">
                 <label for="name">姓名 <span style="color: red;">*</span></label>
-                <input type="text" id="name" placeholder="请输入真实姓名" required>
+                <div id="nameContainer"></div>
             </div>
             
             <div class="form-group">
                 <label for="password">密码 <span style="color: red;">*</span></label>
-                <input type="password" id="password" placeholder="请输入密码" required>
+                <div id="passwordContainer"></div>
             </div>
             
             <div class="form-group">
                 <label for="phone">手机号 <span style="color: red;">*</span></label>
-                <input type="tel" id="phone" placeholder="请输入手机号" required>
+                <div id="phoneContainer"></div>
             </div>
             
             <div class="form-group">
                 <label for="age">年龄 <span style="color: red;">*</span></label>
-                <input type="number" id="age" placeholder="请输入年龄" required min="6" max="18">
+                <div id="ageContainer"></div>
             </div>
             
             <div class="form-group">
                 <label for="email">邮箱（选填）</label>
-                <input type="email" id="email" placeholder="请输入邮箱">
+                <div id="emailContainer"></div>
             </div>
             
             <div class="form-group">
                 <label for="grade">年级（选填）</label>
-                <select id="grade" style="width: 100%; padding: 14px 18px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);">
-                    <option value="">请选择年级</option>
-                    <option value="一年级">一年级</option>
-                    <option value="二年级">二年级</option>
-                    <option value="三年级">三年级</option>
-                    <option value="四年级">四年级</option>
-                    <option value="五年级">五年级</option>
-                    <option value="六年级">六年级</option>
-                    <option value="初一">初一</option>
-                    <option value="初二">初二</option>
-                    <option value="初三">初三</option>
-                    <option value="高一">高一</option>
-                    <option value="高二">高二</option>
-                    <option value="高三">高三</option>
-                </select>
+                <div id="gradeContainer"></div>
             </div>
             
             <button type="submit" class="register-btn">注册</button>
@@ -230,6 +216,7 @@
         async function gesp_handleStudentRegister(e) {
             e.preventDefault();
             
+            // 先获取用户输入的值
             const name = document.getElementById('name').value;
             const password = document.getElementById('password').value;
             const phone = document.getElementById('phone').value;
@@ -280,6 +267,145 @@
                 gesp_showErrorMessage('网络错误，请稍后重试');
             }
         }
+        
+        // 动态创建输入框，防止浏览器自动填充
+        function gesp_createInputFields() {
+            // 创建姓名输入框
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.id = 'name';
+            nameInput.name = 'name_' + Math.random().toString(36).substring(2, 9);
+            nameInput.placeholder = '请输入真实姓名';
+            nameInput.required = true;
+            nameInput.style.width = '100%';
+            nameInput.style.padding = '14px 18px';
+            nameInput.style.border = '1px solid #ddd';
+            nameInput.style.borderRadius = '8px';
+            nameInput.style.fontSize = '1rem';
+            nameInput.style.transition = 'all 0.3s ease';
+            nameInput.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            // 添加事件监听器，在获取焦点时清空输入框
+            nameInput.addEventListener('focus', function() {
+                this.value = '';
+            });
+            document.getElementById('nameContainer').appendChild(nameInput);
+            
+            // 创建密码输入框
+            const passwordInput = document.createElement('input');
+            passwordInput.type = 'password';
+            passwordInput.id = 'password';
+            passwordInput.name = 'password_' + Math.random().toString(36).substring(2, 9);
+            passwordInput.placeholder = '请输入密码';
+            passwordInput.required = true;
+            passwordInput.style.width = '100%';
+            passwordInput.style.padding = '14px 18px';
+            passwordInput.style.border = '1px solid #ddd';
+            passwordInput.style.borderRadius = '8px';
+            passwordInput.style.fontSize = '1rem';
+            passwordInput.style.transition = 'all 0.3s ease';
+            passwordInput.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            // 添加事件监听器，在获取焦点时清空输入框
+            passwordInput.addEventListener('focus', function() {
+                this.value = '';
+            });
+            document.getElementById('passwordContainer').appendChild(passwordInput);
+            
+            // 创建手机号输入框
+            const phoneInput = document.createElement('input');
+            phoneInput.type = 'tel';
+            phoneInput.id = 'phone';
+            phoneInput.name = 'phone_' + Math.random().toString(36).substring(2, 9);
+            phoneInput.placeholder = '请输入手机号';
+            phoneInput.required = true;
+            phoneInput.style.width = '100%';
+            phoneInput.style.padding = '14px 18px';
+            phoneInput.style.border = '1px solid #ddd';
+            phoneInput.style.borderRadius = '8px';
+            phoneInput.style.fontSize = '1rem';
+            phoneInput.style.transition = 'all 0.3s ease';
+            phoneInput.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            // 添加事件监听器，在获取焦点时清空输入框
+            phoneInput.addEventListener('focus', function() {
+                this.value = '';
+            });
+            document.getElementById('phoneContainer').appendChild(phoneInput);
+            
+            // 创建年龄输入框
+            const ageInput = document.createElement('input');
+            ageInput.type = 'number';
+            ageInput.id = 'age';
+            ageInput.name = 'age_' + Math.random().toString(36).substring(2, 9);
+            ageInput.placeholder = '请输入年龄';
+            ageInput.required = true;
+            ageInput.min = 6;
+            ageInput.max = 18;
+            ageInput.style.width = '100%';
+            ageInput.style.padding = '14px 18px';
+            ageInput.style.border = '1px solid #ddd';
+            ageInput.style.borderRadius = '8px';
+            ageInput.style.fontSize = '1rem';
+            ageInput.style.transition = 'all 0.3s ease';
+            ageInput.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            // 添加事件监听器，在获取焦点时清空输入框
+            ageInput.addEventListener('focus', function() {
+                this.value = '';
+            });
+            document.getElementById('ageContainer').appendChild(ageInput);
+            
+            // 创建邮箱输入框
+            const emailInput = document.createElement('input');
+            emailInput.type = 'email';
+            emailInput.id = 'email';
+            emailInput.name = 'email_' + Math.random().toString(36).substring(2, 9);
+            emailInput.placeholder = '请输入邮箱';
+            emailInput.style.width = '100%';
+            emailInput.style.padding = '14px 18px';
+            emailInput.style.border = '1px solid #ddd';
+            emailInput.style.borderRadius = '8px';
+            emailInput.style.fontSize = '1rem';
+            emailInput.style.transition = 'all 0.3s ease';
+            emailInput.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            // 添加事件监听器，在获取焦点时清空输入框
+            emailInput.addEventListener('focus', function() {
+                this.value = '';
+            });
+            document.getElementById('emailContainer').appendChild(emailInput);
+            
+            // 创建年级选择框
+            const gradeSelect = document.createElement('select');
+            gradeSelect.id = 'grade';
+            gradeSelect.name = 'grade_' + Math.random().toString(36).substring(2, 9);
+            gradeSelect.style.width = '100%';
+            gradeSelect.style.padding = '14px 18px';
+            gradeSelect.style.border = '1px solid #ddd';
+            gradeSelect.style.borderRadius = '8px';
+            gradeSelect.style.fontSize = '1rem';
+            gradeSelect.style.transition = 'all 0.3s ease';
+            gradeSelect.style.boxShadow = 'inset 0 1px 3px rgba(0, 0, 0, 0.1)';
+            
+            const grades = ['', '一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '初一', '初二', '初三', '高一', '高二', '高三'];
+            grades.forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.textContent = grade || '请选择年级';
+                gradeSelect.appendChild(option);
+            });
+            
+            document.getElementById('gradeContainer').appendChild(gradeSelect);
+            
+            // 页面加载后立即清空所有输入框，防止浏览器自动填充
+            setTimeout(() => {
+                nameInput.value = '';
+                passwordInput.value = '';
+                phoneInput.value = '';
+                ageInput.value = '';
+                emailInput.value = '';
+                gradeSelect.value = '';
+            }, 100);
+        }
+        
+        // 页面加载时创建输入框
+        window.addEventListener('load', gesp_createInputFields);
         
         // 绑定事件监听器
         document.getElementById('studentRegisterForm').addEventListener('submit', gesp_handleStudentRegister);
