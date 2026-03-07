@@ -1532,7 +1532,7 @@
                     
                     // 检查用户权限
                     const userStr = sessionStorage.getItem('user');
-                    const isAdmin = userStr ? JSON.parse(userStr).admin : false;
+                    const isAdmin = userStr ? JSON.parse(userStr).role === 'admin' : false;
                     
                     users.forEach(user => {
                         const row = document.createElement('tr');
@@ -2480,7 +2480,7 @@
                 row.innerHTML = `
                     <td>${user.username}</td>
                     <td>${user.role === 'teacher' ? '教师' : '学生'}</td>
-                    <td><input type="checkbox" ${user.admin ? 'checked' : ''} onchange="gesp_toggleAdminPermission(${user.id}, this.checked)"></td>
+                    <td><input type="checkbox" ${user.role === 'admin' ? 'checked' : ''} onchange="gesp_toggleAdminPermission(${user.id}, this.checked)"></td>
                     <td>
                         <button class="action-btn delete-btn" onclick="gesp_deleteUser(${user.id})">删除</button>
                     </td>
@@ -2571,7 +2571,7 @@
                 // 消课系统页面本身不需要控制消课系统链接的显示
                 
                 // 只显示Wiki链接给管理员用户
-                if (user.admin) {
+                if (user.role === 'admin') {
                     document.getElementById('wikiLink').style.display = 'block';
                 } else {
                     document.getElementById('wikiLink').style.display = 'none';

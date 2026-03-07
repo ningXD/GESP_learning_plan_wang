@@ -599,7 +599,7 @@ def update_course_record(current_user, record_id):
         return jsonify({'success': False, 'message': '消课记录不存在'}), 404
     
     # 验证课程记录是否属于当前教师（非管理员）
-    if not current_user.admin:
+    if current_user.role != 'admin':
         class_record = ClassRecord.query.filter_by(id=course_record.class_id, teacher_id=current_user.id).first()
         if not class_record:
             return jsonify({'success': False, 'message': '无权操作此记录'}), 403
