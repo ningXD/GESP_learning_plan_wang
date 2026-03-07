@@ -52,7 +52,7 @@ def get_user(current_user, user_id):
 @bp.route('/teachers', methods=['GET'])
 @token_required
 def get_teachers(current_user):
-    """获取所有教师用户"""
+    """获取所有教师"""
     try:
         # 获取分页参数
         page = request.args.get('page', 1, type=int)
@@ -65,22 +65,23 @@ def get_teachers(current_user):
         # 获取搜索参数
         keyword = request.args.get('keyword', '')
         
-        # 只返回role为teacher的用户，不包括admin用户
-        query = User.query.filter(User.role == 'teacher')
+        # 从Teacher表查询
+        query = Teacher.query
         
         # 执行搜索
         if keyword:
             # 获取搜索字段
-            fields = request.args.get('fields', 'name,phone,gender,project,teacher').split(',')
+            fields = request.args.get('fields', 'name,phone,gender,project').split(',')
             search_conditions = []
             
             if 'name' in fields:
-                search_conditions.append(db.or_(
-                    User.nickname.like(f'%{keyword}%'),
-                    User.username.like(f'%{keyword}%')
-                ))
+                search_conditions.append(Teacher.name.like(f'%{keyword}%'))
             if 'phone' in fields:
-                search_conditions.append(User.phone.like(f'%{keyword}%'))
+                search_conditions.append(Teacher.phone.like(f'%{keyword}%'))
+            if 'gender' in fields:
+                search_conditions.append(Teacher.gender.like(f'%{keyword}%'))
+            if 'project' in fields:
+                search_conditions.append(Teacher.teaching_subject.like(f'%{keyword}%'))
             
             if search_conditions:
                 query = query.filter(db.or_(*search_conditions))
@@ -104,7 +105,7 @@ def get_teachers(current_user):
             
             teachers = query.all()
             # 按自然排序
-            teachers.sort(key=lambda t: natural_sort_key(t.nickname or t.username or ''), reverse=(order == 'desc'))
+            teachers.sort(key=lambda t: natural_sort_key(t.name or ''), reverse=(order == 'desc'))
             # 手动分页
             total = len(teachers)
             start = (page - 1) * per_page
@@ -112,12 +113,10 @@ def get_teachers(current_user):
             paginated_teachers = teachers[start:end]
             total_pages = (total + per_page - 1) // per_page
             
-            # 构建教师数据列表，使用User表中的nickname字段
+            # 构建教师数据列表
             teacher_data = []
             for teacher in paginated_teachers:
                 teacher_dict = teacher.to_dict()
-                # 直接使用User表中的nickname字段
-                teacher_dict['name'] = teacher_dict.get('nickname', '')
                 teacher_data.append(teacher_dict)
             
             return jsonify({
@@ -134,12 +133,10 @@ def get_teachers(current_user):
         teachers = pagination.items
         total = pagination.total
         
-        # 构建教师数据列表，使用User表中的nickname字段
+        # 构建教师数据列表
         teacher_data = []
         for teacher in teachers:
             teacher_dict = teacher.to_dict()
-            # 直接使用User表中的nickname字段
-            teacher_dict['name'] = teacher_dict.get('nickname', '')
             teacher_data.append(teacher_dict)
         
         return jsonify({
@@ -167,9 +164,12 @@ def search_teachers(current_user):
         per_page = request.args.get('per_page', 20, type=int)
         
         # 构建搜索查询
-        query = User.query.filter(User.role == 'teacher')
+        query = Teacher.query
         if keyword:
-            query = query.filter(User.nickname.like(f'%{keyword}%'))
+            query = query.filter(db.or_(
+                Teacher.name.like(f'%{keyword}%'),
+                Teacher.teaching_subject.like(f'%{keyword}%')
+            ))
         
         # 分页查询
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
@@ -180,7 +180,6 @@ def search_teachers(current_user):
         teacher_data = []
         for teacher in teachers:
             teacher_dict = teacher.to_dict()
-            teacher_dict['name'] = teacher_dict.get('nickname', '')
             teacher_data.append(teacher_dict)
         
         return jsonify({

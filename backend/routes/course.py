@@ -93,25 +93,8 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
-        # 对于管理员，还需要添加User表中的学生角色用户
-        if current_user.role == 'admin':
-            # 查询User表中的学生角色用户
-            user_students = User.query.filter_by(role='student').all()
-            # 转换为字典格式
-            user_student_dicts = []
-            for user in user_students:
-                user_dict = user.to_dict()
-                # 添加必要的字段
-                user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = ''
-                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
-                user_student_dicts.append(user_dict)
-            
-            # 合并Student表和User表中的学生
-            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
-            total = len(students) + len(user_students)
-        else:
-            all_students = [student.to_dict() for student in paginated_students]
+        # 只返回Student表中的学生
+        all_students = [student.to_dict() for student in paginated_students]
         
         # 构建响应
         return jsonify({
@@ -134,25 +117,8 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
-        # 对于管理员，还需要添加User表中的学生角色用户
-        if current_user.role == 'admin':
-            # 查询User表中的学生角色用户
-            user_students = User.query.filter_by(role='student').all()
-            # 转换为字典格式
-            user_student_dicts = []
-            for user in user_students:
-                user_dict = user.to_dict()
-                # 添加必要的字段
-                user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = ''
-                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
-                user_student_dicts.append(user_dict)
-            
-            # 合并Student表和User表中的学生
-            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
-            total = len(students) + len(user_students)
-        else:
-            all_students = [student.to_dict() for student in paginated_students]
+        # 只返回Student表中的学生
+        all_students = [student.to_dict() for student in paginated_students]
         
         # 构建响应
         return jsonify({
@@ -175,25 +141,8 @@ def get_students(current_user):
         paginated_students = students[start:end]
         total_pages = (total + per_page - 1) // per_page
         
-        # 对于管理员，还需要添加User表中的学生角色用户
-        if current_user.role == 'admin':
-            # 查询User表中的学生角色用户
-            user_students = User.query.filter_by(role='student').all()
-            # 转换为字典格式
-            user_student_dicts = []
-            for user in user_students:
-                user_dict = user.to_dict()
-                # 添加必要的字段
-                user_dict['name'] = user.nickname or user.username
-                user_dict['project'] = ''
-                user_dict['teacher'] = None  # User表中的学生可能没有关联教师
-                user_student_dicts.append(user_dict)
-            
-            # 合并Student表和User表中的学生
-            all_students = [student.to_dict() for student in paginated_students] + user_student_dicts
-            total = len(students) + len(user_students)
-        else:
-            all_students = [student.to_dict() for student in paginated_students]
+        # 只返回Student表中的学生
+        all_students = [student.to_dict() for student in paginated_students]
         
         # 构建响应
         return jsonify({
@@ -211,25 +160,8 @@ def get_students(current_user):
     students = pagination.items
     total = pagination.total
     
-    # 对于管理员，还需要添加User表中的学生角色用户
-    if current_user.role == 'admin':
-        # 查询User表中的学生角色用户
-        user_students = User.query.filter_by(role='student').all()
-        # 转换为字典格式
-        user_student_dicts = []
-        for user in user_students:
-            user_dict = user.to_dict()
-            # 添加必要的字段
-            user_dict['name'] = user.nickname or user.username
-            user_dict['project'] = ''
-            user_dict['teacher'] = None  # User表中的学生可能没有关联教师
-            user_student_dicts.append(user_dict)
-        
-        # 合并Student表和User表中的学生
-        all_students = [student.to_dict() for student in students] + user_student_dicts
-        total = len(students) + len(user_students)
-    else:
-        all_students = [student.to_dict() for student in students]
+    # 只返回Student表中的学生
+    all_students = [student.to_dict() for student in students]
     
     return jsonify({
         'success': True, 
@@ -328,21 +260,7 @@ def update_student(current_user, student_id):
         # 管理员可以更新所有学生
         student = Student.query.get(student_id)
         if not student:
-            # 检查是否是User表中的学生
-            user = User.query.filter_by(id=student_id, role='student').first()
-            if not user:
-                return jsonify({'success': False, 'message': '学员不存在'}), 404
-            # 为User表中的学生创建Student记录
-            student = Student(
-                teacher_id=current_user.id,
-                name=user.nickname or user.username,
-                gender=user.gender or '',
-                age=user.age or 0,
-                grade=user.grade or '',
-                project=user.subject or ''
-            )
-            db.session.add(student)
-            db.session.commit()
+            return jsonify({'success': False, 'message': '学员不存在'}), 404
     else:
         # 普通教师只能更新自己的学生
         student = Student.query.filter_by(id=student_id, teacher_id=current_user.id).first()
@@ -402,21 +320,7 @@ def delete_student(current_user, student_id):
         # 管理员可以删除所有学生
         student = Student.query.get(student_id)
         if not student:
-            # 检查是否是User表中的学生
-            user = User.query.filter_by(id=student_id, role='student').first()
-            if not user:
-                return jsonify({'success': False, 'message': '学员不存在'}), 404
-            # 为User表中的学生创建Student记录
-            student = Student(
-                teacher_id=current_user.id,
-                name=user.nickname or user.username,
-                gender=user.gender or '',
-                age=user.age or 0,
-                grade=user.grade or '',
-                project=user.subject or ''
-            )
-            db.session.add(student)
-            db.session.commit()
+            return jsonify({'success': False, 'message': '学员不存在'}), 404
     else:
         # 普通教师只能删除自己的学生
         student = Student.query.filter_by(id=student_id, teacher_id=current_user.id).first()
