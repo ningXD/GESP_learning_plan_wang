@@ -25,4 +25,18 @@ with app.app_context():
     admin_users = User.query.filter_by(role='admin').all()
     print(f"\n管理员用户数量: {len(admin_users)}")
     for user in admin_users:
-        print(f"  - {user.username
+        print(f"  - {user.username} (ID: {user.id})")
+    
+    # 检查教师用户
+    teacher_users = User.query.filter_by(role='teacher').all()
+    print(f"\n教师用户数量: {len(teacher_users)}")
+    if teacher_users:
+        print(f"  前5个教师: {[t.username for t in teacher_users[:5]]}")
+    
+    # 检查学生用户
+    student_users = User.query.filter_by(role='student').all()
+    print(f"\n学生用户数量: {len(student_users)}")
+    if student_users:
+        print(f"  前5个学生: {[s.username for s in student_users[:5]]}")
+
+print("权限检查完成！")
