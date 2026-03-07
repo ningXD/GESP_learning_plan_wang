@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 竞赛特攻队</title>
+    <title>竞赛特攻队 - 竞赛考试必胜系统 - 个人空间</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
         }
         
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+            background-color: #f5f7fa;
             color: #333;
-            background-color: #f4f4f4;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            line-height: 1.6;
         }
         
         /* 导航栏样式 */
@@ -75,23 +72,6 @@
             color: white;
         }
         
-        /* 登录按钮样式 */
-        .login-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .login-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        
         /* 用户头像样式 */
         .user-profile {
             position: relative;
@@ -124,16 +104,9 @@
             margin-top: 2px;
             display: none;
             z-index: 1001;
-            /* 增加一点向上的重叠，确保鼠标移动时不会有间隙 */
-            transform: translateY(-2px);
         }
         
         .user-profile:hover .dropdown-menu {
-            display: block;
-        }
-        
-        /* 确保下拉菜单本身也能保持显示状态 */
-        .user-profile:hover .dropdown-menu:hover {
             display: block;
         }
         
@@ -154,31 +127,20 @@
             font-weight: 500;
         }
         
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        
-        .main-container {
-            flex: 1;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
+        /* 个人资料容器 */
         .profile-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
             max-width: 800px;
-            margin: 0 auto;
+            margin: 40px auto;
+            padding: 0 20px;
         }
         
         .profile-header {
-            text-align: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
+            text-align: center;
         }
         
         .profile-avatar {
@@ -191,119 +153,101 @@
             align-items: center;
             justify-content: center;
             font-size: 48px;
-            font-weight: bold;
             margin: 0 auto 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
         
-        .profile-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .profile-username {
-            font-size: 24px;
+        .profile-name {
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            color: #2c3e50;
+            margin-bottom: 10px;
         }
         
-        .profile-email {
-            color: #666;
+        .profile-role {
+            color: #7f8c8d;
+            font-size: 1rem;
             margin-bottom: 20px;
         }
         
-        .profile-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .profile-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-section {
+            margin-bottom: 30px;
+        }
+        
+        .profile-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
         
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
-            font-weight: 500;
-            color: #555;
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
         
-        .form-group input {
-            padding: 10px 15px;
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 16px;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
         
-        .btn-primary {
-            background-color: #3498db;
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            background-color: #2980b9;
+        .save-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f618d);
             transform: translateY(-2px);
-        }
-        
-        .btn-secondary {
-            background-color: #f8f9fa;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #e9ecef;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
         
         .success-message {
-            background-color: #d4edda;
+            background: #d4edda;
             color: #155724;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: none;
-        }
-        
-        .footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
             padding: 10px;
-            margin-top: auto;
-            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
         }
         
         @media (max-width: 768px) {
             .navbar-container {
                 flex-direction: column;
                 gap: 10px;
-                padding: 10px;
+                padding: 10px 20px;
             }
             
             .nav-links {
@@ -311,16 +255,13 @@
                 justify-content: center;
             }
             
-            .main-container {
-                padding: 20px 10px;
-            }
-            
             .profile-container {
-                padding: 20px;
+                margin: 20px auto;
             }
             
-            .form-actions {
-                flex-direction: column;
+            .profile-header,
+            .profile-content {
+                padding: 20px;
             }
         }
     </style>
@@ -339,11 +280,10 @@
                 <a href="../programming/online_programming.html" class="nav-link">线上编程</a>
                 <a href="../course/course_system.html" class="nav-link" id="courseSystemLink">消课系统</a>
                 <a href="../core/wiki.html" class="nav-link" id="wikiLink" style="display: none;">项目Wiki</a>
-                <a href="profile.html" class="nav-link active">个人空间</a>
-                <div id="authSection">
+                <div id="authSection" style="display: none;">
                     <a href="../auth/login.html" class="login-btn">登录</a>
                 </div>
-                <div id="userSection" style="display: none;">
+                <div id="userSection">
                     <div class="user-profile">
                         <div class="user-avatar" id="userAvatar">U</div>
                         <div class="dropdown-menu">
@@ -357,63 +297,68 @@
         </div>
     </nav>
     
-    <div class="main-container">
-        <div class="profile-container">
-            <div class="success-message" id="successMessage">个人信息更新成功！</div>
-            
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar" onclick="triggerFileInput()">U</div>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-                <div class="profile-username" id="displayName">用户名</div>
-                <div class="profile-email" id="userEmail">邮箱</div>
-            </div>
-            
-            <form class="profile-form" onsubmit="return updateProfile(event)">
-                <div class="form-group">
-                    <label for="nickname">昵称</label>
-                    <input type="text" id="nickname" placeholder="请输入昵称">
-                </div>
-                
-                <div class="form-group">
-                    <label for="account">账号</label>
-                    <input type="text" id="account" disabled placeholder="账号">
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">邮箱</label>
-                    <input type="email" id="email" placeholder="请输入邮箱">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
+    <!-- 个人资料页面 -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <h2 class="profile-name" id="profileName">用户名</h2>
+            <p class="profile-role" id="profileRole">用户角色</p>
         </div>
-    </div>
-    
-    <div class="footer">
-        <p>竞赛特攻队 - 竞赛考试必胜系统 | 个人空间</p>
+        
+        <div class="profile-content">
+            <div class="profile-section">
+                <h3>基本信息</h3>
+                <div class="success-message" id="successMessage">资料保存成功</div>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" placeholder="请输入姓名">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">手机号</label>
+                        <input type="tel" id="phone" placeholder="请输入手机号">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" placeholder="请输入邮箱">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">年龄</label>
+                        <input type="number" id="age" placeholder="请输入年龄" min="6" max="18">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="grade">年级</label>
+                        <select id="grade">
+                            <option value="">请选择年级</option>
+                            <option value="一年级">一年级</option>
+                            <option value="二年级">二年级</option>
+                            <option value="三年级">三年级</option>
+                            <option value="四年级">四年级</option>
+                            <option value="五年级">五年级</option>
+                            <option value="六年级">六年级</option>
+                            <option value="初一">初一</option>
+                            <option value="初二">初二</option>
+                            <option value="初三">初三</option>
+                            <option value="高一">高一</option>
+                            <option value="高二">高二</option>
+                            <option value="高三">高三</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="save-btn">保存资料</button>
+                </form>
+            </div>
+        </div>
     </div>
     
     <!-- 退出登录通知窗口 -->
     <div id="logout-notification" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; color: red; border: 1px solid black; padding: 20px 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; display: none; transition: all 0.3s ease; max-width: 90%; text-align: center;"></div>
     
     <script>
-        // 检查登录状态
-        function gesp_checkLogin() {
-            return sessionStorage.getItem('access_token') !== null;
-        }
-        
-        // 检查登录并重定向
-        function gesp_checkLoginAndRedirect() {
-            if (!gesp_checkLogin()) {
-                alert('请先登录后再访问此页面');
-                window.location.href = '../index.html';
-                return false;
-            }
-            return true;
-        }
-        
         // 检查用户登录状态
         function gesp_checkLoginStatus() {
             const userStr = sessionStorage.getItem('user');
@@ -441,8 +386,8 @@
                     document.getElementById('wikiLink').style.display = 'none';
                 }
                 
-                // 填充个人信息
-                populateUserInfo(user);
+                // 填充个人资料
+                gesp_fillProfile(user);
             } else if (token) {
                 // 有token但没有user对象，保持登录状态
                 document.getElementById('authSection').style.display = 'none';
@@ -450,120 +395,33 @@
                 document.getElementById('userName').textContent = '用户';
                 document.getElementById('userAvatar').textContent = 'U';
             } else {
-                // 未登录状态
-                document.getElementById('authSection').style.display = 'block';
-                document.getElementById('userSection').style.display = 'none';
-                document.getElementById('courseSystemLink').style.display = 'none';
-                document.getElementById('wikiLink').style.display = 'none';
+                // 未登录状态，跳转到登录页面
+                window.location.href = '../auth/login.html';
             }
         }
         
-        // 填充用户信息
-        function populateUserInfo(user) {
+        // 填充个人资料
+        function gesp_fillProfile(user) {
             document.getElementById('profileAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
-            document.getElementById('displayName').textContent = user.nickname || user.username;
-            document.getElementById('userEmail').textContent = user.email || '未设置邮箱';
-            document.getElementById('nickname').value = user.nickname || '';
-            document.getElementById('account').value = user.username;
+            document.getElementById('profileName').textContent = user.nickname || user.username;
+            document.getElementById('profileRole').textContent = user.role === 'student' ? '学生' : user.role === 'teacher' ? '教师' : '管理员';
+            
+            document.getElementById('name').value = user.nickname || '';
+            document.getElementById('phone').value = user.phone || '';
             document.getElementById('email').value = user.email || '';
+            document.getElementById('age').value = user.age || '';
+            document.getElementById('grade').value = user.grade || '';
         }
         
-        // 触发文件输入
-        function triggerFileInput() {
-            document.getElementById('avatarInput').click();
+        // 显示成功信息
+        function gesp_showSuccessMessage(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
         }
-        
-        // 获取token
-        function gesp_getToken() {
-            return sessionStorage.getItem('access_token');
-        }
-        
-        // 处理头像上传
-        document.getElementById('avatarInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // 这里可以添加头像上传逻辑
-                // 目前只是简单地更新头像显示
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const avatar = document.getElementById('profileAvatar');
-                    avatar.style.backgroundImage = `url(${e.target.result})`;
-                    avatar.style.backgroundSize = 'cover';
-                    avatar.style.color = 'transparent';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // 更新个人资料
-        async function updateProfile(event) {
-            event.preventDefault();
-            
-            const nickname = document.getElementById('nickname').value;
-            const email = document.getElementById('email').value;
-            
-            try {
-                const response = await gesp_fetch('http://localhost:5000/api/users/me', {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        nickname,
-                        email
-                    })
-                });
-                
-                const result = await response.json();
-                if (result.error) {
-                    alert('更新个人资料失败: ' + result.error);
-                    return;
-                }
-                
-                // 更新sessionStorage中的用户信息
-                const userStr = sessionStorage.getItem('user');
-                if (userStr) {
-                    const user = JSON.parse(userStr);
-                    user.nickname = nickname;
-                    user.email = email;
-                    sessionStorage.setItem('user', JSON.stringify(user));
-                }
-                
-                // 显示成功消息
-                const successMessage = document.getElementById('successMessage');
-                successMessage.style.display = 'block';
-                
-                // 3秒后隐藏成功消息
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                }, 3000);
-                
-                // 更新页面显示
-                gesp_checkLoginStatus();
-            } catch (error) {
-                alert('更新个人资料失败: ' + error.message);
-            }
-        }
-        
-        // 加载用户信息
-        async function gesp_loadUserInfo() {
-            try {
-                const response = await gesp_fetch('http://localhost:5000/api/users/me');
-                
-                const user = await response.json();
-                if (user.error) {
-                    console.error('加载用户信息失败:', user.error);
-                    return;
-                }
-                
-                // 更新sessionStorage中的用户信息
-                sessionStorage.setItem('user', JSON.stringify(user));
-                
-                // 填充个人信息
-                populateUserInfo(user);
-            } catch (error) {
-                console.error('加载用户信息失败:', error);
-            }
-        }
-        
-
         
         // 显示退出登录通知
         function gesp_showLogoutNotification(message) {
@@ -579,68 +437,6 @@
                     notification.style.opacity = '1';
                 }, 300);
             }, 3000);
-        }
-        
-        // 处理API请求
-        async function gesp_fetch(url, options = {}) {
-            const token = gesp_getToken();
-            
-            // 如果没有token，直接返回null，避免无效请求
-            if (!token) {
-                return null;
-            }
-            
-            // 设置默认选项
-            const defaultOptions = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            };
-            
-            // 合并选项
-            const fetchOptions = {
-                ...defaultOptions,
-                ...options,
-                headers: {
-                    ...defaultOptions.headers,
-                    ...options.headers
-                }
-            };
-            
-            try {
-                const response = await fetch(url, fetchOptions);
-                
-                // 处理401错误
-                if (response.status === 401) {
-                    // 获取当前用户信息
-                    const userStr = sessionStorage.getItem('user');
-                    let username = '用户';
-                    if (userStr) {
-                        const user = JSON.parse(userStr);
-                        username = user.nickname || user.username || '用户';
-                    }
-                    
-                    // 显示退出提示
-                    gesp_showLogoutNotification(`${username}已退出`);
-                    
-                    // 清除存储的登录信息
-                    sessionStorage.removeItem('access_token');
-                    sessionStorage.removeItem('user');
-                    
-                    // 延迟重定向，让用户有时间看到通知
-                    setTimeout(() => {
-                        window.location.href = '../auth/login.html';
-                    }, 1000);
-                    return null;
-                }
-                
-                return response;
-            } catch (error) {
-                console.error('API请求失败:', error);
-                alert('网络错误，请稍后重试');
-                return null;
-            }
         }
         
         // 退出登录
@@ -667,15 +463,56 @@
             }, 1000);
         }
         
-        // 页面加载时检查登录状态
-        window.addEventListener('load', async function() {
-            if (gesp_checkLoginAndRedirect()) {
-                // 加载用户信息
-                await gesp_loadUserInfo();
-                // 检查登录状态
-                gesp_checkLoginStatus();
+        // 保存个人资料
+        async function gesp_saveProfile(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const age = document.getElementById('age').value;
+            const grade = document.getElementById('grade').value;
+            
+            try {
+                // 调用后端更新资料API
+                const response = await fetch('http://127.0.0.1:5000/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify({
+                        nickname: name,
+                        phone,
+                        email,
+                        age,
+                        grade
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    // 更新本地存储的用户信息
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    // 显示成功信息
+                    gesp_showSuccessMessage('资料保存成功');
+                    // 重新填充资料
+                    gesp_fillProfile(data.user);
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || '保存失败，请重试');
+                }
+            } catch (error) {
+                console.error('保存请求失败:', error);
+                alert('网络错误，请稍后重试');
             }
-        });
+        }
+        
+        // 页面加载时检查登录状态
+        window.addEventListener('load', gesp_checkLoginStatus);
+        
+        // 绑定表单提交事件
+        document.getElementById('profileForm').addEventListener('submit', gesp_saveProfile);
     </script>
 </body>
 </html>

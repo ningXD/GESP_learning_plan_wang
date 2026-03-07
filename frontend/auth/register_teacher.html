@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>竞赛特攻队 - 竞赛考试必胜系统 - 登录</title>
+    <title>竞赛特攻队 - 竞赛考试必胜系统 - 教师注册</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             padding: 20px;
         }
         
-        .login-container {
+        .register-container {
             background: white;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -42,19 +42,19 @@
             }
         }
         
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
         
-        .login-header h1 {
+        .register-header h1 {
             color: #2c3e50;
             font-size: 1.6rem;
             margin-bottom: 15px;
             line-height: 1.3;
         }
         
-        .login-header p {
+        .register-header p {
             color: #7f8c8d;
             font-size: 1rem;
             margin-bottom: 20px;
@@ -88,9 +88,9 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
         
-        .login-btn {
+        .register-btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
@@ -99,10 +99,10 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         
-        .login-btn:hover {
+        .register-btn:hover {
             background: linear-gradient(135deg, #2980b9, #1f618d);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
@@ -117,58 +117,70 @@
             display: none;
         }
         
-        .demo-info {
-            margin-top: 20px;
+        .back-link {
             text-align: center;
-            font-size: 0.9rem;
-            color: #7f8c8d;
+            margin-top: 20px;
         }
         
-        .demo-info strong {
+        .back-link a {
             color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
         }
         
         @media (max-width: 480px) {
-            .login-container {
+            .register-container {
                 padding: 30px;
             }
             
-            .login-header h1 {
+            .register-header h1 {
                 font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
+    <div class="register-container">
+        <div class="register-header">
             <h1>竞赛特攻队 - 竞赛考试必胜系统</h1>
-            <p>请登录系统</p>
+            <p>教师注册</p>
         </div>
         
         <div class="error-message" id="errorMessage">
-            账号或密码错误，请重试
+            注册失败，请重试
         </div>
         
-        <form id="loginForm" method="post" action="#" autocomplete="on">
+        <form id="teacherRegisterForm">
             <div class="form-group">
-                <label for="username">手机号</label>
-                <input type="text" id="username" name="username" placeholder="请输入手机号" required autocomplete="tel">
+                <label for="name">姓名 <span style="color: red;">*</span></label>
+                <input type="text" id="name" placeholder="请输入真实姓名" required>
             </div>
             
             <div class="form-group">
-                <label for="password">密码</label>
-                <input type="password" id="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+                <label for="password">密码 <span style="color: red;">*</span></label>
+                <input type="password" id="password" placeholder="请输入密码" required>
             </div>
             
-            <button type="submit" class="login-btn">登录</button>
+            <div class="form-group">
+                <label for="phone">手机号 <span style="color: red;">*</span></label>
+                <input type="tel" id="phone" placeholder="请输入手机号" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">邮箱（选填）</label>
+                <input type="email" id="email" placeholder="请输入邮箱">
+            </div>
+            
+            <button type="submit" class="register-btn">注册</button>
+            
+            <div class="back-link">
+                <a href="register.html">返回角色选择</a>
+            </div>
         </form>
-        
-        <div class="register-link">
-            <p style="text-align: center; margin-top: 15px;">
-                还没有账号？<a href="register.html" style="color: #3498db; text-decoration: none;">立即注册</a>
-            </p>
-        </div>
     </div>
     
     <script>
@@ -182,58 +194,67 @@
             }, 3000);
         }
         
-        // 处理登录
-        async function gesp_handleLogin(e) {
+        // 生成随机用户名
+        function gesp_generateUsername() {
+            const prefix = '教师';
+            const numbers = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            const letters = Math.random().toString(36).substring(2, 6).toUpperCase();
+            return prefix + numbers + letters;
+        }
+        
+        // 处理教师注册
+        async function gesp_handleTeacherRegister(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const name = document.getElementById('name').value;
             const password = document.getElementById('password').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            
+            if (!name || !password || !phone) {
+                gesp_showErrorMessage('请填写所有必填字段');
+                return;
+            }
+            
+            // 生成自动用户名
+            const username = gesp_generateUsername();
             
             try {
-                // 调用后端登录API
-                const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
+                // 调用后端注册API
+                const response = await fetch('http://127.0.0.1:5000/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        email,
+                        phone,
+                        role: 'teacher',
+                        nickname: name
+                    })
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    // 存储token到会话存储
+                    // 注册成功，自动登录
                     sessionStorage.setItem('access_token', data.access_token);
                     sessionStorage.setItem('user', JSON.stringify(data.user));
-                    
-                    // 检查用户资料是否完整
-                    const user = data.user;
-                    let isProfileComplete = true;
-                    
-                    // 检查必填字段
-                    if (!user.email) {
-                        isProfileComplete = false;
-                    }
-                    
-                    if (!isProfileComplete) {
-                        // 显示提示信息
-                        alert('您的账号资料不完整，请前往个人空间完善资料');
-                    }
-                    
-                    // 直接跳转，让浏览器自然处理密码保存
                     window.location.href = '../index.html';
                 } else {
                     const errorData = await response.json();
-                    // 登录失败，显示错误信息
-                    gesp_showErrorMessage(errorData.error || '登录失败，请重试');
+                    // 注册失败，显示错误信息
+                    gesp_showErrorMessage(errorData.error || '注册失败，请重试');
                 }
             } catch (error) {
-                console.error('登录请求失败:', error);
+                console.error('注册请求失败:', error);
                 gesp_showErrorMessage('网络错误，请稍后重试');
             }
         }
         
         // 绑定事件监听器
-        document.getElementById('loginForm').addEventListener('submit', gesp_handleLogin);
+        document.getElementById('teacherRegisterForm').addEventListener('submit', gesp_handleTeacherRegister);
     </script>
 </body>
 </html>
