@@ -4,6 +4,9 @@ from models.models import User
 from extensions import db
 import bcrypt
 from decorators import token_required
+import logging
+
+logger = logging.getLogger('app')
 
 # 创建蓝图
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -12,21 +15,30 @@ bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 def login():
     """用户登录"""
     data = request.get_json()
+    logger.debug(f"登录请求数据: {data}")
+    
     if not data or 'username' not in data or 'password' not in data:
+        logger.debug("缺少用户名或密码")
         return jsonify({'error': '手机号和密码不能为空'}), 400
     
     # 注意：虽然前端界面显示为"手机号"，但后端支持通过用户名或手机号登录
     # 这是一个隐藏功能，用于测试账号登录
+    logger.debug(f"尝试登录用户: {data['username']}")
     user = User.query.filter((User.username == data['username']) | (User.phone == data['username'])).first()
+    
     if not user:
+        logger.debug(f"用户不存在: {data['username']}")
         return jsonify({'error': '用户不存在'}), 401
     
     # 验证密码
+    logger.debug(f"找到用户: {user.username}, ID: {user.id}")
     if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+        logger.debug("密码错误")
         return jsonify({'error': '密码错误'}), 401
     
     # 创建访问令牌，将identity设置为字符串
     access_token = create_access_token(identity=str(user.id))
+    logger.debug(f"登录成功: {user.username}")
     return jsonify({
         'access_token': access_token,
         'user': user.to_dict()

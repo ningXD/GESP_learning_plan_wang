@@ -221,7 +221,7 @@ def get_students(current_user):
             user_dict = user.to_dict()
             # 添加必要的字段
             user_dict['name'] = user.nickname or user.username
-            user_dict['project'] = user.subject
+            user_dict['project'] = ''
             user_dict['teacher'] = None  # User表中的学生可能没有关联教师
             user_student_dicts.append(user_dict)
         
@@ -286,16 +286,17 @@ def add_student(current_user):
         
         # 创建用户记录（密码默认为123456）
         hashed_password = bcrypt.hashpw('123456'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        # 生成默认用户名
+        import random
+        import string
+        default_username = f"{name}_{''.join(random.choices(string.ascii_letters + string.digits, k=8))}"
+        
         new_user = User(
-            username=None,  # 不再自动生成账号
+            username=default_username,  # 生成默认用户名
             password=hashed_password,
             phone=phone,
             nickname=name,
-            role='student',
-            gender=data.get('gender') or '',
-            age=data.get('age'),
-            grade=data.get('grade') or '',
-            subject=data.get('project') or ''
+            role='student'
         )
         db.session.add(new_user)
         db.session.commit()
@@ -373,6 +374,17 @@ def update_student(current_user, student_id):
             student.remaining_fee = data['remaining_fee']
         if 'enrollment_date' in data and data['enrollment_date'] and hasattr(student, 'enrollment_date'):
             student.enrollment_date = datetime.strptime(data['enrollment_date'], '%Y-%m-%d').date()
+        
+        # 同步更新用户表中的对应数据
+        user = User.query.filter_by(nickname=student.name).first()
+        if not user:
+            # 尝试通过手机号查找
+            user = User.query.filter_by(phone=student.phone).first()
+        if user and user.role == 'student':
+            if 'name' in data:
+                user.nickname = data['name']
+            if 'phone' in data:
+                user.phone = data['phone']
         
         db.session.commit()
         return jsonify({'success': True, 'data': student.to_dict()}), 200
