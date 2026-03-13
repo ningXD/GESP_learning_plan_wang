@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
 
 # 确保logs目录存在
-logs_dir = 'D:\\paitou\\Trae\\studyPlan_log'
+logs_dir = 'C:\paitou\Trae\studyPlan_log'
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
