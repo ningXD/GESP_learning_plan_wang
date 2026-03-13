@@ -20,6 +20,7 @@ def init_study_plan_template():
             student = User(
                 username='wanglexi',
                 password=hashed_password,
+                phone='13600136000',
                 nickname='王乐汐',
                 role='student'
             )

@@ -7,10 +7,10 @@ from extensions import db, jwt, cors
 from flask_migrate import Migrate
 
 # 加载环境变量
-load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'))
+load_dotenv(os.path.join(os.path.dirname(__file__), 'config', '.env'), encoding='utf-8')
 
 # 确保logs目录存在
-logs_dir = 'C:\paitou\Trae\studyPlan_log'
+logs_dir = r'C:\paitou\Trae\studyPlan_log'  # 使用原始字符串避免转义序列问题
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
@@ -106,6 +106,8 @@ if __name__ == '__main__':
                 demo_user = User(
                     username='demo',
                     password=hashed_password,
+                    phone='13800138000',
+                    nickname='Demo Admin',
                     role='admin'
                 )
                 db.session.add(demo_user)
@@ -115,9 +117,9 @@ if __name__ == '__main__':
                 teacher_user = User(
                     username='teacher_test',
                     password=teacher_hashed_password,
+                    phone='13900139000',
                     nickname='测试教师',
-                    role='teacher',
-
+                    role='teacher'
                 )
                 db.session.add(teacher_user)
                 
@@ -130,6 +132,7 @@ if __name__ == '__main__':
                 student_user = User(
                     username='student_test',
                     password=student_hashed_password,
+                    phone='13700137000',
                     nickname='测试学生',
                     role='student'
                 )
