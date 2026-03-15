@@ -1572,8 +1572,8 @@ for (int i = 0; i < n; i++) {
                 // 显示用户信息
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                document.getElementById('userName').textContent = user.nickname || user.username;
+                document.getElementById('userAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
                 if (user.role !== 'teacher' && user.role !== 'admin') {
@@ -3623,8 +3623,8 @@ int main() {
                 // 显示用户信息
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('userSection').style.display = 'block';
-                document.getElementById('userName').textContent = user.username;
-                document.getElementById('userAvatar').textContent = user.username.charAt(0).toUpperCase();
+                document.getElementById('userName').textContent = user.nickname || user.username;
+                document.getElementById('userAvatar').textContent = (user.nickname || user.username).charAt(0).toUpperCase();
                 
                 // 检查用户角色，控制消课系统的显示
                 if (user.role === 'teacher' || user.role === 'admin') {

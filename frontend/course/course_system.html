@@ -816,47 +816,81 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="edit-student-name">姓名:</label>
-                        <input type="text" id="edit-student-name" readonly autocomplete="off">
+                        <span id="edit-student-name-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-name" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-phone">电话:</label>
-                        <input type="text" id="edit-student-phone" readonly autocomplete="off">
+                        <span id="edit-student-phone-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="tel" id="edit-student-phone" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-gender">性别:</label>
-                        <input type="text" id="edit-student-gender" readonly autocomplete="off">
+                        <span id="edit-student-gender-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-gender" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-age">年龄:</label>
-                        <input type="text" id="edit-student-age" readonly autocomplete="off">
+                        <span id="edit-student-age-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-age" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-grade">年级:</label>
-                        <input type="text" id="edit-student-grade" readonly autocomplete="off">
+                        <span id="edit-student-grade-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <select id="edit-student-grade" style="display: none;" autocomplete="off">
+                            <option value="">请选择</option>
+                            <option value="一年级">一年级</option>
+                            <option value="二年级">二年级</option>
+                            <option value="三年级">三年级</option>
+                            <option value="四年级">四年级</option>
+                            <option value="五年级">五年级</option>
+                            <option value="六年级">六年级</option>
+                            <option value="初一">初一</option>
+                            <option value="初二">初二</option>
+                            <option value="初三">初三</option>
+                            <option value="高一">高一</option>
+                            <option value="高二">高二</option>
+                            <option value="高三">高三</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="edit-student-project">学习项目:</label>
-                        <input type="text" id="edit-student-project" readonly autocomplete="off">
+                        <span id="edit-student-project-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <select id="edit-student-project" style="display: none;" autocomplete="off">
+                            <option value="">请选择</option>
+                            <option value="GESP C++">GESP C++</option>
+                            <option value="GESP Python">GESP Python</option>
+                            <option value="GESP Scratch">GESP Scratch</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="edit-student-teacher">所属教师:</label>
-                        <input type="text" id="edit-student-teacher" readonly autocomplete="off">
+                        <span id="edit-student-teacher-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <div style="position: relative; display: inline-block; display: none;" id="edit-student-teacher-container">
+                            <input type="text" id="edit-student-teacher" placeholder="点击选择教师..." autocomplete="off">
+                            <div id="editStudentTeacherDropdown" class="teacher-dropdown" style="position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-height: 300px; z-index: 1000; display: none; margin-bottom: 4px;">
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-weight: bold;">选择教师</div>
+                                <div style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 1;">
+                                    <input type="text" id="editStudentTeacherSearchInput" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" placeholder="搜索教师..." autocomplete="off">
+                                </div>
+                                <div id="editStudentTeacherList" style="padding: 4px 0;"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="edit-student-remaining-classes">剩余课时数:</label>
-                        <input type="text" id="edit-student-remaining-classes" readonly autocomplete="off">
+                        <span id="edit-student-remaining-classes-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-remaining-classes" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-remaining-fee">剩余学费:</label>
-                        <input type="text" id="edit-student-remaining-fee" readonly autocomplete="off">
+                        <span id="edit-student-remaining-fee-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-remaining-fee" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit-student-enrollment-date">入学时间:</label>
-                        <input type="text" id="edit-student-enrollment-date" readonly autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-student-created-at">信息录入时间:</label>
-                        <input type="text" id="edit-student-created-at" readonly autocomplete="off">
+                        <span id="edit-student-enrollment-date-display" style="display: inline-block; width: 200px; padding: 10px;"></span>
+                        <input type="text" id="edit-student-enrollment-date" style="display: none;" autocomplete="off">
                     </div>
                     <div class="form-group" id="editTeacherGroup" style="display: none;">
                         <label for="edit-teacher">所属教师:</label>
@@ -1631,17 +1665,53 @@
                 if (result.success) {
                     const student = result.data;
                     const studentName = student.name || student.nickname || student.username;
+                    // 设置显示文本
+                    document.getElementById('edit-student-name-display').textContent = studentName;
+                    document.getElementById('edit-student-phone-display').textContent = student.phone || '';
+                    document.getElementById('edit-student-gender-display').textContent = student.gender || '';
+                    document.getElementById('edit-student-age-display').textContent = student.age || '';
+                    document.getElementById('edit-student-grade-display').textContent = student.grade || '';
+                    document.getElementById('edit-student-project-display').textContent = student.project || student.subject || '';
+                    
+                    // 设置所属教师显示文本
+                    const teacherDisplaySpan = document.getElementById('edit-student-teacher-display');
+                    if (student.teacher) {
+                        teacherDisplaySpan.textContent = student.teacher.nickname || student.teacher.username;
+                    } else {
+                        teacherDisplaySpan.textContent = '未分配';
+                    }
+                    
+                    document.getElementById('edit-student-remaining-classes-display').textContent = student.remaining_classes || '0';
+                    document.getElementById('edit-student-remaining-fee-display').textContent = student.remaining_fee || '0';
+                    document.getElementById('edit-student-enrollment-date-display').textContent = student.enrollment_date || '';
+                    
+                    // 设置输入框和选择框的值
                     document.getElementById('edit-student-name').value = studentName;
                     document.getElementById('edit-student-phone').value = student.phone || '';
                     document.getElementById('edit-student-gender').value = student.gender || '';
                     document.getElementById('edit-student-age').value = student.age || '';
-                    document.getElementById('edit-student-grade').value = student.grade || '';
-                    document.getElementById('edit-student-project').value = student.project || student.subject || '';
-                    document.getElementById('edit-student-teacher').value = student.teacher ? (student.teacher.nickname || student.teacher.username) : '未分配';
+                    
+                    // 设置年级选择框
+                    const gradeSelect = document.getElementById('edit-student-grade');
+                    gradeSelect.value = student.grade || '';
+                    
+                    // 设置学习项目选择框
+                    const projectSelect = document.getElementById('edit-student-project');
+                    projectSelect.value = student.project || student.subject || '';
+                    
+                    // 设置所属教师搜索输入框
+                    const teacherInput = document.getElementById('edit-student-teacher');
+                    if (student.teacher) {
+                        teacherInput.value = student.teacher.nickname || student.teacher.username;
+                        teacherInput.dataset.id = student.teacher.id;
+                    } else {
+                        teacherInput.value = '';
+                        teacherInput.dataset.id = '';
+                    }
+                    
                     document.getElementById('edit-student-remaining-classes').value = student.remaining_classes || '0';
                     document.getElementById('edit-student-remaining-fee').value = student.remaining_fee || '0';
                     document.getElementById('edit-student-enrollment-date').value = student.enrollment_date || '';
-                    document.getElementById('edit-student-created-at').value = student.created_at || '';
                     
                     // 检查用户权限，管理员显示修改归属按钮
                     const userStr = sessionStorage.getItem('user');
@@ -1655,6 +1725,9 @@
                     
                     // 存储学员ID
                     document.getElementById('editStudentModal').dataset.studentId = studentId;
+                    
+                    // 初始化教师搜索功能
+                    initEditStudentTeacherSearch();
                     
                     // 显示弹窗
                     document.getElementById('editStudentModal').style.display = 'block';
@@ -1703,11 +1776,39 @@
                     // 密码验证成功，进入编辑模式
                     document.getElementById('passwordVerification').style.display = 'none';
                     
-                    // 启用所有输入框
-                    const inputs = document.querySelectorAll('#editStudentModal input[readonly]');
-                    inputs.forEach(input => {
-                        input.removeAttribute('readonly');
-                    });
+                    // 隐藏显示文本，显示输入框和选择框
+                    document.getElementById('edit-student-name-display').style.display = 'none';
+                    document.getElementById('edit-student-name').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-phone-display').style.display = 'none';
+                    document.getElementById('edit-student-phone').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-gender-display').style.display = 'none';
+                    document.getElementById('edit-student-gender').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-age-display').style.display = 'none';
+                    document.getElementById('edit-student-age').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-grade-display').style.display = 'none';
+                    document.getElementById('edit-student-grade').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-project-display').style.display = 'none';
+                    document.getElementById('edit-student-project').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-teacher-display').style.display = 'none';
+                    document.getElementById('edit-student-teacher-container').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-remaining-classes-display').style.display = 'none';
+                    document.getElementById('edit-student-remaining-classes').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-remaining-fee-display').style.display = 'none';
+                    document.getElementById('edit-student-remaining-fee').style.display = 'inline-block';
+                    
+                    document.getElementById('edit-student-enrollment-date-display').style.display = 'none';
+                    document.getElementById('edit-student-enrollment-date').style.display = 'inline-block';
+                    
+                    // 重新初始化教师搜索功能，确保点击事件正常工作
+                    initEditStudentTeacherSearch();
                     
                     // 显示保存按钮
                     document.getElementById('saveChangesBtn').style.display = 'block';
@@ -1723,10 +1824,19 @@
         async function gesp_saveChanges() {
             const studentId = document.getElementById('editStudentModal').dataset.studentId;
             
+            // 验证电话号码格式
+            const phoneInput = document.getElementById('edit-student-phone');
+            const phone = phoneInput.value;
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (phone && !phoneRegex.test(phone)) {
+                alert('请输入正确的电话号码格式');
+                return;
+            }
+            
             // 获取表单数据
             const studentData = {
                 name: document.getElementById('edit-student-name').value,
-                phone: document.getElementById('edit-student-phone').value,
+                phone: phone,
                 gender: document.getElementById('edit-student-gender').value,
                 age: document.getElementById('edit-student-age').value,
                 grade: document.getElementById('edit-student-grade').value,
@@ -1736,12 +1846,24 @@
                 enrollment_date: document.getElementById('edit-student-enrollment-date').value
             };
             
+            // 获取教师ID
+            const teacherInput = document.getElementById('edit-student-teacher');
+            const teacherId = teacherInput.dataset.id;
+            if (teacherId) {
+                studentData.teacher_id = parseInt(teacherId);
+            }
+            
             try {
                 // 保存更改
                 const response = await gesp_fetch(`http://127.0.0.1:5000/api/students/${studentId}`, {
                     method: 'PUT',
                     body: JSON.stringify(studentData)
                 });
+                
+                if (!response) {
+                    // 如果响应为null，说明token无效或网络错误，gesp_fetch已经显示了错误提示
+                    return;
+                }
                 
                 const result = await response.json();
                 if (result.success) {
@@ -1947,6 +2069,111 @@
                         dropdown.style.display = 'none';
                     }
                 });
+            }
+        }
+        
+        // 初始化编辑学员时的教师搜索功能
+        function initEditStudentTeacherSearch() {
+            const searchInput = document.getElementById('edit-student-teacher');
+            const dropdown = document.getElementById('editStudentTeacherDropdown');
+            const teacherList = document.getElementById('editStudentTeacherList');
+            const teacherSearchInput = document.getElementById('editStudentTeacherSearchInput');
+            
+            if (searchInput && dropdown && teacherList && teacherSearchInput) {
+                // 点击输入框显示弹窗
+                searchInput.addEventListener('click', async function() {
+                    // 显示弹窗
+                    dropdown.style.display = 'block';
+                    // 聚焦搜索框
+                    teacherSearchInput.focus();
+                    // 清空搜索框
+                    teacherSearchInput.value = '';
+                    // 加载默认教师列表（前20个）
+                    await loadEditStudentTeachers(1, 20);
+                });
+                
+                // 搜索框输入事件 - 调用后端搜索API
+                const debouncedSearch = debounce(async function(keyword) {
+                    console.log('搜索词:', keyword);
+                    try {
+                        // 调用后端搜索API
+                        const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers/search?keyword=${encodeURIComponent(keyword)}&page=1&per_page=20`);
+                        if (!response) return;
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            const filteredTeachers = result.data;
+                            console.log('过滤结果:', filteredTeachers);
+                            // 更新弹窗列表
+                            renderEditStudentTeachers(filteredTeachers);
+                        }
+                    } catch (error) {
+                        console.error('搜索教师失败:', error);
+                    }
+                }, 300);
+                
+                // 绑定搜索事件
+                teacherSearchInput.addEventListener('input', function() {
+                    const keyword = this.value;
+                    debouncedSearch(keyword);
+                });
+                
+                // 点击其他地方关闭弹窗
+                document.addEventListener('click', function(event) {
+                    if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // 加载编辑学员时的教师列表
+        async function loadEditStudentTeachers(page = 1, perPage = 20) {
+            try {
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/teachers?page=${page}&per_page=${perPage}`);
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    teachersList = result.data;
+                    renderEditStudentTeachers(teachersList);
+                }
+            } catch (error) {
+                console.error('加载教师列表失败:', error);
+            }
+        }
+        
+        // 渲染编辑学员时的教师列表
+        function renderEditStudentTeachers(teachers) {
+            const teacherList = document.getElementById('editStudentTeacherList');
+            if (!teacherList) return;
+            
+            teacherList.innerHTML = '';
+            
+            if (teachers.length > 0) {
+                teachers.forEach(teacher => {
+                    const item = document.createElement('div');
+                    item.className = 'teacher-dropdown-item';
+                    // 直接使用nickname字段，因为教师表里的name就是nickname
+                    item.textContent = teacher.nickname || teacher.username;
+                    item.dataset.id = teacher.id;
+                    
+                    item.addEventListener('click', function() {
+                        const searchInput = document.getElementById('edit-student-teacher');
+                        // 直接使用nickname字段，因为教师表里的name就是nickname
+                        searchInput.value = teacher.nickname || teacher.username;
+                        searchInput.dataset.id = teacher.id;
+                        document.getElementById('editStudentTeacherDropdown').style.display = 'none';
+                    });
+                    
+                    teacherList.appendChild(item);
+                });
+            } else {
+                const emptyItem = document.createElement('div');
+                emptyItem.style.padding = '8px 12px';
+                emptyItem.style.color = '#999';
+                emptyItem.textContent = '没有找到匹配的教师';
+                teacherList.appendChild(emptyItem);
             }
         }
         
