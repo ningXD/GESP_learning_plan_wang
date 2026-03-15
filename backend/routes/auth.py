@@ -59,12 +59,16 @@ def register():
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     # 创建用户
+    role = 'admin' if data['username'] == 'demo' else data.get('role', 'student')
+    level = 9 if data['username'] == 'demo' else 1  # demo账号为超级管理员，其他默认为学生级别
+    
     user = User(
         username=data['username'],
         password=hashed_password,
         email=data.get('email'),
         phone=data.get('phone'),
-        role='admin' if data['username'] == 'demo' else data.get('role', 'student')
+        role=role,
+        level=level
     )
     
     db.session.add(user)

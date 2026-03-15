@@ -14,6 +14,7 @@ class User(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)  # 手机号，唯一，可用于登录
     nickname = db.Column(db.String(50), nullable=False, index=True)  # 用户姓名，用于显示，添加索引提高搜索性能
     role = db.Column(db.String(20), nullable=False, default='student')  # student, teacher, admin
+    level = db.Column(db.Integer, nullable=False, default=1)  # 用户等级：1=学生，2=教师，3=教师管理员，9=超级管理员
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone))  # 创建时间
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(china_timezone), onupdate=lambda: datetime.now(china_timezone))  # 更新时间
     
@@ -30,6 +31,7 @@ class User(db.Model):
             'phone': self.phone,
             'nickname': self.nickname,
             'role': self.role,
+            'level': self.level,
             'created_at': self.created_at.isoformat()
         }
 

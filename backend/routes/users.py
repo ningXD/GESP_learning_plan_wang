@@ -65,8 +65,8 @@ def get_teachers(current_user):
         # 获取搜索参数
         keyword = request.args.get('keyword', '')
         
-        # 从Teacher表查询
-        query = Teacher.query
+        # 从User表查询角色为teacher的用户
+        query = User.query.filter_by(role='teacher')
         
         # 执行搜索
         if keyword:
@@ -75,13 +75,9 @@ def get_teachers(current_user):
             search_conditions = []
             
             if 'name' in fields:
-                search_conditions.append(Teacher.name.like(f'%{keyword}%'))
+                search_conditions.append(User.nickname.like(f'%{keyword}%'))
             if 'phone' in fields:
-                search_conditions.append(Teacher.phone.like(f'%{keyword}%'))
-            if 'gender' in fields:
-                search_conditions.append(Teacher.gender.like(f'%{keyword}%'))
-            if 'project' in fields:
-                search_conditions.append(Teacher.teaching_subject.like(f'%{keyword}%'))
+                search_conditions.append(User.phone.like(f'%{keyword}%'))
             
             if search_conditions:
                 query = query.filter(db.or_(*search_conditions))
@@ -103,21 +99,21 @@ def get_teachers(current_user):
                         key.append(''.join(lazy_pinyin(part)))
                 return key
             
-            teachers = query.all()
+            users = query.all()
             # 按自然排序
-            teachers.sort(key=lambda t: natural_sort_key(t.name or ''), reverse=(order == 'desc'))
+            users.sort(key=lambda u: natural_sort_key(u.nickname or ''), reverse=(order == 'desc'))
             # 手动分页
-            total = len(teachers)
+            total = len(users)
             start = (page - 1) * per_page
             end = start + per_page
-            paginated_teachers = teachers[start:end]
+            paginated_users = users[start:end]
             total_pages = (total + per_page - 1) // per_page
             
             # 构建教师数据列表
             teacher_data = []
-            for teacher in paginated_teachers:
-                teacher_dict = teacher.to_dict()
-                teacher_data.append(teacher_dict)
+            for user in paginated_users:
+                user_dict = user.to_dict()
+                teacher_data.append(user_dict)
             
             return jsonify({
                 'success': True, 
@@ -130,14 +126,14 @@ def get_teachers(current_user):
         
         # 默认分页（无排序）
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-        teachers = pagination.items
+        users = pagination.items
         total = pagination.total
         
         # 构建教师数据列表
         teacher_data = []
-        for teacher in teachers:
-            teacher_dict = teacher.to_dict()
-            teacher_data.append(teacher_dict)
+        for user in users:
+            user_dict = user.to_dict()
+            teacher_data.append(user_dict)
         
         return jsonify({
             'success': True, 
@@ -164,23 +160,23 @@ def search_teachers(current_user):
         per_page = request.args.get('per_page', 20, type=int)
         
         # 构建搜索查询
-        query = Teacher.query
+        query = User.query.filter_by(role='teacher')
         if keyword:
             query = query.filter(db.or_(
-                Teacher.name.like(f'%{keyword}%'),
-                Teacher.teaching_subject.like(f'%{keyword}%')
+                User.nickname.like(f'%{keyword}%'),
+                User.phone.like(f'%{keyword}%')
             ))
         
         # 分页查询
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-        teachers = pagination.items
+        users = pagination.items
         total = pagination.total
         
         # 构建教师数据列表
         teacher_data = []
-        for teacher in teachers:
-            teacher_dict = teacher.to_dict()
-            teacher_data.append(teacher_dict)
+        for user in users:
+            user_dict = user.to_dict()
+            teacher_data.append(user_dict)
         
         return jsonify({
             'success': True, 
@@ -224,7 +220,8 @@ def add_teacher(current_user):
             password=hashed_password,
             phone=phone,
             nickname=name,
-            role='teacher'
+            role='teacher',
+            level=2  # 教师级别为2
         )
         db.session.add(new_user)
         db.session.commit()
@@ -290,6 +287,36 @@ def update_student(current_user):
         return jsonify({
             'success': True, 
             'data': student.to_dict()
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/<int:user_id>/level', methods=['PUT'])
+@token_required
+def update_user_level(current_user):
+    """更新用户等级"""
+    # 只有超级管理员（level 9）可以更新用户等级
+    if current_user.level != 9:
+        return jsonify({'error': '权限不足'}), 403
+    
+    data = request.get_json()
+    user_id = request.view_args.get('user_id')
+    
+    try:
+        # 获取用户记录
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': '用户不存在'}), 404
+        
+        # 更新用户等级
+        if 'level' in data:
+            user.level = data['level']
+        
+        db.session.commit()
+        return jsonify({
+            'success': True, 
+            'data': user.to_dict()
         }), 200
     except Exception as e:
         db.session.rollback()

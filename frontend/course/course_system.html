@@ -2739,38 +2739,63 @@
         }
         
         // 加载教师用户列表
-        function gesp_loadAdminUsers() {
-            // 这里应该从后端API获取用户列表
-            // 暂时使用模拟数据
-            const mockUsers = [
-                { id: 1, username: 'demo', role: 'teacher', admin: true },
-                { id: 2, username: 'teacher1', role: 'teacher', admin: false },
-                { id: 3, username: 'teacher2', role: 'teacher', admin: false }
-            ];
-            
-            const tableBody = document.querySelector('#adminUserTable tbody');
-            tableBody.innerHTML = '';
-            
-            mockUsers.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.username}</td>
-                    <td>${user.role === 'teacher' ? '教师' : '学生'}</td>
-                    <td><input type="checkbox" ${user.role === 'admin' ? 'checked' : ''} onchange="gesp_toggleAdminPermission(${user.id}, this.checked)"></td>
-                    <td>
-                        <button class="action-btn delete-btn" onclick="gesp_deleteUser(${user.id})">删除</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+        async function gesp_loadAdminUsers() {
+            try {
+                // 从后端API获取教师用户列表
+                const response = await gesp_fetch('http://127.0.0.1:5000/api/users/teachers');
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    const users = result.data;
+                    
+                    const tableBody = document.querySelector('#adminUserTable tbody');
+                    tableBody.innerHTML = '';
+                    
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.nickname || user.username}</td>
+                            <td>${user.level === 9 ? '超级管理员' : user.level === 3 ? '教师管理员' : user.level === 2 ? '教师' : '学生'}</td>
+                            <td><input type="checkbox" ${user.level === 3 ? 'checked' : ''} onchange="gesp_toggleAdminPermission(${user.id}, this.checked)"></td>
+                            <td>
+                                <button class="action-btn delete-btn" onclick="gesp_deleteUser(${user.id})"></button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('加载教师用户列表失败:', result.message);
+                }
+            } catch (error) {
+                console.error('加载教师用户列表失败:', error);
+            }
         }
         
         // 切换管理员权限
-        function gesp_toggleAdminPermission(userId, isAdmin) {
-            // 这里应该调用后端API更新用户权限
-            console.log(`更新用户 ${userId} 的管理员权限为: ${isAdmin}`);
-            // 显示成功消息
-            alert(`用户权限已更新`);
+        async function gesp_toggleAdminPermission(userId, isAdmin) {
+            try {
+                // 调用后端API更新用户权限
+                const response = await gesp_fetch(`http://127.0.0.1:5000/api/users/${userId}/level`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ level: isAdmin ? 3 : 2 })
+                });
+                
+                if (!response) return;
+                
+                const result = await response.json();
+                if (result.success) {
+                    // 显示成功消息
+                    alert(`用户权限已更新`);
+                    // 重新加载用户列表
+                    gesp_loadAdminUsers();
+                } else {
+                    alert(`更新权限失败: ${result.error || '未知错误'}`);
+                }
+            } catch (error) {
+                console.error('更新用户权限失败:', error);
+                alert('更新用户权限失败: ' + error.message);
+            }
         }
         
         // 删除用户
