@@ -1741,6 +1741,44 @@
         
         // 关闭编辑学员弹窗
         function gesp_closeEditStudentModal() {
+            // 重置编辑状态，显示文本，隐藏输入框和选择框
+            document.getElementById('edit-student-name-display').style.display = 'inline-block';
+            document.getElementById('edit-student-name').style.display = 'none';
+            
+            document.getElementById('edit-student-phone-display').style.display = 'inline-block';
+            document.getElementById('edit-student-phone').style.display = 'none';
+            
+            document.getElementById('edit-student-gender-display').style.display = 'inline-block';
+            document.getElementById('edit-student-gender').style.display = 'none';
+            
+            document.getElementById('edit-student-age-display').style.display = 'inline-block';
+            document.getElementById('edit-student-age').style.display = 'none';
+            
+            document.getElementById('edit-student-grade-display').style.display = 'inline-block';
+            document.getElementById('edit-student-grade').style.display = 'none';
+            
+            document.getElementById('edit-student-project-display').style.display = 'inline-block';
+            document.getElementById('edit-student-project').style.display = 'none';
+            
+            document.getElementById('edit-student-teacher-display').style.display = 'inline-block';
+            document.getElementById('edit-student-teacher-container').style.display = 'none';
+            
+            document.getElementById('edit-student-remaining-classes-display').style.display = 'inline-block';
+            document.getElementById('edit-student-remaining-classes').style.display = 'none';
+            
+            document.getElementById('edit-student-remaining-fee-display').style.display = 'inline-block';
+            document.getElementById('edit-student-remaining-fee').style.display = 'none';
+            
+            document.getElementById('edit-student-enrollment-date-display').style.display = 'inline-block';
+            document.getElementById('edit-student-enrollment-date').style.display = 'none';
+            
+            // 隐藏保存按钮
+            document.getElementById('saveChangesBtn').style.display = 'none';
+            
+            // 隐藏密码验证表单
+            document.getElementById('passwordVerification').style.display = 'none';
+            
+            // 关闭弹窗
             document.getElementById('editStudentModal').style.display = 'none';
         }
         
