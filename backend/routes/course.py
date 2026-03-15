@@ -154,7 +154,10 @@ def get_students(current_user):
             'pages': total_pages
         }), 200
     
-    # 默认分页（无排序）
+    # 默认按创建时间排序
+    query = query.order_by(Student.created_at.asc())
+    
+    # 分页
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     
     students = pagination.items
